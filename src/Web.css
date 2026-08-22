@@ -52,9 +52,12 @@
 
   color: #666;
   font-size: 20px;
-  line-height: 1.6;
+  line-height: 2;
 }
 
+#work{
+  scroll-behavior: smooth;
+}
 
 
 .hero-buttons {
@@ -80,28 +83,16 @@
 
 
 .primary-btn {
-  background: #E7A93C;
-  color: white;
+  background: #d9d5cf;
+  color: #e7a93c;
   border: 2px solid #e7a93c;
-  margin-left: 220px;
+  margin-left: 20px;
 }
 
 .primary-btn:hover {
   background: #D89527;
 }
 
-
-
-.secondary-btn {
-  background: transparent;
-  color: #e7a93c;
-  border: 2px solid #e7a93c;
-}
-
-.secondary-btn:hover {
-  background: #e7a93c;
-  color: white;
-}
 
 .Features {
   min-height: 100vh;

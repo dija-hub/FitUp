@@ -13,7 +13,7 @@ function Web() {
     <div>
       <Navbar />
 
-      <section className="hero">
+      <section className="hero" id="home">
         <div className="hero-content">
           <p className="hero-tagline">BUILD STRENGTH. BUILD CONFIDENCE.</p>
 
@@ -28,8 +28,6 @@ function Web() {
 
           <div className="hero-buttons">
             <button className="primary-btn">Get Started</button>
-
-            <button className="secondary-btn">Our Programs</button>
           </div>
         </div>
         
@@ -38,7 +36,7 @@ function Web() {
      
 
       <hr />
-      <section className="Features">
+      <section className="Features" id="features">
 
   <div className="features-heading">
     <h2>FEATURES</h2>
@@ -124,7 +122,7 @@ function Web() {
 
 </section>
 <hr/>
-<section className="how-it-works">
+<section className="how-it-works" id="work">
 
   <div className="how-heading">
     <p>HOW IT WORKS</p>
@@ -221,7 +219,7 @@ function Web() {
 
 </section>
 
- <section className="final-cta">
+ <section className="final-cta" id="connect with us">
 
       <div className="cta-wrapper">
 
