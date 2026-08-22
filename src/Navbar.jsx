@@ -17,26 +17,20 @@ function Navbar() {
         </li>
 
         <li>
-          <a href="#about">
-            About
+          <a href="#features">
+            Features
           </a>
         </li>
 
         <li>
-          <a href="#programs">
-            Programs
+          <a href="#work">
+            How it works
           </a>
         </li>
 
         <li>
-          <a href="#services">
-            Services
-          </a>
-        </li>
-
-        <li>
-          <a href="#contact">
-            Contact
+          <a href="#Reviews">
+            Reviews
           </a>
         </li>
 
