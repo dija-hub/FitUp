@@ -1,5 +1,11 @@
 import Navbar from "./Navbar";
 import "./Web.css";
+import {
+  Flame,
+  Palette,
+  Moon,
+  TrendingUp
+} from "lucide-react";
 
 function Web() {
   return (
@@ -48,34 +54,91 @@ function Web() {
       </section>
       <hr />
       <section className="Features">
-        <div className="features-content">
-          <div className="feature-box">
-            <h2>Daily Check-ins</h2>
-            <p>
-              Keep track of your daily tasks and stay consistent with your
-              habits.
-            </p>
-          </div>
-          <div className="feature-box">
-            <h2>Habit Color Categories</h2>
-            <p>
-              Organize your habits with simple colors to quickly see what needs
-              your attention.
-            </p>
-          </div>
-          <div className="feature-box">
-            <h2>Dark Mode</h2>
-            <p>
-              Switch to a comfortable dark theme for a cleaner experience
-              anytime.
-            </p>
-          </div>
-          <div className="feature-box">
-            <h2>Progress Tracking</h2>
-            <p>See your completed tasks and track your progress over time.</p>
-          </div>
+
+  <div className="features-heading">
+    <p>FEATURES</p>
+    <h1>
+      Everything you need,
+      <br />
+      nothing you don't
+    </h1>
+  </div>
+
+  <div className="features-content">
+
+    <div className="feature-item">
+      <div className="feature-box">
+
+        <div className="feature-icon">
+          <Flame size={20} />
         </div>
-      </section>
+
+        <h2>Daily Check-ins</h2>
+
+        <p>
+          Keep track of your daily tasks and stay consistent with your habits.
+        </p>
+
+      </div>
+    </div>
+
+
+    <div className="feature-item">
+      <div className="feature-box">
+
+        <div className="feature-icon">
+          <Palette size={20} />
+        </div>
+
+        <h2>Habit Color Categories</h2>
+
+        <p>
+          Organize your habits with simple colors to quickly see what needs
+          your attention.
+        </p>
+
+      </div>
+    </div>
+
+
+    <div className="feature-item">
+      <div className="feature-box">
+
+        <div className="feature-icon">
+          <Moon size={20} />
+        </div>
+
+        <h2>Dark Mode</h2>
+
+        <p>
+          Switch to a comfortable dark theme for a cleaner experience
+          anytime.
+        </p>
+
+      </div>
+    </div>
+
+
+    <div className="feature-item">
+      <div className="feature-box">
+
+        <div className="feature-icon">
+          <TrendingUp size={20} />
+        </div>
+
+        <h2>Progress Tracking</h2>
+
+        <p>
+          See your completed tasks and track your progress over time.
+        </p>
+
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
     </div>
   );
 }

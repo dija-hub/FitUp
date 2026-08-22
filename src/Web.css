@@ -13,7 +13,7 @@
 
   text-align: center;
 
-  background: #fdfcf9;
+  background: #F7F8F2;
   padding: 60px 20px;
 }
 
@@ -80,13 +80,13 @@
 
 
 .primary-btn {
-  background: #557d35;
+  background: #557D35;
   color: white;
   border: 2px solid #557d35;
 }
 
 .primary-btn:hover {
-  background: #45672c;
+  background: #3F6327;
 }
 
 
@@ -151,23 +151,101 @@
   font-size: 15px;
 }
 
-.Features{
-  min-height: calc(100vh - 70px);
-  display: flex;
-  justify-content: center;
-  background-color: #d2e7b3;
-  padding: 60px 20px;
-  
-}
-.features-content {
-  width: 99%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
-  flex-wrap: wrap;
 
+.Features {
+  min-height: 100vh;
+  background-color: #DDEBC8;
+  padding: 70px 20px;
 }
-.Features span {
-color:#034d24;
+
+.features-title {
+  text-align: center;
+  color: #172126;
+  font-size: 60px;
+  font-weight: 700;
+  margin-bottom: 70px;
+}
+
+.features-content {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 70px 80px;
+}
+
+.feature-item {
+  text-align: center;
+}
+
+.feature-item h2 {
+  color: white;
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+
+.feature-box {
+  min-height: 160px;
+  border: 2px solid #FFFFFF;
+  border-radius: 15px;
+  padding: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.feature-box p {
+  color: #9299bd;
+  font-size: 18px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+
+.features-content {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 70px 80px;
+}
+
+.feature-item {
+  text-align: center;
+}
+
+.feature-item h2 {
+  color: #315A2A;
+  font-size: 30px;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.feature-box {
+  min-height: 160px;
+
+  border: 2px solid #D5DDD0;
+  border-radius: 15px;
+
+  padding: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.feature-box p {
+  color: #66706A;
+  font-size: 18px;
+  line-height: 1.7;
+  margin: 0;
 }
