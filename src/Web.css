@@ -155,12 +155,17 @@
   min-height: calc(100vh - 70px);
   display: flex;
   justify-content: center;
-
   background-color: #d2e7b3;
   padding: 60px 20px;
+  
 }
 .features-content {
-  width: 99vh;
+  width: 99%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-wrap: wrap;
 
 }
 .Features span {
