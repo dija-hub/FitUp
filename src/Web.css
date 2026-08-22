@@ -151,3 +151,17 @@
   font-size: 15px;
 }
 
+.Features{
+  min-height: calc(100vh - 70px);
+  display: flex;
+  justify-content: center;
+  background-color: #d2e7b3;
+  padding: 60px 20px;
+}
+.features-content {
+  max-width: 900px;
+}
+.Features span {
+color:#034d24;
+
+}

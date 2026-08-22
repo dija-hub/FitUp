@@ -46,7 +46,14 @@ function Web() {
           </div>
         </div>
       </section>
-      
+      <hr />
+      <section className="Features">
+        <div className="features-content">
+          <h1>
+            <span>Features</span>
+          </h1>
+        </div>
+      </section>
     </div>
   );
 }
