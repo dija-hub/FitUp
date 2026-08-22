@@ -235,6 +235,110 @@ function Web() {
   </div>
 
 </section>
+<section className="reviews">
+
+  <div className="reviews-heading">
+    <p>WHAT PEOPLE SAY</p>
+
+    <h1>
+      Built for better
+      <span> everyday habits.</span>
+    </h1>
+
+    <p className="reviews-subtitle">
+      Real people. Real habits. Real progress.
+    </p>
+  </div>
+
+
+  <div className="reviews-container">
+
+    {/* Review 1 */}
+    <div className="review-card">
+
+      <div className="review-stars">
+        ★★★★★
+      </div>
+
+      <p className="review-text">
+        "This app made staying consistent so much easier.
+        I love being able to see my progress every day."
+      </p>
+
+      <div className="review-user">
+
+        <div className="user-avatar">
+          A
+        </div>
+
+        <div>
+          <h3>Alex Morgan</h3>
+          <p>Fitness Enthusiast</p>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    {/* Review 2 */}
+    <div className="review-card featured-review">
+
+      <div className="review-stars">
+        ★★★★★
+      </div>
+
+      <p className="review-text">
+        "Simple, clean, and actually motivating.
+        I've finally turned my small habits into a routine."
+      </p>
+
+      <div className="review-user">
+
+        <div className="user-avatar">
+          S
+        </div>
+
+        <div>
+          <h3>Sarah Wilson</h3>
+          <p>Daily User</p>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    {/* Review 3 */}
+    <div className="review-card">
+
+      <div className="review-stars">
+        ★★★★★
+      </div>
+
+      <p className="review-text">
+        "The progress tracking keeps me motivated.
+        Every completed habit feels like a small win."
+      </p>
+
+      <div className="review-user">
+
+        <div className="user-avatar">
+          J
+        </div>
+
+        <div>
+          <h3>James Carter</h3>
+          <p>Habit Builder</p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
 
     </div>
   );
