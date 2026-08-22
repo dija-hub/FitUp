@@ -293,7 +293,7 @@ function Web() {
           <a href="#signin">Sign in</a>
         </div>
 
-        <p>© 2026 Continuum</p>
+        <p>© 2026 FitUp</p>
 
       </footer>
 

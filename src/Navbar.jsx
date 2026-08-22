@@ -29,8 +29,8 @@ function Navbar() {
         </li>
 
         <li>
-          <a href="#Reviews">
-            Reviews
+          <a href="#connect with us">
+            Connect with us
           </a>
         </li>
 
