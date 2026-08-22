@@ -14,7 +14,7 @@
   text-align: center;
 
   background: #F7F8F2;
-  padding: 60px 20px;
+  padding: 20px 20px;
 }
 
 .hero-content {
@@ -102,56 +102,6 @@
   background: #e7a93c;
   color: white;
 }
-
-
-
-.stats {
-  display: flex;
-  justify-content: center;
-
-  margin-top: 70px;
-}
-
-.stat {
-  width: 180px;
-  padding: 0 30px;
-
-  border-right: 1px solid #ddd;
-}
-
-.stat:last-child {
-  border-right: none;
-}
-
-.stat-icon {
-  width: 60px;
-  height: 60px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  margin: 0 auto 15px;
-
-  border-radius: 50%;
-
-  background: #eef1e8;
-  color: #557d35;
-
-  font-size: 25px;
-}
-
-.stat h3 {
-  font-size: 30px;
-  color: #172126;
-}
-
-.stat p {
-  margin-top: 5px;
-  color: #777;
-  font-size: 15px;
-}
-
 
 .Features {
   min-height: 100vh;

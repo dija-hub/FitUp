@@ -4,7 +4,8 @@ import {
   Flame,
   Palette,
   Moon,
-  TrendingUp
+  TrendingUp,
+  ArrowDown 
 } from "lucide-react";
 
 function Web() {
@@ -30,28 +31,12 @@ function Web() {
 
             <button className="secondary-btn">Our Programs</button>
           </div>
-
-          <div className="stats">
-            <div className="stat">
-              <div className="stat-icon">♙</div>
-              <h3>Active</h3>
-              <p>Happy Members</p>
-            </div>
-
-            <div className="stat">
-              <div className="stat-icon">🏋</div>
-              <h3>Better</h3>
-              <p>Habits</p>
-            </div>
-
-            <div className="stat">
-              <div className="stat-icon">🔥</div>
-              <h3>Focus</h3>
-              <p>Categories</p>
-            </div>
-          </div>
         </div>
+        
+
       </section>
+     
+
       <hr />
       <section className="Features">
 
