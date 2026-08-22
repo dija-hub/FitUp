@@ -52,6 +52,22 @@ function Web() {
           <h1>
             <span>Features</span>
           </h1>
+          <div className="feature-box">
+            <h2>Daily Check-ins</h2>
+            <p>Keep track of your daily tasks and stay consistent with your habits.</p>
+          </div>
+          <div className="feature-box">
+            <h2>Habit Color Categories</h2>
+            <p>Organize your habits with simple colors to quickly see what needs your attention.</p>
+          </div>
+          <div className="feature-box">
+            <h2>Dark Mode</h2>
+            <p>Switch to a comfortable dark theme for a cleaner experience anytime.</p>
+          </div>
+          <div className="feature-box">
+            <h2>Progress Tracking</h2>
+            <p>See your completed tasks and track your progress over time.</p>
+          </div>
         </div>
       </section>
     </div>
