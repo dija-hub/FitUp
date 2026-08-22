@@ -8,54 +8,45 @@ function Web() {
 
       <section className="hero">
         <div className="hero-content">
-
-          <p className="hero-tagline">
-            BUILD STRENGTH. BUILD CONFIDENCE.
-          </p>
+          <p className="hero-tagline">BUILD STRENGTH. BUILD CONFIDENCE.</p>
 
           <h1>
             Stronger <span>Every Day</span>
           </h1>
 
           <p className="hero-description">
-            Transform your body, boost your energy, and
-            become the best version of yourself.
+            Transform your body, boost your energy, and become the best version
+            of yourself.
           </p>
 
           <div className="hero-buttons">
-            <button className="primary-btn">
-              Get Started
-            </button>
+            <button className="primary-btn">Get Started</button>
 
-            <button className="secondary-btn">
-              Our Programs
-            </button>
+            <button className="secondary-btn">Our Programs</button>
           </div>
 
           <div className="stats">
-
             <div className="stat">
               <div className="stat-icon">♙</div>
-              <h3>500+</h3>
+              <h3>Active</h3>
               <p>Happy Members</p>
             </div>
 
             <div className="stat">
               <div className="stat-icon">🏋</div>
-              <h3>25+</h3>
-              <p>Expert Trainers</p>
+              <h3>Better</h3>
+              <p>Habits</p>
             </div>
 
             <div className="stat">
               <div className="stat-icon">🔥</div>
-              <h3>30+</h3>
-              <p>Fitness Programs</p>
+              <h3>Focus</h3>
+              <p>Categories</p>
             </div>
-
           </div>
-
         </div>
       </section>
+      
     </div>
   );
 }
