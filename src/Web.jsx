@@ -253,7 +253,6 @@ function Web() {
 
   <div className="reviews-container">
 
-    {/* Review 1 */}
     <div className="review-card">
 
       <div className="review-stars">
@@ -280,8 +279,6 @@ function Web() {
 
     </div>
 
-
-    {/* Review 2 */}
     <div className="review-card featured-review">
 
       <div className="review-stars">
@@ -308,8 +305,6 @@ function Web() {
 
     </div>
 
-
-    {/* Review 3 */}
     <div className="review-card">
 
       <div className="review-stars">
@@ -343,11 +338,10 @@ function Web() {
 
       <div className="cta-wrapper">
 
-        {/* Decorative orange circles */}
         <div className="orange-orb orb-one"></div>
         <div className="orange-orb orb-two"></div>
 
-        {/* Decorative lines */}
+        
         <div className="corner-line line-one"></div>
         <div className="corner-line line-two"></div>
 
@@ -383,7 +377,6 @@ function Web() {
         </div>
       </div>
 
-      {/* Footer */}
       <footer className="cta-footer">
 
         <div className="brand">
