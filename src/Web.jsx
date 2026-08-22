@@ -56,12 +56,12 @@ function Web() {
       <section className="Features">
 
   <div className="features-heading">
-    <p>FEATURES</p>
-    <h1>
+    <h2>FEATURES</h2>
+    <h3>
       Everything you need,
       <br />
       nothing you don't
-    </h1>
+    </h3>
   </div>
 
   <div className="features-content">

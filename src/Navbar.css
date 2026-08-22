@@ -32,7 +32,7 @@
 }
 
 .logo span {
-  color: #557d35;
+  color: #D89527;
   font-size: 25px;
 }
 
@@ -59,7 +59,7 @@
 
 .nav-links a:hover,
 .nav-links a.active {
-  color: #557d35;
+  color: #D89527;
 }
 
 
@@ -70,7 +70,7 @@
   border: none;
   border-radius: 8px;
 
-  background: #557d35;
+  background: #E7A93C;
   color: white;
 
   font-size: 16px;
@@ -82,6 +82,6 @@
 }
 
 .join-btn:hover {
-  background: #45672c;
+  background: #D89527;
 }
 
