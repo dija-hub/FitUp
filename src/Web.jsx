@@ -339,7 +339,70 @@ function Web() {
   </div>
 
 </section>
+ <section className="final-cta">
 
+      <div className="cta-wrapper">
+
+        {/* Decorative orange circles */}
+        <div className="orange-orb orb-one"></div>
+        <div className="orange-orb orb-two"></div>
+
+        {/* Decorative lines */}
+        <div className="corner-line line-one"></div>
+        <div className="corner-line line-two"></div>
+
+        <div className="cta-inner">
+
+          <div className="cta-label">
+            <span className="label-dot"></span>
+            START YOUR JOURNEY
+          </div>
+
+          <h2>
+            Ready to build
+            <br />
+            <span>better habits?</span>
+          </h2>
+
+          <p>
+            Join thousands of people building consistency,
+            creating better routines, and making progress
+            every single day.
+          </p>
+
+          <button className="cta-button">
+            Get started 
+            <span>→</span>
+          </button>
+
+          <div className="cta-note">
+            <span>✦</span>
+            Free forever · No credit card required
+          </div>
+
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="cta-footer">
+
+        <div className="brand">
+          <div className="brand-icon">✚</div>
+          <span>FitUp</span>
+        </div>
+
+        <div className="footer-links">
+          <a href="#features">Features</a>
+          <a href="#how-it-works">How it works</a>
+          <a href="#reviews">Reviews</a>
+          <a href="#signin">Sign in</a>
+        </div>
+
+        <p>© 2026 Continuum</p>
+
+      </footer>
+
+    </section>
     </div>
   );
 }
