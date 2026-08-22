@@ -261,5 +261,195 @@
   max-width: 430px;
 }
 
+.how-it-works {
+  min-height: 75vh;
+
+  background: #ffffff;
+
+  padding: 100px 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.how-heading {
+  text-align: center;
+
+  margin-bottom: 70px;
+}
+
+.how-heading p {
+  color: #e7a93c;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  letter-spacing: 2px;
+
+  margin-bottom: 15px;
+}
+
+.how-heading h1 {
+  color: #303030;
+
+  font-size: 48px;
+  font-weight: 700;
+
+  margin: 0 0 15px;
+
+  letter-spacing: -1px;
+}
+
+.how-heading span {
+  color: #77736d;
+
+  font-size: 16px;
+}
+
+.steps {
+  width: 100%;
+  max-width: 1050px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 22px;
+}
+
+
+.step {
+  width: 280px;
+
+  text-align: left;
+}
+
+.step-number {
+  color: #e7a93c;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  letter-spacing: 2px;
+
+  margin: 0 0 12px 5px;
+}
+
+.step-box {
+  height: 140px;
+
+  padding: 25px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 18px;
+
+  background: #f7f5ef;
+
+  border: 1px solid #e7e1d6;
+
+  border-radius: 18px;
+
+  position: relative;
+
+  overflow: hidden;
+
+  transition: all 0.3s ease;
+}
+
+
+.step-box::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 20px;
+  bottom: 20px;
+
+  width: 4px;
+
+  background: #e7a93c;
+
+  border-radius: 0 5px 5px 0;
+}
+
+
+.step-icon {
+  min-width: 48px;
+  height: 48px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 13px;
+
+  background: #f9ead0;
+
+  color: #e7a93c;
+
+  font-size: 20px;
+
+  font-weight: 700;
+}
+
+.step-box h2 {
+  color: #303030;
+
+  font-size: 20px;
+
+  font-weight: 600;
+
+  margin: 0 0 6px;
+}
+
+.step-box p {
+  color: #77736d;
+
+  font-size: 14px;
+
+  margin: 0;
+
+  line-height: 1.5;
+}
+
+.step-arrow {
+  color: #e7a93c;
+
+  font-size: 28px;
+
+  font-weight: 300;
+
+  margin-top: 35px;
+
+  opacity: 0.8;
+}
+
+
+
+.step-box:hover {
+  transform: translateY(-5px);
+
+  background: #fffdf8;
+
+  border-color: #e7a93c;
+
+  box-shadow:
+    0 12px 30px rgba(231, 169, 60, 0.12);
+}
+
+.step-box:hover .step-icon {
+  background: #e7a93c;
+
+  color: white;
+}
+
 
 

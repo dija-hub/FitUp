@@ -154,7 +154,7 @@ function Web() {
 
   <div className="steps">
 
-    {/* STEP 01 */}
+    
     <div className="step">
 
       <div className="step-number">
@@ -182,7 +182,7 @@ function Web() {
     </div>
 
 
-    {/* STEP 02 */}
+    
     <div className="step">
 
       <div className="step-number">
@@ -210,7 +210,7 @@ function Web() {
     </div>
 
 
-    {/* STEP 03 */}
+    
     <div className="step">
 
       <div className="step-number">
