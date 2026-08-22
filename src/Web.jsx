@@ -138,97 +138,103 @@ function Web() {
   </div>
 
 </section>
-<section className="routine">
+<hr/>
+<section className="how-it-works">
 
-  <div className="routine-heading">
-    <h2>BUILD YOUR ROUTINE</h2>
+  <div className="how-heading">
+    <p>HOW IT WORKS</p>
 
-    <h3>
-      Create a routine that
-      <br />
-      works for you
-    </h3>
+    <h1>Start building better habits</h1>
 
-    <p>
-      Create simple daily routines and stay on track
-      with the habits that matter to you.
-    </p>
+    <span>
+      Simple steps to turn small actions into lasting routines.
+    </span>
   </div>
 
 
-  <div className="routine-content">
+  <div className="steps">
 
-    <div className="routine-card">
+    {/* STEP 01 */}
+    <div className="step">
 
-      <div className="task">
-        <span className="check">✓</span>
-
-        <div>
-          <h4>Morning Workout</h4>
-          <p>Start your day with movement.</p>
-        </div>
+      <div className="step-number">
+        01
       </div>
 
+      <div className="step-box">
 
-      <div className="task">
-        <span className="check">✓</span>
+        <div className="step-icon">
+          ✓
+        </div>
 
         <div>
-          <h4>Drink Water</h4>
-          <p>Keep your daily hydration goal in mind.</p>
+          <h2>Create</h2>
+          <p>Build your habits</p>
         </div>
-      </div>
 
-
-      <div className="task">
-        <span className="check empty">✓</span>
-
-        <div>
-          <h4>Read 20 Minutes</h4>
-          <p>Make time for learning every day.</p>
-        </div>
-      </div>
-
-
-      <div className="task">
-        <span className="check empty">✓</span>
-
-        <div>
-          <h4>Evening Stretch</h4>
-          <p>End your day with a simple stretch.</p>
-        </div>
       </div>
 
     </div>
 
 
-    <div className="routine-info">
+    <div className="step-arrow">
+      →
+    </div>
 
-      <div className="routine-number">
-        04
+
+    {/* STEP 02 */}
+    <div className="step">
+
+      <div className="step-number">
+        02
       </div>
 
-      <h2>
-        Small habits.
-        <br />
-        Big changes.
-      </h2>
+      <div className="step-box">
 
-      <p>
-        Stay consistent with simple habits and
-        build a routine that helps you reach your goals.
-      </p>
+        <div className="step-icon">
+          ↗
+        </div>
 
-      <button className="routine-btn">
-        Start Tracking
-      </button>
+        <div>
+          <h2>Track</h2>
+          <p>Stay consistent</p>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div className="step-arrow">
+      →
+    </div>
+
+
+    {/* STEP 03 */}
+    <div className="step">
+
+      <div className="step-number">
+        03
+      </div>
+
+      <div className="step-box">
+
+        <div className="step-icon">
+          ★
+        </div>
+
+        <div>
+          <h2>Improve</h2>
+          <p>Become your best</p>
+        </div>
+
+      </div>
 
     </div>
 
   </div>
 
 </section>
-
 
     </div>
   );
