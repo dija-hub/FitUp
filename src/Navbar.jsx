@@ -1,6 +1,8 @@
+import { useState } from "react";
 import "./Navbar.css";
 import { Moon } from "lucide-react";
 function Navbar({activeSection,setActiveSection}) {
+  const [darkMode,setDarkmode]=useState(true)
   return (
     
 
@@ -39,7 +41,7 @@ function Navbar({activeSection,setActiveSection}) {
       </ul>
 <div className="nav-buttons">
 
-  <button className="dark-mode-btn">
+  <button className={`dark-mode-btn ${darkMode ? "darkmode" : "lightmode"}`}>
     <Moon size={18} />
   </button>
 
