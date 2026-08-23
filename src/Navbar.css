@@ -36,6 +36,10 @@ html {
 
   transform: translateY(-2px);
 }
+.navbardark{
+  background-color: #121212;
+  color: #ffffff;
+}
 .navbar {
   height: 75px;
   width: 100%;
