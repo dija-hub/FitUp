@@ -36,10 +36,7 @@ html {
 
   transform: translateY(-2px);
 }
-.navbardark{
-  background-color: #121212;
-  color: #ffffff;
-}
+
 .navbar {
   height: 75px;
   width: 100%;
@@ -53,7 +50,10 @@ html {
 
   border-bottom: 1px solid #eeeeee;
 }
-
+.navbar.dark{
+  background-color: #121212;
+  color: #ffffff;
+}
 
 
 .logo {

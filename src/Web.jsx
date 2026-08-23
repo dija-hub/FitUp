@@ -11,9 +11,10 @@ import {
 
 function Web() {
   const [activeSection,setActiveSection]=useState("home")
+  const [darkMode, setDarkMode] = useState(false)
   return (
     <div>
-      <Navbar activeSection={activeSection} setActiveSection={setActiveSection}/>
+      <Navbar activeSection={activeSection} setActiveSection={setActiveSection} darkMode setDarkMode />
 
       <section className="hero" id="home">
         <div className="hero-content">
