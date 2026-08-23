@@ -13,25 +13,25 @@ function Navbar({activeSection,setActiveSection}) {
       <ul className="nav-links">
 
         <li>
-          <a href="#home" className={activeSection==="home"?"active":""}>
+          <a href="#home" className={activeSection==="home"?"active":""}onClick={() => setActiveSection("home")}>
             Home
           </a>
         </li>
 
         <li>
-          <a href="#features">
+          <a href="#features"className={activeSection==="features"?"active":""}onClick={() => setActiveSection("features")}>
             Features
           </a>
         </li>
 
         <li>
-          <a href="#work">
+          <a href="#work"className={activeSection==="work"?"active":""}onClick={() => setActiveSection("work")}>
             How it works
           </a>
         </li>
 
         <li>
-          <a href="#connect">
+          <a href="#connect"className={activeSection==="connect"?"active":""}onClick={() => setActiveSection("connect")}>
             Connect with us
           </a>
         </li>

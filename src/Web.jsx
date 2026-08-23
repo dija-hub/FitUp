@@ -13,7 +13,7 @@ function Web() {
   const [activeSection,setActiveSection]=useState("home")
   return (
     <div>
-      <Navbar activeSection={activeSection} setActiceSection={setActiveSection}/>
+      <Navbar activeSection={activeSection} setActiveSection={setActiveSection}/>
 
       <section className="hero" id="home">
         <div className="hero-content">

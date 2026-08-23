@@ -3,6 +3,9 @@
   padding: 0;
   box-sizing: border-box;
 }
+html {
+  scroll-behavior: smooth;
+}
 
 .navbar {
   height: 75px;
@@ -11,7 +14,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 0 70px;
 
   background: #fdfcf9;
