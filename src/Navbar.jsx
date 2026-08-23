@@ -1,7 +1,9 @@
 import "./Navbar.css";
 
-function Navbar() {
+function Navbar({activeSection,setActiveSection}) {
   return (
+    
+
     <nav className="navbar">
 
       <div className="logo">
@@ -11,7 +13,7 @@ function Navbar() {
       <ul className="nav-links">
 
         <li>
-          <a href="#home" className="active">
+          <a href="#home" className={activeSection==="home"?"active":""}>
             Home
           </a>
         </li>
