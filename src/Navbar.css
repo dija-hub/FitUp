@@ -6,7 +6,36 @@
 html {
   scroll-behavior: smooth;
 }
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+.dark-mode-btn {
+  width: 42px;
+  height: 32px;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 20px;
+
+  background: #f9ead0;
+  color: #e7a93c;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.dark-mode-btn:hover {
+  background: #e7a93c;
+  color: white;
+
+  transform: translateY(-2px);
+}
 .navbar {
   height: 75px;
   width: 100%;

@@ -273,8 +273,7 @@ function Web() {
 
         <div className="footer-links">
           <a href="#features">Features</a>
-          <a href="#how-it-works">How it works</a>
-          <a href="#reviews">Reviews</a>
+          <a href="#work">How it works</a>
           <a href="#signin">Sign in</a>
         </div>
 

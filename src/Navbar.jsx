@@ -1,5 +1,5 @@
 import "./Navbar.css";
-
+import { Moon } from "lucide-react";
 function Navbar({activeSection,setActiveSection}) {
   return (
     
@@ -37,10 +37,17 @@ function Navbar({activeSection,setActiveSection}) {
         </li>
 
       </ul>
+<div className="nav-buttons">
 
-      <button className="join-btn">
-        Join Now
-      </button>
+  <button className="dark-mode-btn">
+    <Moon size={18} />
+  </button>
+
+  <button className="join-btn">
+    Join Now
+  </button>
+
+</div>
 
     </nav>
   );
