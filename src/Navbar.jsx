@@ -29,7 +29,7 @@ function Navbar() {
         </li>
 
         <li>
-          <a href="#connect with us">
+          <a href="#connect">
             Connect with us
           </a>
         </li>

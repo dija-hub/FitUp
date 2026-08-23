@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Navbar from "./Navbar";
 import "./Web.css";
 import {
@@ -9,9 +10,10 @@ import {
 } from "lucide-react";
 
 function Web() {
+  const [activeSection,setActiveSection]=useState("home")
   return (
     <div>
-      <Navbar />
+      <Navbar activeSection={activeSection} setActiceSection={setActiceSection}/>
 
       <section className="hero" id="home">
         <div className="hero-content">
@@ -219,7 +221,7 @@ function Web() {
 
 </section>
 
- <section className="final-cta" id="connect with us">
+ <section className="final-cta" id="connect">
 
       <div className="cta-wrapper">
 
