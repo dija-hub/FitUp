@@ -110,7 +110,10 @@
 .primary-btn:hover {
   background: #d89527;
 }
-
+.dark-page.primary-btn:hover{
+  background-color: #F0B64D;
+  color:#1a1a1a
+}
 .Features {
   min-height: 100vh;
   background: #f7f5ef;
@@ -234,7 +237,11 @@
 
   max-width: 430px;
 }
-
+.dark-page .feature-box:hover {
+  background-color:#242424;
+  border-color: #E7A92C;
+  box-shadow: rgba(0,0,0,0.4);
+}
 .how-it-works {
   min-height: 75vh;
 
@@ -246,7 +253,31 @@
   flex-direction: column;
   align-items: center;
 }
-
+.dark-page .how-heading h1{
+  color:#F5F5F5;
+}
+.dark-page .how-heading span{
+  color:#A8A8A8;
+}
+.dark-page .step-box {
+background-color: #1E1E1E;
+border-color:#2A2A2A;
+}
+.dark-page .step-box h2{
+  color:#F5F5F5;
+}
+.dark-page .step-box p{
+  color:#A8A8A8;
+}
+.dark-page .step-icon {
+  background-color: #2A241A;
+  color:#E7A92C
+}
+.dark-page .step-box:hover{
+  background-color: #242424;
+  border:#E7A92C;
+  box-shadow: rgba(0,0,0,0.4);
+}
 .how-heading {
   text-align: center;
 
@@ -432,6 +463,9 @@
     radial-gradient(circle at 80% 70%, #1e3029 0%, transparent 35%), #0d110f;
   color: #fff;
 }
+.dark-page .cta-wrapper{
+  background-color: #18130f;
+}
 
 .cta-content {
   position: relative;
@@ -582,10 +616,6 @@
   justify-content: space-between;
 }
 
-/* =========================
-   BACKGROUND
-========================= */
-
 .grid-lines {
   position: absolute;
   inset: 0;
@@ -637,10 +667,6 @@
   filter: blur(100px);
 }
 
-/* =========================
-   CTA CONTENT
-========================= */
-
 .cta-content {
   position: relative;
   z-index: 2;
@@ -679,10 +705,6 @@
   box-shadow: 0 0 15px #ff9d32;
 }
 
-/* =========================
-   HEADING
-========================= */
-
 .cta-content h2 {
   margin: 0;
 
@@ -697,10 +719,6 @@
   font-style: normal;
 }
 
-/* =========================
-   DESCRIPTION
-========================= */
-
 .cta-content > p {
   max-width: 560px;
 
@@ -711,10 +729,6 @@
   font-size: 16px;
   line-height: 1.7;
 }
-
-/* =========================
-   BUTTONS
-========================= */
 
 .cta-buttons {
   display: flex;
@@ -784,10 +798,6 @@
 .text-button:hover {
   color: #fff;
 }
-
-/* =========================
-   TRUST
-========================= */
 
 .trust-row {
   display: flex;
@@ -859,8 +869,6 @@
   padding: 70px 5% 0;
 }
 
-/* MAIN CTA */
-
 .cta-wrapper {
   position: relative;
   overflow: hidden;
@@ -892,8 +900,6 @@
   text-align: center;
 }
 
-/* LABEL */
-
 .cta-label {
   display: flex;
   align-items: center;
@@ -920,8 +926,6 @@
   box-shadow: 0 0 12px #f59a2f;
 }
 
-/* HEADING */
-
 .cta-inner h2 {
   margin: 0;
 
@@ -937,8 +941,6 @@
   color: #f59a2f;
 }
 
-/* DESCRIPTION */
-
 .cta-inner p {
   max-width: 540px;
 
@@ -949,8 +951,6 @@
   font-size: 16px;
   line-height: 1.7;
 }
-
-/* BUTTON */
 
 .cta-button {
   display: inline-flex;
@@ -994,9 +994,6 @@
 
   box-shadow: 0 12px 30px rgba(245, 154, 47, 0.25);
 }
-
-/* SMALL NOTE */
-
 .cta-note {
   margin-top: 22px;
 
@@ -1010,10 +1007,6 @@
 
   color: #f59a2f;
 }
-
-/* =========================
-   ORANGE DECORATIONS
-========================= */
 
 .orange-orb {
   position: absolute;
@@ -1099,7 +1092,9 @@
   font-size: 14px;
   font-weight: 700;
 }
-
+.dark-page .brand {
+  color: #f5f5f5;
+}
 .brand-icon {
   display: flex;
   align-items: center;
@@ -1121,7 +1116,9 @@
   display: flex;
   gap: 30px;
 }
-
+.dark-page .footer-link a {
+  color:#A8A8A8
+}
 .footer-links a {
   color: #817970;
 
