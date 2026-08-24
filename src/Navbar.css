@@ -39,7 +39,7 @@ html {
 
   transform: translateY(-2px);
 }
-.dark-mode-btn .join-btn {
+.dark.join-btn {
   background-color: #E7A93C;
   color:#1A1A1A;
 }
