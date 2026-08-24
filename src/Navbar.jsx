@@ -1,7 +1,8 @@
-import { useState } from "react";
+
 import "./Navbar.css";
-import { Moon } from "lucide-react";
-function Navbar({ activeSection, setActiveSection,darkMode,setDarkMode }) {
+import { Moon, ArrowLeft } from "lucide-react";
+function Navbar({ 
+  setShowSignUp}) {
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>
       <div className="logo">
@@ -59,7 +60,7 @@ function Navbar({ activeSection, setActiveSection,darkMode,setDarkMode }) {
           <Moon size={18} />
         </button>
 
-        <button className="join-btn">Join Now</button>
+        <button className="join-btn" onClick={() => setShowSignUp(true)}>Join Now</button>
       </div>
     </nav>
   );

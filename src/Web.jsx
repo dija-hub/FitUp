@@ -1,15 +1,23 @@
 import { useState } from "react";
 import Navbar from "./Navbar";
 import "./Web.css";
+import SignUp from "./SignUp";
 import { Flame, Palette, Moon, TrendingUp } from "lucide-react";
 
 function Web() {
+const [showSignUp, setShowSignUp] = useState(false);
 
   const [activeSection, setActiveSection] = useState("home");
 
   const [darkMode, setDarkMode] = useState(false);
 
+     if (showSignUp) {
+  return <SignUp />;
+}
+
   return (
+
+ 
     <div className={darkMode ? "dark-page" : ""}>
 
       <Navbar
@@ -17,6 +25,7 @@ function Web() {
         setActiveSection={setActiveSection}
         darkMode={darkMode}
         setDarkMode={setDarkMode}
+         setShowSignUp={setShowSignUp}
       />
 
       <section className="hero" id="home">
@@ -33,7 +42,7 @@ function Web() {
           </p>
 
           <div className="hero-buttons">
-            <button className="primary-btn">Get Started</button>
+            <button className="primary-btn" onClick={() => setShowSignUp(true)}>Get Started</button>
           </div>
         </div>
       </section>
@@ -189,7 +198,7 @@ function Web() {
               routines, and making progress every single day.
             </p>
 
-            <button className="cta-button">
+            <button className="cta-button" onClick={() => setShowSignUp(true)}>
               Get started
               <span>→</span>
             </button>
@@ -210,7 +219,7 @@ function Web() {
           <div className="footer-links">
             <a href="#features">Features</a>
             <a href="#work">How it works</a>
-            <a href="#signin">Sign in</a>
+            <a href="#Signin">Sign in</a>
           </div>
 
           <p>© 2026 FitUp</p>
