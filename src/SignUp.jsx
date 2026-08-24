@@ -16,9 +16,9 @@ export default function SignUp({setShowSignUp}) {
 
     <div className="signup-page">
       <div className="signup-card">
-        <button
+ <button
   className="signup-back-btn"
-  onClick={() => setShowSignUp(false)}
+  onClick={() => window.location.href = "/Web"}
 >
   <ArrowLeft size={22} />
 </button>
