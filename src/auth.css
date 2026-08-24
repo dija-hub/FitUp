@@ -368,9 +368,6 @@
   }
 
 }
-body {
-  overflow: hidden;
-}
 
 @media (max-height: 750px) {
   .auth-card {
