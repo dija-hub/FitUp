@@ -1189,12 +1189,14 @@ border-color:#2A2A2A;
   align-items: center;
   justify-content: center;
 
-  padding: 20px;
+  padding: 25px 20px;
 
   background: rgba(20, 20, 20, 0.3);
 
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+
+  overflow-y: auto;
 
   z-index: 1000;
 
