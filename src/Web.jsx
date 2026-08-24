@@ -1,18 +1,22 @@
 import { useState } from "react";
 import Navbar from "./Navbar";
 import "./Web.css";
-import { Flame, Palette, Moon, TrendingUp, ArrowDown } from "lucide-react";
+import { Flame, Palette, Moon, TrendingUp } from "lucide-react";
 
 function Web() {
+
   const [activeSection, setActiveSection] = useState("home");
+
   const [darkMode, setDarkMode] = useState(false);
+
   return (
     <div className={darkMode ? "dark-page" : ""}>
+
       <Navbar
         activeSection={activeSection}
         setActiveSection={setActiveSection}
-        darkMode
-        setDarkMode
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
       />
 
       <section className="hero" id="home">

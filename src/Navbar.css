@@ -22,12 +22,15 @@ html {
   border: none;
   border-radius: 20px;
 
-  background: #f9ead0;
+  background: #F5E9D5;
   color: #e7a93c;
 
   cursor: pointer;
 
   transition: 0.3s;
+}
+.dark-mode-btn icon{
+  color:#D89527;
 }
 
 .dark-mode-btn:hover {
@@ -35,6 +38,10 @@ html {
   color: white;
 
   transform: translateY(-2px);
+}
+.dark-mode-btn .join-btn {
+  background-color: #E7A93C;
+  color:#1A1A1A;
 }
 
 .navbar {
@@ -54,7 +61,15 @@ html {
   background-color: #121212;
   color:#e7a93c ;
 } 
-
+.navbar.dark a{
+  color:#E5E5E5
+}
+.navbar.dark .logo{
+  color:#F5F5F5
+}
+.navbar.dark .active{
+color:#E7A93C;
+}
 
 .logo {
   font-size: 30px;

@@ -13,18 +13,33 @@
 
   text-align: center;
 
-  background: #F7F8F2;
+  background: #f7f8f2;
   padding: 20px 20px;
 }
-.dark-page{
-  background-color: #0d110f;
-  color:#e7a93c;
-}
-.hero-content {
-  max-width: 900px;
+.dark-page .hero {
+  background: #121212;
 }
 
+.dark-page .Features {
+  background: #121212;
+}
 
+.dark-page .how-it-works {
+  background: #121212;
+}
+
+.dark-page .final-cta {
+  background: #121212;
+}
+.dark-page .hero-tagline {
+  color: #e7a93c;
+}
+.dark-page .hero-content h1 {
+  color: #f5f5f5;
+}
+.dark-page .hero-content sapan {
+  color: #e7a93c;
+}
 .hero-tagline {
   color: #e7a93c;
   font-size: 18px;
@@ -33,21 +48,17 @@
   margin-bottom: 30px;
 }
 
-
-
 .hero h1 {
   font-size: 80px;
   font-weight: 700;
   color: #303030;
   margin-bottom: 25px;
-  line-height:60px;
+  line-height: 60px;
 }
 
 .hero h1 span {
   color: #e7a93c;
 }
-
-
 
 .hero-description {
   max-width: 600px;
@@ -58,10 +69,9 @@
   line-height: 2;
 }
 
-#work{
+#work {
   scroll-behavior: smooth;
 }
-
 
 .hero-buttons {
   display: flex;
@@ -83,8 +93,6 @@
   transition: 0.3s;
 }
 
-
-
 .primary-btn {
   background: #d9d5cf;
   color: #e7a93c;
@@ -93,9 +101,8 @@
 }
 
 .primary-btn:hover {
-  background: #D89527;
+  background: #d89527;
 }
-
 
 .Features {
   min-height: 100vh;
@@ -116,7 +123,7 @@
   margin-bottom: 14px;
 }
 
-.features-heading h3{
+.features-heading h3 {
   color: #252525;
   font-size: 25px;
   line-height: 1.09;
@@ -151,8 +158,7 @@
 
   border: 1px solid rgba(210, 205, 195, 0.55);
 
-  box-shadow:
-    0 4px 15px rgba(40, 35, 25, 0.04);
+  box-shadow: 0 4px 15px rgba(40, 35, 25, 0.04);
 
   backdrop-filter: blur(8px);
 
@@ -162,8 +168,7 @@
 .feature-box:hover {
   transform: translateY(-4px);
 
-  box-shadow:
-    0 10px 25px rgba(40, 35, 25, 0.08);
+  box-shadow: 0 10px 25px rgba(40, 35, 25, 0.08);
 
   border-color: rgba(231, 169, 60, 0.35);
 }
@@ -184,7 +189,6 @@
 
   margin-bottom: 18px;
 }
-
 
 .feature-box h2 {
   color: #303030;
@@ -264,7 +268,6 @@
   gap: 22px;
 }
 
-
 .step {
   width: 280px;
 
@@ -307,7 +310,6 @@
   transition: all 0.3s ease;
 }
 
-
 .step-box::before {
   content: "";
 
@@ -323,7 +325,6 @@
 
   border-radius: 0 5px 5px 0;
 }
-
 
 .step-icon {
   min-width: 48px;
@@ -377,8 +378,6 @@
   opacity: 0.8;
 }
 
-
-
 .step-box:hover {
   transform: translateY(-5px);
 
@@ -386,8 +385,7 @@
 
   border-color: #e7a93c;
 
-  box-shadow:
-    0 12px 30px rgba(231, 169, 60, 0.12);
+  box-shadow: 0 12px 30px rgba(231, 169, 60, 0.12);
 }
 
 .step-box:hover .step-icon {
@@ -406,8 +404,7 @@
   padding: 80px 24px;
   background:
     radial-gradient(circle at 20% 30%, #24362d 0%, transparent 35%),
-    radial-gradient(circle at 80% 70%, #1e3029 0%, transparent 35%),
-    #0d110f;
+    radial-gradient(circle at 80% 70%, #1e3029 0%, transparent 35%), #0d110f;
   color: #fff;
 }
 
@@ -560,7 +557,6 @@
   justify-content: space-between;
 }
 
-
 /* =========================
    BACKGROUND
 ========================= */
@@ -570,15 +566,8 @@
   inset: 0;
 
   background-image:
-    linear-gradient(
-      rgba(255, 255, 255, 0.025) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.025) 1px,
-      transparent 1px
-    );
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
 
   background-size: 70px 70px;
 
@@ -623,7 +612,6 @@
   filter: blur(100px);
 }
 
-
 /* =========================
    CTA CONTENT
 ========================= */
@@ -666,7 +654,6 @@
   box-shadow: 0 0 15px #ff9d32;
 }
 
-
 /* =========================
    HEADING
 ========================= */
@@ -685,7 +672,6 @@
   font-style: normal;
 }
 
-
 /* =========================
    DESCRIPTION
 ========================= */
@@ -700,7 +686,6 @@
   font-size: 16px;
   line-height: 1.7;
 }
-
 
 /* =========================
    BUTTONS
@@ -774,7 +759,6 @@
 .text-button:hover {
   color: #fff;
 }
-
 
 /* =========================
    TRUST
@@ -1002,7 +986,6 @@
   color: #f59a2f;
 }
 
-
 /* =========================
    ORANGE DECORATIONS
 ========================= */
@@ -1035,7 +1018,6 @@
   bottom: -220px;
 }
 
-
 .cta-wrapper::before {
   content: "";
 
@@ -1051,7 +1033,6 @@
 
   border-radius: 50%;
 }
-
 
 .cta-wrapper::after {
   content: "";
@@ -1069,8 +1050,6 @@
   border-radius: 50%;
 }
 
-
-
 .cta-footer {
   max-width: 1250px;
 
@@ -1084,7 +1063,6 @@
 
   gap: 30px;
 }
-
 
 .brand {
   display: flex;
@@ -1114,7 +1092,6 @@
   font-size: 19px;
 }
 
-
 .footer-links {
   display: flex;
   gap: 30px;
@@ -1141,6 +1118,3 @@
 
   font-size: 11px;
 }
-
-
-
