@@ -37,8 +37,15 @@
 .dark-page .hero-content h1 {
   color: #f5f5f5;
 }
-.dark-page .hero-content sapan {
+.dark-page .hero-content span {
   color: #e7a93c;
+}
+.dark-page .hero-description {
+  color: #a8a8a8;
+}
+.dark-page .primary-btn {
+  background-color: #e7a93c;
+  color: #1a1a1a;
 }
 .hero-tagline {
   color: #e7a93c;
@@ -109,7 +116,25 @@
   background: #f7f5ef;
   padding: 80px 22px;
 }
-
+.dark-page .feature-box h2 {
+  color: #f5f5f5;
+}
+.dark-page .feature-box p {
+  color: #a8a8a8;
+}
+.dark-page .feature-box {
+  border-color: #2a2a2a;
+}
+.dark-page .features-heading h3 {
+  color: #f5f5f5;
+}
+.dark-page .feature-box {
+  background-color: #1e1e1e;
+}
+.dark-page .feature-icon {
+  background-color: #2a241a;
+  color: #e7a93c;
+}
 .features-heading {
   max-width: 1100px;
   margin: 0 auto 55px;
