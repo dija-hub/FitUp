@@ -1,0 +1,329 @@
+* {
+  box-sizing: border-box;
+}
+
+.auth-page {
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px 20px;
+
+  background: #f7f8f2;
+}
+
+.auth-card {
+  position: relative;
+
+  width: 100%;
+  max-width: 500px;
+
+  padding: 45px;
+
+  background: #fffefa;
+
+  border: 1px solid #eee8dc;
+  border-radius: 22px;
+
+  box-shadow: 0 20px 60px rgba(50, 40, 20, 0.08);
+
+  animation: authAppear 0.5s ease;
+}
+
+.auth-back-btn {
+  position: absolute;
+
+  top: 22px;
+  left: 22px;
+
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #f9ead0;
+  color: #e7a93c;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.auth-back-btn:hover {
+  background: #e7a93c;
+  color: white;
+
+  transform: translateX(-3px);
+}
+
+.auth-heading {
+  text-align: center;
+
+  margin-bottom: 30px;
+}
+
+.auth-label {
+  margin-bottom: 12px;
+
+  color: #e7a93c;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  letter-spacing: 2px;
+}
+
+.auth-heading h1 {
+  margin: 0;
+
+  color: #303030;
+
+  font-size: 38px;
+
+  letter-spacing: -1px;
+}
+
+.auth-heading h1 span {
+  color: #e7a93c;
+}
+
+.auth-heading p:last-child {
+  margin-top: 12px;
+
+  color: #777;
+
+  font-size: 15px;
+
+  line-height: 1.6;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+
+  gap: 13px;
+}
+
+.input-box {
+  width: 100%;
+  height: 56px;
+
+  display: flex;
+  align-items: center;
+
+  border: 1.5px solid #e8e2d8;
+  border-radius: 10px;
+
+  background: #fffefa;
+
+  transition: 0.25s;
+}
+
+.input-box:focus-within {
+  border-color: #e7a93c;
+
+  box-shadow: 0 0 0 4px rgba(231, 169, 60, 0.1);
+}
+
+.input-icon {
+  width: 20px;
+
+  margin: 0 16px;
+
+  color: #e7a93c;
+
+  flex-shrink: 0;
+}
+
+.input-box input {
+  width: 100%;
+  height: 100%;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #303030;
+
+  font-size: 15px;
+}
+
+.input-box input::placeholder {
+  color: #999;
+}
+
+.eye-icon {
+  margin-right: 17px;
+
+  color: #888;
+
+  cursor: pointer;
+}
+
+.auth-main-btn {
+  width: 100%;
+  height: 56px;
+
+  margin-top: 5px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #e7a93c;
+
+  color: #ffffff;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.auth-main-btn:hover {
+  background: #d89527;
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 10px 25px rgba(231, 169, 60, 0.25);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  margin: 8px 0;
+}
+
+.divider span {
+  height: 1px;
+
+  flex: 1;
+
+  background: #e8e2d8;
+}
+
+.divider p {
+  color: #999;
+
+  font-size: 12px;
+
+  white-space: nowrap;
+}
+
+.google-btn {
+  width: 100%;
+  height: 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  border: 1.5px solid #e8e2d8;
+  border-radius: 10px;
+
+  background: #fffefa;
+
+  color: #303030;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.google-btn:hover {
+  border-color: #e7a93c;
+
+  background: #fffaf2;
+}
+
+.google-icon {
+  width: 24px;
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #f9ead0;
+
+  color: #e7a93c;
+
+  font-weight: 700;
+}
+
+.auth-switch {
+  margin-top: 8px;
+
+  text-align: center;
+}
+
+.auth-switch p {
+  color: #777;
+
+  font-size: 14px;
+}
+
+.auth-switch button {
+  margin-left: 5px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #e7a93c;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.auth-switch button:hover {
+  text-decoration: underline;
+}
+
+@keyframes authAppear {
+
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+}
+
+@media (max-width: 550px) {
+
+  .auth-card {
+    padding: 40px 22px 30px;
+  }
+
+  .auth-heading h1 {
+    font-size: 30px;
+  }
+
+}
