@@ -16,7 +16,10 @@
   background: #F7F8F2;
   padding: 20px 20px;
 }
-
+.dark-page{
+  background-color: #0d110f;
+  color:#e7a93c;
+}
 .hero-content {
   max-width: 900px;
 }

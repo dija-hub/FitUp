@@ -2,7 +2,6 @@ import { useState } from "react";
 import "./Navbar.css";
 import { Moon } from "lucide-react";
 function Navbar({ activeSection, setActiveSection }) {
-  const [darkMode, setDarkMode] = useState(false);
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>
       <div className="logo">
