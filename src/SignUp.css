@@ -102,6 +102,10 @@ body {
 
 .signup-form {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  gap: 11px;
 }
 
 .input-box {
@@ -111,7 +115,7 @@ body {
   display: flex;
   align-items: center;
 
-  margin-bottom: 11px;
+  margin-bottom: 16px;
 
   border: 1.5px solid #e8e2d8;
   border-radius: 9px;
@@ -134,7 +138,6 @@ body {
 
   margin-left: 19px;
   margin-right: 17px;
-
   color: #f7941d;
 
   stroke-width: 1.8;
@@ -267,15 +270,10 @@ width:200px;
 
 .google {
   font-family: Arial, sans-serif;
-
   font-size: 20px;
   font-weight: 700;
-
   background:black;
-
-  -webkit-background-clip: text;
   background-clip: text;
-
   color: transparent;
 }
 

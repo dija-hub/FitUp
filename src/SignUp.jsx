@@ -5,23 +5,21 @@ import {
   LockKeyhole,
   Eye,
   EyeOff,
-   ArrowLeft
-
+  ArrowLeft,
 } from "lucide-react";
-import Navbar from "./Navbar";
 import "./SignUp.css";
 
-export default function SignUp({setShowSignUp}) {
+export default function SignUp() {
+  
   return (
-
     <div className="signup-page">
       <div className="signup-card">
- <button
-  className="signup-back-btn"
-  onClick={() => window.location.href = "/Web"}
->
-  <ArrowLeft size={22} />
-</button>
+        <button
+          className="signup-back-btn"
+          onClick={() => (window.location.href = "/Web")}
+        >
+          <ArrowLeft size={22} />
+        </button>
         <div className="signup-heading">
           <h1>
             Create Your <span>Account</span>
@@ -35,55 +33,35 @@ export default function SignUp({setShowSignUp}) {
         </div>
 
         <div className="signup-form">
-
-          
           <div className="input-box">
             <UserRound className="input-icon" />
 
-            <input
-              type="text"
-              placeholder="Full Name"
-            />
+            <input type="text" placeholder="Full Name" />
           </div>
 
-          
           <div className="input-box">
             <Mail className="input-icon" />
 
-            <input
-              type="email"
-              placeholder="Email Address"
-            />
+            <input type="email" placeholder="Email Address" />
           </div>
 
-          
           <div className="input-box">
             <LockKeyhole className="input-icon" />
 
-            <input
-              type="password"
-              placeholder="Create Password"
-            />
+            <input type="password" placeholder="Create Password" />
 
             <Eye className="eye-icon" />
           </div>
 
-        
           <div className="input-box">
             <LockKeyhole className="input-icon" />
 
-            <input
-              type="password"
-              placeholder="Confirm Password"
-            />
+            <input type="password" placeholder="Confirm Password" />
 
             <Eye className="eye-icon" />
           </div>
 
-         
-          <button className="create-account-btn">
-            Create Account
-          </button>
+          <button className="create-account-btn">Create Account</button>
 
           <div className="divider">
             <span></span>
@@ -91,22 +69,17 @@ export default function SignUp({setShowSignUp}) {
             <span></span>
           </div>
 
-        
           <div className="social-buttons">
-
             <button className="social-btn">
               <span className="google">G</span>
               Google
             </button>
-
           </div>
 
-        
           <p className="login-text">
             Already have an account?
             <a href="#"> Log in</a>
           </p>
-
         </div>
       </div>
     </div>
