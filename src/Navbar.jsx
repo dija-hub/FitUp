@@ -1,7 +1,10 @@
 
 import "./Navbar.css";
-import { Moon, ArrowLeft } from "lucide-react";
-function Navbar({ 
+import { Moon} from "lucide-react";
+function Navbar({  activeSection,
+  setActiveSection,
+  darkMode,
+  setDarkMode,
   setShowSignUp}) {
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>

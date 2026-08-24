@@ -5,20 +5,23 @@ import {
   LockKeyhole,
   Eye,
   EyeOff,
+   ArrowLeft
 
 } from "lucide-react";
 import Navbar from "./Navbar";
 import "./SignUp.css";
 
-export default function SignUp() {
+export default function SignUp({setShowSignUp}) {
   return (
-
-
-
 
     <div className="signup-page">
       <div className="signup-card">
-        
+        <button
+  className="signup-back-btn"
+  onClick={() => setShowSignUp(false)}
+>
+  <ArrowLeft size={22} />
+</button>
         <div className="signup-heading">
           <h1>
             Create Your <span>Account</span>
