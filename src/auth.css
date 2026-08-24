@@ -4,17 +4,10 @@
 
 .auth-page {
   width: 100%;
-  min-height: 100vh;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  padding: 30px 20px;
-
-  background: #f7f8f2;
 }
-
 .auth-card {
   position: relative;
 

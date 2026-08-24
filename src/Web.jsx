@@ -1,23 +1,15 @@
 import { useState } from "react";
 import Navbar from "./Navbar";
 import "./Web.css";
-import SignUp from "./SignUp";
+import Auth from "./Auth";
 import { Flame, Palette, Moon, TrendingUp } from "lucide-react";
 
 function Web() {
-const [showSignUp, setShowSignUp] = useState(false);
-
+  const [showSignUp, setShowSignUp] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-
   const [darkMode, setDarkMode] = useState(false);
 
-     if (showSignUp) {
-  return <SignUp />;
-}
-
   return (
-
- 
     <div className={darkMode ? "dark-page" : ""}>
 
       <Navbar
@@ -25,12 +17,14 @@ const [showSignUp, setShowSignUp] = useState(false);
         setActiveSection={setActiveSection}
         darkMode={darkMode}
         setDarkMode={setDarkMode}
-         setShowSignUp={setShowSignUp}
+        setShowSignUp={setShowSignUp}
       />
 
       <section className="hero" id="home">
         <div className="hero-content">
-          <p className="hero-tagline">BUILD STRENGTH. BUILD CONFIDENCE.</p>
+          <p className="hero-tagline">
+            BUILD STRENGTH. BUILD CONFIDENCE.
+          </p>
 
           <h1>
             Stronger <span>Every Day</span>
@@ -42,15 +36,22 @@ const [showSignUp, setShowSignUp] = useState(false);
           </p>
 
           <div className="hero-buttons">
-            <button className="primary-btn" onClick={() => setShowSignUp(true)}>Get Started</button>
+            <button
+              className="primary-btn"
+              onClick={() => setShowSignUp(true)}
+            >
+              Get Started
+            </button>
           </div>
         </div>
       </section>
 
       <hr />
+
       <section className="Features" id="features">
         <div className="features-heading">
           <h2>FEATURES</h2>
+
           <h3>
             Everything you need,
             <br />
@@ -59,6 +60,7 @@ const [showSignUp, setShowSignUp] = useState(false);
         </div>
 
         <div className="features-content">
+
           <div className="feature-item">
             <div className="feature-box">
               <div className="feature-icon">
@@ -112,22 +114,30 @@ const [showSignUp, setShowSignUp] = useState(false);
 
               <h2>Progress Tracking</h2>
 
-              <p>See your completed tasks and track your progress over time.</p>
+              <p>
+                See your completed tasks and track your progress over time.
+              </p>
             </div>
           </div>
+
         </div>
       </section>
+
       <hr />
+
       <section className="how-it-works" id="work">
         <div className="how-heading">
           <p>HOW IT WORKS</p>
 
           <h1>Start building better habits</h1>
 
-          <span>Simple steps to turn small actions into lasting routines.</span>
+          <span>
+            Simple steps to turn small actions into lasting routines.
+          </span>
         </div>
 
         <div className="steps">
+
           <div className="step">
             <div className="step-number">01</div>
 
@@ -170,18 +180,18 @@ const [showSignUp, setShowSignUp] = useState(false);
               </div>
             </div>
           </div>
+
         </div>
       </section>
 
       <section className="final-cta" id="connect">
         <div className="cta-wrapper">
+
           <div className="orange-orb orb-one"></div>
           <div className="orange-orb orb-two"></div>
 
-          <div className="corner-line line-one"></div>
-          <div className="corner-line line-two"></div>
-
           <div className="cta-inner">
+
             <div className="cta-label">
               <span className="label-dot"></span>
               START YOUR JOURNEY
@@ -198,7 +208,10 @@ const [showSignUp, setShowSignUp] = useState(false);
               routines, and making progress every single day.
             </p>
 
-            <button className="cta-button" onClick={() => setShowSignUp(true)}>
+            <button
+              className="cta-button"
+              onClick={() => setShowSignUp(true)}
+            >
               Get started
               <span>→</span>
             </button>
@@ -207,10 +220,12 @@ const [showSignUp, setShowSignUp] = useState(false);
               <span>✦</span>
               Free forever · No credit card required
             </div>
+
           </div>
         </div>
 
         <footer className="cta-footer">
+
           <div className="brand">
             <div className="brand-icon">✚</div>
             <span>FitUp</span>
@@ -219,12 +234,31 @@ const [showSignUp, setShowSignUp] = useState(false);
           <div className="footer-links">
             <a href="#features">Features</a>
             <a href="#work">How it works</a>
-            <a href="#Signin">Sign in</a>
+
+            <button
+              className="footer-signin"
+              onClick={() => setShowSignUp(true)}
+            >
+              Sign in
+            </button>
           </div>
 
           <p>© 2026 FitUp</p>
+
         </footer>
       </section>
+
+      {showSignUp && (
+        <div
+          className="auth-overlay"
+          onClick={() => setShowSignUp(false)}
+        >
+          <div onClick={(e) => e.stopPropagation()}>
+            <Auth setShowSignUp={setShowSignUp} />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

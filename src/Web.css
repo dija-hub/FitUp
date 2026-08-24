@@ -1144,3 +1144,76 @@ border-color:#2A2A2A;
 .dark-page .cta-footer p {
   color:#777777;
 }
+
+.auth-overlay {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(20, 20, 20, 0.25);
+
+  backdrop-filter: blur(8px);
+
+  z-index: 1000;
+
+  animation: overlayAppear 0.3s ease;
+}
+
+
+@keyframes overlayAppear {
+
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+
+}
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(20, 20, 20, 0.3);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  z-index: 1000;
+
+  animation: overlayAppear 0.3s ease;
+}
+.footer-signin {
+  border: none;
+  background: transparent;
+
+  color: #817970;
+
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+.footer-signin:hover {
+  color: #f59a2f;
+}
+.dark-page .footer-signin {
+  color: #a8a8a8;
+}

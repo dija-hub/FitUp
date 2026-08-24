@@ -4,17 +4,18 @@ import {
   Mail,
   LockKeyhole,
   Eye,
+  EyeOff,
   ArrowLeft
 } from "lucide-react";
 
 import "./Auth.css";
 
 function Auth({ setShowSignUp }) {
-
   const [isSignUp, setIsSignUp] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
-
     <div className="auth-page">
 
       <div className="auth-card">
@@ -25,7 +26,6 @@ function Auth({ setShowSignUp }) {
         >
           <ArrowLeft size={21} />
         </button>
-
 
         <div className="auth-heading">
 
@@ -54,132 +54,117 @@ function Auth({ setShowSignUp }) {
 
         </div>
 
-
         <div className="auth-form">
 
           {isSignUp && (
-
             <div className="input-box">
-
               <UserRound className="input-icon" />
 
               <input
                 type="text"
                 placeholder="Full Name"
               />
-
             </div>
-
           )}
 
-
           <div className="input-box">
-
             <Mail className="input-icon" />
 
             <input
               type="email"
               placeholder="Email Address"
             />
-
           </div>
 
-
           <div className="input-box">
-
             <LockKeyhole className="input-icon" />
 
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
             />
 
-            <Eye className="eye-icon" />
-
+            <button
+              type="button"
+              className="password-btn"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <EyeOff className="eye-icon" />
+              ) : (
+                <Eye className="eye-icon" />
+              )}
+            </button>
           </div>
 
-
           {isSignUp && (
-
             <div className="input-box">
-
               <LockKeyhole className="input-icon" />
 
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm Password"
               />
 
-              <Eye className="eye-icon" />
-
+              <button
+                type="button"
+                className="password-btn"
+                onClick={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="eye-icon" />
+                ) : (
+                  <Eye className="eye-icon" />
+                )}
+              </button>
             </div>
-
           )}
 
-
           <button className="auth-main-btn">
-
-            {isSignUp
-              ? "Create Account"
-              : "Sign In"
-            }
-
+            {isSignUp ? "Create Account" : "Sign In"}
           </button>
 
-
           <div className="divider">
-
             <span></span>
-
             <p>or continue with</p>
-
             <span></span>
-
           </div>
 
-
           <button className="google-btn">
-
-            <span className="google-icon">
-              G
-            </span>
+            <span className="google-icon">G</span>
 
             {isSignUp
               ? "Sign up with Google"
               : "Sign in with Google"
             }
-
           </button>
-
 
           <div className="auth-switch">
 
             {isSignUp ? (
-
               <p>
                 Already have an account?
 
                 <button
+                  type="button"
                   onClick={() => setIsSignUp(false)}
                 >
                   Sign in
                 </button>
-
               </p>
-
             ) : (
-
               <p>
                 Don't have an account?
 
                 <button
+                  type="button"
                   onClick={() => setIsSignUp(true)}
                 >
                   Sign up
                 </button>
-
               </p>
-
             )}
 
           </div>
@@ -189,7 +174,6 @@ function Auth({ setShowSignUp }) {
       </div>
 
     </div>
-
   );
 }
 
