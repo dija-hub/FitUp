@@ -361,7 +361,6 @@
 }
 
 @keyframes authAppear {
-
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -371,11 +370,9 @@
     opacity: 1;
     transform: translateY(0);
   }
-
 }
 
 @media (max-width: 550px) {
-
   .auth-card {
     padding: 40px 22px 30px;
   }
@@ -383,7 +380,6 @@
   .auth-heading h1 {
     font-size: 30px;
   }
-
 }
 
 @media (max-height: 750px) {
@@ -419,8 +415,6 @@
     margin: 4px 0;
   }
 }
-
-
 
 .auth-dark .auth-card {
   background: #1e1e1e;
