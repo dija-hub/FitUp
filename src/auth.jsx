@@ -21,7 +21,18 @@ function Auth({ setShowSignUp, darkMode }) {
 
   function handleSubmit(e){
 e.preventDefault()
-  }
+if (fullName.trim() === "") {
+    console.log("validation detects empty name")
+} else {
+    console.log("validation allows it to continue")
+}
+if(email.trim()===""){
+console.log("validation detects empty email")
+}else{
+  console.log("validation allows it to continue")
+}
+  
+}
   return (
     <div className={`auth-page ${darkMode ? "auth-dark" : ""}`}>
 
