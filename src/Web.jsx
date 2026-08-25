@@ -1,7 +1,10 @@
+import {supabase } from "./utils/supabase";
+
 import { useState } from "react";
 import Navbar from "./Navbar";
 import "./Web.css";
 import Auth from "./Auth";
+
 import { Flame, Palette, BarChart3, TrendingUp } from "lucide-react";
 
 function Web() {
