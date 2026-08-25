@@ -38,20 +38,24 @@ body {
   align-items: center;
   justify-content: center;
 
-  border: none;
-  border-radius: 50%;
+  padding: 0;
 
-  background: #f5e9d5;
-  color: #d89527;
+  border: none;
+  outline: none;
+
+  background: transparent !important;
+
+  color: #171717;
 
   cursor: pointer;
 
-  transition: 0.3s;
+  transition: transform 0.3s ease;
 }
 
 .signup-back-btn:hover {
-  background: #e7a93c;
-  color: white;
+  background: transparent !important;
+  color: #171717;
+  box-shadow: none;
   transform: translateX(-3px);
 }
 
@@ -101,7 +105,6 @@ body {
 
 .signup-form {
   width: 100%;
-
   display: flex;
   flex-direction: column;
 
@@ -191,12 +194,6 @@ body {
   color: #777;
 
   stroke-width: 1.8;
-
-  transition: 0.2s;
-}
-
-.password-btn:hover .eye-icon {
-  color: #f7941d;
 }
 
 .create-account-btn {
@@ -384,5 +381,10 @@ body {
 
   .signup-heading p {
     font-size: 14px;
+  }
+
+  .signup-back-btn {
+    top: 15px;
+    left: 15px;
   }
 }

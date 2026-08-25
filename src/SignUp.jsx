@@ -16,6 +16,7 @@ export default function SignUp() {
   return (
     <div className="signup-page">
       <div className="signup-card">
+
         <button
           className="signup-back-btn"
           onClick={() => (window.location.href = "/Web")}
@@ -36,16 +37,23 @@ export default function SignUp() {
         </div>
 
         <div className="signup-form">
+
           <div className="input-box">
             <UserRound className="input-icon" />
 
-            <input type="text" placeholder="Full Name" />
+            <input
+              type="text"
+              placeholder="Full Name"
+            />
           </div>
 
           <div className="input-box">
             <Mail className="input-icon" />
 
-            <input type="email" placeholder="Email Address" />
+            <input
+              type="email"
+              placeholder="Email Address"
+            />
           </div>
 
           <div className="input-box">
@@ -113,6 +121,7 @@ export default function SignUp() {
             Already have an account?
             <a href="#"> Log in</a>
           </p>
+
         </div>
       </div>
     </div>
