@@ -2,7 +2,7 @@ import { useState } from "react";
 import Navbar from "./Navbar";
 import "./Web.css";
 import Auth from "./Auth";
-import { Flame, Palete, Moon, TrendingUp } from "lucide-react";
+import { Flame, Palette, BarChart3, TrendingUp } from "lucide-react";
 
 function Web() {
   const [showSignUp, setShowSignUp] = useState(false);
@@ -92,19 +92,19 @@ function Web() {
           </div>
 
           <div className="feature-item">
-            <div className="feature-box">
-              <div className="feature-icon">
-                <Moon size={20} />
-              </div>
+  <div className="feature-box">
+    <div className="feature-icon">
+      <BarChart3 size={20} />
+    </div>
 
-              <h2>Dark Mode</h2>
+    <h2>Progress Analytics</h2>
 
-              <p>
-                Switch to a comfortable dark theme for a cleaner experience
-                anytime.
-              </p>
-            </div>
-          </div>
+    <p>
+      View your progress with simple graphs and track how your habits
+      improve over time.
+    </p>
+  </div>
+</div>
 
           <div className="feature-item">
             <div className="feature-box">

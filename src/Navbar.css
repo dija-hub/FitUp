@@ -55,7 +55,7 @@ html {
 
   background: #fdfcf9;
 
-  border-bottom: 1px solid #eeeeee;
+  border-bottom: none;
 }
 .navbar.dark{
   background-color: #121212;
@@ -92,7 +92,7 @@ color:#E7A93C;
   display: flex;
   align-items: center;
   gap: 40px;
-
+margin-left: 135px;
   list-style: none;
 }
 
