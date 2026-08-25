@@ -12,6 +12,8 @@ import "./Auth.css";
 
 function Auth({ setShowSignUp, darkMode }) {
   const [isSignUp, setIsSignUp] = useState(true);
+  const [fullName,setFullName]=useState("")
+  const[email,setemail]=useState()
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -63,6 +65,8 @@ function Auth({ setShowSignUp, darkMode }) {
               <input
                 type="text"
                 placeholder="Full Name"
+                value={fullName}
+                
               />
             </div>
           )}
