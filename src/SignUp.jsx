@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   UserRound,
   Mail,
@@ -10,7 +10,9 @@ import {
 import "./SignUp.css";
 
 export default function SignUp() {
-  
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   return (
     <div className="signup-page">
       <div className="signup-card">
@@ -20,6 +22,7 @@ export default function SignUp() {
         >
           <ArrowLeft size={22} />
         </button>
+
         <div className="signup-heading">
           <h1>
             Create Your <span>Account</span>
@@ -48,20 +51,50 @@ export default function SignUp() {
           <div className="input-box">
             <LockKeyhole className="input-icon" />
 
-            <input type="password" placeholder="Create Password" />
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Create Password"
+            />
 
-            <Eye className="eye-icon" />
+            <button
+              type="button"
+              className="password-btn"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <Eye className="eye-icon" />
+              ) : (
+                <EyeOff className="eye-icon" />
+              )}
+            </button>
           </div>
 
           <div className="input-box">
             <LockKeyhole className="input-icon" />
 
-            <input type="password" placeholder="Confirm Password" />
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="Confirm Password"
+            />
 
-            <Eye className="eye-icon" />
+            <button
+              type="button"
+              className="password-btn"
+              onClick={() =>
+                setShowConfirmPassword(!showConfirmPassword)
+              }
+            >
+              {showConfirmPassword ? (
+                <Eye className="eye-icon" />
+              ) : (
+                <EyeOff className="eye-icon" />
+              )}
+            </button>
           </div>
 
-          <button className="create-account-btn">Create Account</button>
+          <button className="create-account-btn">
+            Create Account
+          </button>
 
           <div className="divider">
             <span></span>
