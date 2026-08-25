@@ -59,7 +59,7 @@ export default function SignUp() {
             <button
               type="button"
               className="password-btn"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={() => setShowPassword((prev) => !prev)}
             >
               {showPassword ? (
                 <Eye className="eye-icon" />
@@ -81,7 +81,7 @@ export default function SignUp() {
               type="button"
               className="password-btn"
               onClick={() =>
-                setShowConfirmPassword(!showConfirmPassword)
+                setShowConfirmPassword((prev) => !prev)
               }
             >
               {showConfirmPassword ? (

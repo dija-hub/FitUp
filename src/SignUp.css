@@ -8,8 +8,22 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   background: #faf9f5;
 }
+
 .signup-page {
   position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 600px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 18px;
+
+  overflow: hidden;
+
+  background: #faf9f5;
 }
 
 .signup-back-btn {
@@ -39,21 +53,6 @@ body {
   background: #e7a93c;
   color: white;
   transform: translateX(-3px);
-}
-.signup-page {
-  width: 100%;
-  height: 100vh;
-  min-height: 600px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 18px;
-
-  overflow: hidden;
-
-  background: #faf9f5;
 }
 
 .signup-card {
@@ -102,6 +101,7 @@ body {
 
 .signup-form {
   width: 100%;
+
   display: flex;
   flex-direction: column;
 
@@ -138,6 +138,7 @@ body {
 
   margin-left: 19px;
   margin-right: 17px;
+
   color: #f7941d;
 
   stroke-width: 1.8;
@@ -147,7 +148,7 @@ body {
   width: 100%;
   height: 100%;
 
-  padding: 0 15px 0 0;
+  padding: 0;
 
   border: none;
   outline: none;
@@ -163,19 +164,39 @@ body {
   color: #666;
 }
 
-.eye-icon {
-  width: 21px;
-  height: 21px;
+.password-btn {
+  width: 55px;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   flex-shrink: 0;
 
-  margin-right: 18px;
+  padding: 0;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.eye-icon {
+  width: 21px;
+  height: 21px;
 
   color: #777;
 
   stroke-width: 1.8;
 
-  cursor: pointer;
+  transition: 0.2s;
+}
+
+.password-btn:hover .eye-icon {
+  color: #f7941d;
 }
 
 .create-account-btn {
@@ -235,13 +256,13 @@ body {
 
 .social-buttons {
   display: flex;
-  
-justify-content: center;
+  justify-content: center;
 }
 
 .social-btn {
+  width: 200px;
   height: 48px;
-width:200px;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -272,14 +293,8 @@ width:200px;
   font-family: Arial, sans-serif;
   font-size: 20px;
   font-weight: 700;
-  background:black;
-  background-clip: text;
-  color: transparent;
-}
 
-.social-btn svg {
   color: #111;
-  stroke-width: 2;
 }
 
 .login-text {
@@ -353,7 +368,9 @@ width:200px;
   .signup-page {
     height: auto;
     min-height: 100vh;
+
     overflow: visible;
+
     padding: 15px 10px;
   }
 
@@ -367,9 +384,5 @@ width:200px;
 
   .signup-heading p {
     font-size: 14px;
-  }
-
-  .social-buttons {
-    grid-template-columns: 1fr;
   }
 }
