@@ -17,13 +17,12 @@ export default function SignUp() {
     <div className="signup-page">
       <div className="signup-card">
 
-<button
-  type="button"
+<div
   className="signup-back-btn"
   onClick={() => (window.location.href = "/Web")}
 >
   <ArrowLeft size={28} />
-</button>
+</div>
         <div className="signup-heading">
           <h1>
             Create Your <span>Account</span>

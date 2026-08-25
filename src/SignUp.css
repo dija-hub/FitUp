@@ -26,49 +26,35 @@ body {
   background: #faf9f5;
 }
 
-/* .signup-back-btn {
-  position: absolute !important;
-  top: 25px !important;
-  left: 35px !important;
+.signup-back-btn {
+  position: absolute;
+  top: 25px;
+  left: 35px;
 
-  width: 45px !important;
-  height: 45px !important;
+  width: 45px;
+  height: 45px;
 
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  padding: 0 !important;
-  margin: 0 !important;
+  border: none;
+  border-radius: 50%;
 
-  background: none !important;
-  background-color: transparent !important;
+  background: #f5e9d5;
+  color: #d89527;
 
-  border: 0 !important;
-  border-radius: 0 !important;
+  cursor: pointer;
 
-  box-shadow: none !important;
-  outline: none !important;
+  transition: 0.3s;
+}
 
-  color: #171717 !important;
+.signup-back-btn:hover {
+  background: #e7a93c;
+  color: white;
+  transform: translateX(-3px);
+}
 
-  cursor: pointer !important;
-
-  transition: transform 0.3s ease !important;
-} */
-
-/* .signup-back-btn:hover {
-  background: none !important;
-  background-color: transparent !important;
-
-  border: 0 !important;
-  box-shadow: none !important;
-  outline: none !important;
-
-  color: #171717 !important;
-
-  transform: translateX(-3px) !important;
-} */
 .signup-card {
   width: 100%;
   max-width: 650px;
