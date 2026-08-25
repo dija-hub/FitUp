@@ -80,12 +80,10 @@
   color: #ffffff;
 }
 .auth-back-btn:hover {
-  background: #e7a93c;
-  color: white;
-
+  background: transparent;
+  color: #303030;
   transform: translateX(-3px);
 }
-
 .auth-heading {
   text-align: center;
 
@@ -422,7 +420,9 @@
   }
 }
 
-
+.auth-dark {
+  background: #121212;
+}
 
 .auth-dark .auth-card {
   background: #1e1e1e;
