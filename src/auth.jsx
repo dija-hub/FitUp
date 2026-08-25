@@ -13,7 +13,9 @@ import "./Auth.css";
 function Auth({ setShowSignUp, darkMode }) {
   const [isSignUp, setIsSignUp] = useState(true);
   const [fullName,setFullName]=useState("")
-  const[email,setemail]=useState()
+  const[email,setEmail]=useState("")
+  const [password,setPassword]=useState("")
+  const [confirmPass,setConfirmPass]=useState("")
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -66,7 +68,7 @@ function Auth({ setShowSignUp, darkMode }) {
                 type="text"
                 placeholder="Full Name"
                 value={fullName}
-                
+                onChange={(e)=>setFullName(e.target.value)}
               />
             </div>
           )}
@@ -77,6 +79,8 @@ function Auth({ setShowSignUp, darkMode }) {
             <input
               type="email"
               placeholder="Email Address"
+              value={email}
+                onChange={(e)=>setEmail(e.target.value)}
             />
           </div>
 
@@ -86,6 +90,8 @@ function Auth({ setShowSignUp, darkMode }) {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
+              value={password}
+                onChange={(e)=>setPassword(e.target.value)}
             />
 
             <button
@@ -108,6 +114,8 @@ function Auth({ setShowSignUp, darkMode }) {
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm Password"
+                value={confirmPass}
+                onChange={(e)=>setConfirmPass(e.target.value)}
               />
 
               <button
