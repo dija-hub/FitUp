@@ -10,13 +10,13 @@ import {
 
 import "./Auth.css";
 
-function Auth({ setShowSignUp }) {
+function Auth({ setShowSignUp, darkMode }) {
   const [isSignUp, setIsSignUp] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
-    <div className="auth-page">
+    <div className={`auth-page ${darkMode ? "auth-dark" : ""}`}>
 
       <div className="auth-card">
 

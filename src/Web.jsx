@@ -2,7 +2,7 @@ import { useState } from "react";
 import Navbar from "./Navbar";
 import "./Web.css";
 import Auth from "./Auth";
-import { Flame, Palette, Moon, TrendingUp } from "lucide-react";
+import { Flame, Palete, Moon, TrendingUp } from "lucide-react";
 
 function Web() {
   const [showSignUp, setShowSignUp] = useState(false);
@@ -254,7 +254,10 @@ function Web() {
           onClick={() => setShowSignUp(false)}
         >
           <div onClick={(e) => e.stopPropagation()}>
-            <Auth setShowSignUp={setShowSignUp} />
+            <Auth
+              setShowSignUp={setShowSignUp}
+              darkMode={darkMode}
+            />
           </div>
         </div>
       )}

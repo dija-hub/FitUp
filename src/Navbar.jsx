@@ -1,5 +1,6 @@
 import "./Navbar.css";
-import { Moon } from "lucide-react";
+import { Moon ,Sun} from "lucide-react";
+
 
 function Navbar({
   activeSection,
@@ -69,7 +70,7 @@ function Navbar({
             darkMode ? "darkmode" : "lightmode"
           }`}
         >
-          <Moon size={18} />
+          {darkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
         <button
