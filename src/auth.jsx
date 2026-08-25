@@ -19,6 +19,9 @@ function Auth({ setShowSignUp, darkMode }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  function handleSubmit(e){
+e.preventDefault()
+  }
   return (
     <div className={`auth-page ${darkMode ? "auth-dark" : ""}`}>
 
@@ -58,7 +61,7 @@ function Auth({ setShowSignUp, darkMode }) {
 
         </div>
 
-        <div className="auth-form">
+        <form className="auth-form" onSubmit={handleSubmit}>
 
           {isSignUp && (
             <div className="input-box">
@@ -134,7 +137,7 @@ function Auth({ setShowSignUp, darkMode }) {
             </div>
           )}
 
-          <button className="auth-main-btn">
+          <button className="auth-main-btn" type="submit">
             {isSignUp ? "Create Account" : "Sign In"}
           </button>
 
@@ -181,7 +184,7 @@ function Auth({ setShowSignUp, darkMode }) {
 
           </div>
 
-        </div>
+        </form>
 
       </div>
 
