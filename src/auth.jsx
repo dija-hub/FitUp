@@ -50,9 +50,15 @@ if(password!==confirmPass){
 
 const {error,data}=await supabase.auth.signUp(
   {
-    email:email,
-    password:password
+    email:email.trim(),
+    password:password,
+    option:{
+      data:{
+        full_name:fullName.trim()
+      }
+    }
   }
+  
 
 )
  if (error) {
