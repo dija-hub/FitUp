@@ -22,10 +22,7 @@ function Auth({ setShowSignUp, darkMode }) {
 
 async function handleSubmit(e) {
   e.preventDefault();
-if(password!==confirmPass){
-  console.log("pass not match")
-  return
-}
+
   if (fullName.trim() === "") {
     console.log("validation detects empty name");
     return;
@@ -45,15 +42,24 @@ if(password!==confirmPass){
     console.log("validation detects empty confirm password");
     return;
   }
-
+if(password!==confirmPass){
+  console.log("pass not match")
+  return
+}
   console.log("validation allows it to continue");
 
-const data=await supabase.auth.signUp(
+const {error,data}=await supabase.auth.signUp(
   {
     email:email,
     password:password
   }
+
 )
+ if (error) {
+    console.log(error)
+    return
+}
+console.log("Sign Up is successfull")
 }
 
   return (
