@@ -21,7 +21,10 @@ function Auth({ setShowSignUp, darkMode }) {
 
 function handleSubmit(e) {
   e.preventDefault();
-
+if(password!==confirmPass){
+  console.log("pass not match")
+  return
+}
   if (fullName.trim() === "") {
     console.log("validation detects empty name");
     return;
@@ -44,13 +47,7 @@ function handleSubmit(e) {
 
   console.log("validation allows it to continue");
 
-  if(password===confirmPass){
-  console.log("passwords match")
-  
-}
-if(password!==confirmPass){
-  console.log("pass not match")
-}
+
 }
 
   return (
