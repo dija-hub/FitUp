@@ -48,7 +48,12 @@ if(password!==confirmPass){
 
   console.log("validation allows it to continue");
 
-const data=await supabase.auth.signUp(data)
+const data=await supabase.auth.signUp(
+  {
+    email:email,
+    password:password
+  }
+)
 }
 
   return (
