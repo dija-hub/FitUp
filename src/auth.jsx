@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "./utils/supabase";
 import {
   UserRound,
   Mail,
@@ -19,7 +20,7 @@ function Auth({ setShowSignUp, darkMode }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-function handleSubmit(e) {
+async function handleSubmit(e) {
   e.preventDefault();
 if(password!==confirmPass){
   console.log("pass not match")
@@ -47,7 +48,7 @@ if(password!==confirmPass){
 
   console.log("validation allows it to continue");
 
-
+const data=await supabase.auth.signUp(data)
 }
 
   return (
