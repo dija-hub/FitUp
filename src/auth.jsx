@@ -43,7 +43,16 @@ function handleSubmit(e) {
   }
 
   console.log("validation allows it to continue");
+
+  if(password===confirmPass){
+  console.log("passwords match")
+  
 }
+if(password!==confirmPass){
+  console.log("pass not match")
+}
+}
+
   return (
     <div className={`auth-page ${darkMode ? "auth-dark" : ""}`}>
 
