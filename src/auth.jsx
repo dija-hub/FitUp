@@ -19,31 +19,34 @@ function Auth({ setShowSignUp, darkMode }) {
   const [confirmPass, setConfirmPass] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
 
+    setErrorMessage("");
+
     if (fullName.trim() === "") {
-      console.log("validation detects empty name");
+      setErrorMessage("Please enter your full name.");
       return;
     }
 
     if (email.trim() === "") {
-      console.log("validation detects empty email");
+      console.log("Please enter the Email");
       return;
     }
 
     if (password.trim() === "") {
-      console.log("validation detects empty password");
+      console.log("Please enter the  password");
       return;
     }
 
     if (confirmPass.trim() === "") {
-      console.log("validation detects empty confirm password");
+      console.log("Please enter confirm your password");
       return;
     }
     if (password !== confirmPass) {
-      console.log("pass not match");
+      setErrorMessage("Passwords do not match.");
       return;
     }
     console.log("validation allows it to continue");
@@ -61,6 +64,10 @@ function Auth({ setShowSignUp, darkMode }) {
       console.log(error);
       return;
     }
+    {
+      errorMessage && <p className="auth-error">{errorMessage}</p>;
+    }
+
     console.log("Sign Up is successfull");
   }
 
