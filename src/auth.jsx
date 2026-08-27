@@ -24,57 +24,61 @@ function Auth({ setShowSignUp, darkMode }) {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    setErrorMessage("");
+    setError("");
 
-    if (fullName.trim() === "") {
-      setErrorMessage("Please enter your full name.");
+    if (isSignUp && fullName.trim() === "") {
+      setError("Please enter your full name.");
       return;
     }
 
     if (email.trim() === "") {
-      console.log("Please enter the Email");
+      setError("Please enter your email.");
       return;
     }
 
     if (password.trim() === "") {
-      console.log("Please enter the  password");
+      setError("Please enter your password.");
       return;
     }
 
-    if (confirmPass.trim() === "") {
-      console.log("Please enter confirm your password");
+    if (isSignUp && confirmPass.trim() === "") {
+      setError("Please confirm your password.");
       return;
     }
-    if (password !== confirmPass) {
-      setErrorMessage("Passwords do not match.");
-      return;
-    }
-    console.log("validation allows it to continue");
 
-    const { error, data } = await supabase.auth.signUp({
-      email: email.trim(),
-      password: password,
-      options: {
-        data: {
-          full_name: fullName.trim(),
+    if (isSignUp && password !== confirmPass) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    if (isSignUp) {
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: email.trim(),
+        password: password,
+        options: {
+          data: {
+            full_name: fullName.trim(),
+          },
         },
-      },
-    });
-    if (error) {
-      console.log(error);
-      return;
-    }
-    {
-      errorMessage && <p className="auth-error">{errorMessage}</p>;
-    }
+      });
 
-    console.log("Sign Up is successfull");
+      if (signUpError) {
+        setError(signUpError.message);
+        return;
+      }
+
+      console.log("Sign Up is successful");
+    }
   }
 
   return (
     <div className={`auth-page ${darkMode ? "auth-dark" : ""}`}>
       <div className="auth-card">
-        <button className="auth-back-btn" onClick={() => setShowSignUp(false)}>
+
+        <button
+          className="auth-back-btn"
+          onClick={() => setShowSignUp(false)}
+        >
           <ArrowLeft size={21} />
         </button>
 
@@ -103,6 +107,7 @@ function Auth({ setShowSignUp, darkMode }) {
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
+
           {isSignUp && (
             <div className="input-box">
               <UserRound className="input-icon" />
@@ -164,7 +169,9 @@ function Auth({ setShowSignUp, darkMode }) {
               <button
                 type="button"
                 className="password-btn"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                onClick={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
               >
                 {showConfirmPassword ? (
                   <EyeOff className="eye-icon" />
@@ -174,6 +181,8 @@ function Auth({ setShowSignUp, darkMode }) {
               </button>
             </div>
           )}
+
+         {error && <p className="auth-error">{error}</p>}
 
           <button className="auth-main-btn" type="submit">
             {isSignUp ? "Create Account" : "Sign In"}
@@ -185,29 +194,49 @@ function Auth({ setShowSignUp, darkMode }) {
             <span></span>
           </div>
 
-          <button className="google-btn">
+          <button
+            type="button"
+            className="google-btn"
+          >
             <span className="google-icon">G</span>
 
-            {isSignUp ? "Sign up with Google" : "Sign in with Google"}
+            {isSignUp
+              ? "Sign up with Google"
+              : "Sign in with Google"}
           </button>
 
           <div className="auth-switch">
             {isSignUp ? (
               <p>
                 Already have an account?
-                <button type="button" onClick={() => setIsSignUp(false)}>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSignUp(false);
+                    setError("");
+                  }}
+                >
                   Sign in
                 </button>
               </p>
             ) : (
               <p>
                 Don't have an account?
-                <button type="button" onClick={() => setIsSignUp(true)}>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSignUp(true);
+                    setError("");
+                  }}
+                >
                   Sign up
                 </button>
               </p>
             )}
           </div>
+
         </form>
       </div>
     </div>
