@@ -1,23 +1,20 @@
 import "./Navbar.css";
-import { Moon ,Sun} from "lucide-react";
-
+import { Moon, Sun } from "lucide-react";
 
 function Navbar({
   activeSection,
   setActiveSection,
   darkMode,
   setDarkMode,
-  setShowSignUp
+  setShowSignUp,
 }) {
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>
-      
       <div className="logo">
         <span>✚</span> FitUp
       </div>
 
       <ul className="nav-links">
-
         <li>
           <a
             href="#home"
@@ -57,31 +54,33 @@ function Navbar({
             Connect with us
           </a>
         </li>
-
+      <li>
+  <a
+    href="/dashboard"
+    onClick={(e) => {
+      e.preventDefault();
+      window.location.href = "/dashboard";
+    }}
+  >
+    Dashboard
+  </a>
+</li>
       </ul>
 
       <div className="nav-buttons">
-
         <button
           onClick={() => {
             setDarkMode(!darkMode);
           }}
-          className={`dark-mode-btn ${
-            darkMode ? "darkmode" : "lightmode"
-          }`}
+          className={`dark-mode-btn ${darkMode ? "darkmode" : "lightmode"}`}
         >
           {darkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
-        <button
-          className="join-btn"
-          onClick={() => setShowSignUp(true)}
-        >
+        <button className="join-btn" onClick={() => setShowSignUp(true)}>
           Join Now
         </button>
-
       </div>
-
     </nav>
   );
 }

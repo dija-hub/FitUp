@@ -6,6 +6,7 @@ import "./Web.css";
 import Auth from "./Auth";
 
 import { Flame, Palette, BarChart3, TrendingUp } from "lucide-react";
+import Dashboard from "./dashboard";
 
 function Web() {
   const [showSignUp, setShowSignUp] = useState(false);
@@ -22,7 +23,13 @@ function Web() {
         setDarkMode={setDarkMode}
         setShowSignUp={setShowSignUp}
       />
-
+{activeSection === "dashboard" ? (
+  <Dashboard />
+) : (
+  <>
+    Your main website content goes here
+  </>
+)}
       <section className="hero" id="home">
         <div className="hero-content">
           <p className="hero-tagline">
