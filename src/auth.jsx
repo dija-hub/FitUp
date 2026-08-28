@@ -51,24 +51,39 @@ function Auth({ setShowSignUp, darkMode }) {
       return;
     }
 
-    if (isSignUp) {
-      const { error: signUpError } = await supabase.auth.signUp({
-        email: email.trim(),
-        password: password,
-        options: {
-          data: {
-            full_name: fullName.trim(),
-          },
-        },
+if (isSignUp) {
+  const { data, error: signUpError } = await supabase.auth.signUp({
+    email: email.trim(),
+    password: password,
+    options: {
+      data: {
+        full_name: fullName.trim(),
+      },
+    },
+  });
+
+  if (signUpError) {
+    setError(signUpError.message);
+    return;
+  }
+
+  if (data.user) {
+    const { error: profileError } = await supabase
+      .from("Profiles")
+      .insert({
+        full_name: fullName.trim(),
+        user_id: data.user.id,
       });
 
-      if (signUpError) {
-        setError(signUpError.message);
-        return;
-      }
-
-      console.log("Sign Up is successful");
+    if (profileError) {
+      console.log("Profile Error:", profileError.message);
+      setError(profileError.message);
+      return;
     }
+  }
+
+  console.log("Sign Up is successful");
+}
   }
 
   return (

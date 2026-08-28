@@ -12,7 +12,7 @@ function Web() {
   const [showSignUp, setShowSignUp] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [darkMode, setDarkMode] = useState(false);
-
+ 
   return (
     <div className={darkMode ? "dark-page" : ""}>
 
@@ -23,13 +23,6 @@ function Web() {
         setDarkMode={setDarkMode}
         setShowSignUp={setShowSignUp}
       />
-{activeSection === "dashboard" ? (
-  <Dashboard />
-) : (
-  <>
-    Your main website content goes here
-  </>
-)}
       <section className="hero" id="home">
         <div className="hero-content">
           <p className="hero-tagline">
