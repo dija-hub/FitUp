@@ -73,20 +73,25 @@ console.log("Signup error message:", signUpError?.message);
     return;
   }
 
-  if (data.user) {
-    const { error: profileError } = await supabase
-      .from("Profiles")
-      .insert({
-        full_name: fullName.trim(),
-        user_id: data.user.id,
-      });
+// if (data.user) {
+//   const { error: profileError } = await supabase
+//     .from("Profiles")
+//     .upsert(
+//       {
+//         user_id: data.user.id,
+//         full_name: fullName.trim(),
+//       },
+//       {
+//         onConflict: "user_id",
+//       }
+//     );
 
-    if (profileError) {
-      console.log("Profile Error:", profileError.message);
-      setError(profileError.message);
-      return;
-    }
-  }
+//   if (profileError) {
+//     console.log("Profile Error:", profileError.message);
+//     setError(profileError.message);
+//     return;
+//   }
+// }
 
  setSuccessMessage("Check your email to confirm your account.");
 }
