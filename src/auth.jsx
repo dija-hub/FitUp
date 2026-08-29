@@ -20,11 +20,13 @@ function Auth({ setShowSignUp, darkMode }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    setError("");
+   setError("");
+setSuccessMessage("");
 
     if (isSignUp && fullName.trim() === "") {
       setError("Please enter your full name.");
@@ -62,7 +64,10 @@ const { data, error: signUpError } = await supabase.auth.signUp({
     },
   },
 });
-
+console.log("Signup data:", data);
+  console.log("Signup user:", data.user);
+console.log("Signup error:", signUpError);
+console.log("Signup error message:", signUpError?.message);
   if (signUpError) {
     setError(signUpError.message);
     return;
@@ -83,7 +88,7 @@ const { data, error: signUpError } = await supabase.auth.signUp({
     }
   }
 
-  console.log("Sign Up is successful");
+ setSuccessMessage("Check your email to confirm your account.");
 }
   }
 
@@ -199,6 +204,9 @@ const { data, error: signUpError } = await supabase.auth.signUp({
           )}
 
          {error && <p className="auth-error">{error}</p>}
+         {successMessage && (
+  <p className="auth-success">{successMessage}</p>
+)}
 
           <button className="auth-main-btn" type="submit">
             {isSignUp ? "Create Account" : "Sign In"}
