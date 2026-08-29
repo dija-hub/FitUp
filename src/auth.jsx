@@ -52,15 +52,16 @@ function Auth({ setShowSignUp, darkMode }) {
     }
 
 if (isSignUp) {
-  const { data, error: signUpError } = await supabase.auth.signUp({
-    email: email.trim(),
-    password: password,
-    options: {
-      data: {
-        full_name: fullName.trim(),
-      },
+const { data, error: signUpError } = await supabase.auth.signUp({
+  email: email.trim(),
+  password: password,
+  options: {
+    emailRedirectTo: "http://localhost:5173",
+    data: {
+      full_name: fullName.trim(),
     },
-  });
+  },
+});
 
   if (signUpError) {
     setError(signUpError.message);
