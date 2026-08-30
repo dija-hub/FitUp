@@ -1,4 +1,4 @@
-import {supabase } from "./utils/supabase";
+import { supabase } from "./utils/supabase";
 
 import { useState } from "react";
 import Navbar from "./Navbar";
@@ -12,10 +12,9 @@ function Web() {
   const [showSignUp, setShowSignUp] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [darkMode, setDarkMode] = useState(false);
- 
+
   return (
     <div className={darkMode ? "dark-page" : ""}>
-
       <Navbar
         activeSection={activeSection}
         setActiveSection={setActiveSection}
@@ -25,9 +24,7 @@ function Web() {
       />
       <section className="hero" id="home">
         <div className="hero-content">
-          <p className="hero-tagline">
-            BUILD STRENGTH. BUILD CONFIDENCE.
-          </p>
+          <p className="hero-tagline">BUILD STRENGTH. BUILD CONFIDENCE.</p>
 
           <h1>
             Stronger <span>Every Day</span>
@@ -39,10 +36,7 @@ function Web() {
           </p>
 
           <div className="hero-buttons">
-            <button
-              className="primary-btn"
-              onClick={() => setShowSignUp(true)}
-            >
+            <button className="primary-btn" onClick={() => setShowSignUp(true)}>
               Get Started
             </button>
           </div>
@@ -63,7 +57,6 @@ function Web() {
         </div>
 
         <div className="features-content">
-
           <div className="feature-item">
             <div className="feature-box">
               <div className="feature-icon">
@@ -95,19 +88,19 @@ function Web() {
           </div>
 
           <div className="feature-item">
-  <div className="feature-box">
-    <div className="feature-icon">
-      <BarChart3 size={20} />
-    </div>
+            <div className="feature-box">
+              <div className="feature-icon">
+                <BarChart3 size={20} />
+              </div>
 
-    <h2>Progress Analytics</h2>
+              <h2>Progress Analytics</h2>
 
-    <p>
-      View your progress with simple graphs and track how your habits
-      improve over time.
-    </p>
-  </div>
-</div>
+              <p>
+                View your progress with simple graphs and track how your habits
+                improve over time.
+              </p>
+            </div>
+          </div>
 
           <div className="feature-item">
             <div className="feature-box">
@@ -117,12 +110,9 @@ function Web() {
 
               <h2>Progress Tracking</h2>
 
-              <p>
-                See your completed tasks and track your progress over time.
-              </p>
+              <p>See your completed tasks and track your progress over time.</p>
             </div>
           </div>
-
         </div>
       </section>
 
@@ -134,13 +124,10 @@ function Web() {
 
           <h1>Start building better habits</h1>
 
-          <span>
-            Simple steps to turn small actions into lasting routines.
-          </span>
+          <span>Simple steps to turn small actions into lasting routines.</span>
         </div>
 
         <div className="steps">
-
           <div className="step">
             <div className="step-number">01</div>
 
@@ -183,18 +170,15 @@ function Web() {
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
       <section className="final-cta" id="connect">
         <div className="cta-wrapper">
-
           <div className="orange-orb orb-one"></div>
           <div className="orange-orb orb-two"></div>
 
           <div className="cta-inner">
-
             <div className="cta-label">
               <span className="label-dot"></span>
               START YOUR JOURNEY
@@ -211,10 +195,7 @@ function Web() {
               routines, and making progress every single day.
             </p>
 
-            <button
-              className="cta-button"
-              onClick={() => setShowSignUp(true)}
-            >
+            <button className="cta-button" onClick={() => setShowSignUp(true)}>
               Get started
               <span>→</span>
             </button>
@@ -223,12 +204,10 @@ function Web() {
               <span>✦</span>
               Free forever · No credit card required
             </div>
-
           </div>
         </div>
 
         <footer className="cta-footer">
-
           <div className="brand">
             <div className="brand-icon">✚</div>
             <span>FitUp</span>
@@ -247,24 +226,16 @@ function Web() {
           </div>
 
           <p>© 2026 FitUp</p>
-
         </footer>
       </section>
 
       {showSignUp && (
-        <div
-          className="auth-overlay"
-          onClick={() => setShowSignUp(false)}
-        >
+        <div className="auth-overlay" onClick={() => setShowSignUp(false)}>
           <div onClick={(e) => e.stopPropagation()}>
-            <Auth
-              setShowSignUp={setShowSignUp}
-              darkMode={darkMode}
-            />
+            <Auth setShowSignUp={setShowSignUp} darkMode={darkMode} />
           </div>
         </div>
       )}
-
     </div>
   );
 }

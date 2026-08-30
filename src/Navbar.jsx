@@ -54,17 +54,17 @@ function Navbar({
             Connect with us
           </a>
         </li>
-      <li>
-  <a
-    href="/dashboard"
-    onClick={(e) => {
-      e.preventDefault();
-      window.location.href = "/dashboard";
-    }}
-  >
-    Dashboard
-  </a>
-</li>
+        <li>
+          <a
+            href="/dashboard"
+            onClick={(e) => {
+              e.preventDefault();
+              window.location.href = "/dashboard";
+            }}
+          >
+            Dashboard
+          </a>
+        </li>
       </ul>
 
       <div className="nav-buttons">

@@ -25,8 +25,8 @@ function Auth({ setShowSignUp, darkMode }) {
   async function handleSubmit(e) {
     e.preventDefault();
 
-   setError("");
-setSuccessMessage("");
+    setError("");
+    setSuccessMessage("");
 
     if (isSignUp && fullName.trim() === "") {
       setError("Please enter your full name.");
@@ -53,58 +53,54 @@ setSuccessMessage("");
       return;
     }
 
-if (isSignUp) {
-const { data, error: signUpError } = await supabase.auth.signUp({
-  email: email.trim(),
-  password: password,
-  options: {
-    emailRedirectTo: "http://localhost:5173",
-    data: {
-      full_name: fullName.trim(),
-    },
-  },
-});
-console.log("Signup data:", data);
-  console.log("Signup user:", data.user);
-console.log("Signup error:", signUpError);
-console.log("Signup error message:", signUpError?.message);
-  if (signUpError) {
-    setError(signUpError.message);
-    return;
-  }
+    if (isSignUp) {
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: email.trim(),
+        password: password,
+        options: {
+          emailRedirectTo: "http://localhost:5173",
+          data: {
+            full_name: fullName.trim(),
+          },
+        },
+      });
+      console.log("Signup data:", data);
+      console.log("Signup user:", data.user);
+      console.log("Signup error:", signUpError);
+      console.log("Signup error message:", signUpError?.message);
+      if (signUpError) {
+        setError(signUpError.message);
+        return;
+      }
 
-// if (data.user) {
-//   const { error: profileError } = await supabase
-//     .from("Profiles")
-//     .upsert(
-//       {
-//         user_id: data.user.id,
-//         full_name: fullName.trim(),
-//       },
-//       {
-//         onConflict: "user_id",
-//       }
-//     );
+      // if (data.user) {
+      //   const { error: profileError } = await supabase
+      //     .from("Profiles")
+      //     .upsert(
+      //       {
+      //         user_id: data.user.id,
+      //         full_name: fullName.trim(),
+      //       },
+      //       {
+      //         onConflict: "user_id",
+      //       }
+      //     );
 
-//   if (profileError) {
-//     console.log("Profile Error:", profileError.message);
-//     setError(profileError.message);
-//     return;
-//   }
-// }
+      //   if (profileError) {
+      //     console.log("Profile Error:", profileError.message);
+      //     setError(profileError.message);
+      //     return;
+      //   }
+      // }
 
- setSuccessMessage("Check your email to confirm your account.");
-}
+      setSuccessMessage("Check your email to confirm your account.");
+    }
   }
 
   return (
     <div className={`auth-page ${darkMode ? "auth-dark" : ""}`}>
       <div className="auth-card">
-
-        <button
-          className="auth-back-btn"
-          onClick={() => setShowSignUp(false)}
-        >
+        <button className="auth-back-btn" onClick={() => setShowSignUp(false)}>
           <ArrowLeft size={21} />
         </button>
 
@@ -133,7 +129,6 @@ console.log("Signup error message:", signUpError?.message);
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
-
           {isSignUp && (
             <div className="input-box">
               <UserRound className="input-icon" />
@@ -195,9 +190,7 @@ console.log("Signup error message:", signUpError?.message);
               <button
                 type="button"
                 className="password-btn"
-                onClick={() =>
-                  setShowConfirmPassword(!showConfirmPassword)
-                }
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? (
                   <EyeOff className="eye-icon" />
@@ -208,10 +201,8 @@ console.log("Signup error message:", signUpError?.message);
             </div>
           )}
 
-         {error && <p className="auth-error">{error}</p>}
-         {successMessage && (
-  <p className="auth-success">{successMessage}</p>
-)}
+          {error && <p className="auth-error">{error}</p>}
+          {successMessage && <p className="auth-success">{successMessage}</p>}
 
           <button className="auth-main-btn" type="submit">
             {isSignUp ? "Create Account" : "Sign In"}
@@ -223,22 +214,16 @@ console.log("Signup error message:", signUpError?.message);
             <span></span>
           </div>
 
-          <button
-            type="button"
-            className="google-btn"
-          >
+          <button type="button" className="google-btn">
             <span className="google-icon">G</span>
 
-            {isSignUp
-              ? "Sign up with Google"
-              : "Sign in with Google"}
+            {isSignUp ? "Sign up with Google" : "Sign in with Google"}
           </button>
 
           <div className="auth-switch">
             {isSignUp ? (
               <p>
                 Already have an account?
-
                 <button
                   type="button"
                   onClick={() => {
@@ -252,7 +237,6 @@ console.log("Signup error message:", signUpError?.message);
             ) : (
               <p>
                 Don't have an account?
-
                 <button
                   type="button"
                   onClick={() => {
@@ -265,7 +249,6 @@ console.log("Signup error message:", signUpError?.message);
               </p>
             )}
           </div>
-
         </form>
       </div>
     </div>
