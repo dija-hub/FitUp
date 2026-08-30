@@ -9,7 +9,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 
-import "./Auth.css";
+import "./auth.css";
 
 function Auth({ setShowSignUp, darkMode }) {
   const [isSignUp, setIsSignUp] = useState(true);
