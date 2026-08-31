@@ -58,7 +58,7 @@ function Auth({ setShowSignUp, darkMode }) {
         email: email.trim(),
         password: password,
         options: {
-          emailRedirectTo: "http://localhost:5173",
+          emailRedirectTo: "https://fit-up-rouge.vercel.app",
           data: {
             full_name: fullName.trim(),
           },
