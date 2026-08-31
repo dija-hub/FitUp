@@ -248,17 +248,18 @@ function Web() {
         <Dashboard />
       )}
 
-      {showSignUp && (
-        <div className="auth-overlay" onClick={() => setShowSignUp(false)}>
-          <div onClick={(e) => e.stopPropagation()}>
-            <Auth
-              setShowSignUp={setShowSignUp}
-              darkMode={darkMode}
-              setIsLoggedIn={setIsLoggedIn}
-            />
-          </div>
-        </div>
-      )}
+     {showSignUp && (
+  <div className="auth-overlay" onClick={() => setShowSignUp(false)}>
+    <div onClick={(e) => e.stopPropagation()}>
+      <Auth
+        setShowSignUp={setShowSignUp}
+        darkMode={darkMode}
+        setIsLoggedIn={setIsLoggedIn}
+        setShowDashboard={setShowDashboard}
+      />
+    </div>
+  </div>
+)}
     </div>
   );
 }

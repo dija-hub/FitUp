@@ -74,7 +74,8 @@ async function handleSubmit(e) {
       return;
     }
 
-    setSuccessMessage("Account created successfully!");
+    setIsLoggedIn(true);
+setShowSignUp(false);
   }else {
   const { data, error: signInError } =
     await supabase.auth.signInWithPassword({
