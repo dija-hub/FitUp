@@ -11,7 +11,7 @@ import {
 
 import "./auth.css";
 
-function Auth({ setShowSignUp, darkMode }) {
+function Auth({ setShowSignUp, darkMode, setIsLoggedIn }) {
   const [isSignUp, setIsSignUp] = useState(true);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -69,10 +69,13 @@ async function handleSubmit(e) {
     console.log("Signup user:", data.user);
     console.log("Signup error:", signUpError);
 
-    if (signUpError) {
-      setError(signUpError.message);
-      return;
-    }
+   if (signInError) {
+  setError(signInError.message);
+  return;
+}
+
+setIsLoggedIn(true);
+setShowSignUp(false);
 
     setSuccessMessage("Account created successfully!");
   } else {
@@ -90,7 +93,7 @@ async function handleSubmit(e) {
       return;
     }
 
-    setSuccessMessage("Signed in successfully!");
+    setShowSignUp(false);
   }
 }
 

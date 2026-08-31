@@ -7,6 +7,8 @@ function Navbar({
   darkMode,
   setDarkMode,
   setShowSignUp,
+  isLoggedIn,
+  setShowDashboard,
 }) {
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>
@@ -19,7 +21,10 @@ function Navbar({
           <a
             href="#home"
             className={activeSection === "home" ? "active" : ""}
-            onClick={() => setActiveSection("home")}
+            onClick={() => {
+              setActiveSection("home");
+              setShowDashboard(false);
+            }}
           >
             Home
           </a>
@@ -29,7 +34,10 @@ function Navbar({
           <a
             href="#features"
             className={activeSection === "features" ? "active" : ""}
-            onClick={() => setActiveSection("features")}
+            onClick={() => {
+              setActiveSection("features");
+              setShowDashboard(false);
+            }}
           >
             Features
           </a>
@@ -39,7 +47,10 @@ function Navbar({
           <a
             href="#work"
             className={activeSection === "work" ? "active" : ""}
-            onClick={() => setActiveSection("work")}
+            onClick={() => {
+              setActiveSection("work");
+              setShowDashboard(false);
+            }}
           >
             How it works
           </a>
@@ -49,22 +60,27 @@ function Navbar({
           <a
             href="#connect"
             className={activeSection === "connect" ? "active" : ""}
-            onClick={() => setActiveSection("connect")}
+            onClick={() => {
+              setActiveSection("connect");
+              setShowDashboard(false);
+            }}
           >
             Connect with us
           </a>
         </li>
-        <li>
-          <a
-            href="/dashboard"
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.href = "/dashboard";
-            }}
-          >
-            Dashboard
-          </a>
-        </li>
+
+        {isLoggedIn && (
+          <li>
+            <button
+              className="dashboard-nav-btn"
+              onClick={() => {
+                setShowDashboard(true);
+              }}
+            >
+              Dashboard
+            </button>
+          </li>
+        )}
       </ul>
 
       <div className="nav-buttons">
@@ -72,14 +88,21 @@ function Navbar({
           onClick={() => {
             setDarkMode(!darkMode);
           }}
-          className={`dark-mode-btn ${darkMode ? "darkmode" : "lightmode"}`}
+          className={`dark-mode-btn ${
+            darkMode ? "darkmode" : "lightmode"
+          }`}
         >
           {darkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
-        <button className="join-btn" onClick={() => setShowSignUp(true)}>
-          Join Now
-        </button>
+        {!isLoggedIn && (
+          <button
+            className="join-btn"
+            onClick={() => setShowSignUp(true)}
+          >
+            Join Now
+          </button>
+        )}
       </div>
     </nav>
   );
