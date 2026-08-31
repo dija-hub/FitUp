@@ -251,9 +251,8 @@ function Web() {
           </section>
         </>
       ) : (
-        <Dashboard />
-      )}
-
+  <Dashboard />
+)}
       {showSignUp && (
         <div
           className="auth-overlay"
