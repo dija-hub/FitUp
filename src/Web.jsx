@@ -9,10 +9,10 @@ import { Flame, Palette, BarChart3, TrendingUp } from "lucide-react";
 
 function Web() {
   const [showSignUp, setShowSignUp] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
-  const [darkMode, setDarkMode] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showDashboard, setShowDashboard] = useState(false);
+const [activeSection, setActiveSection] = useState("home");
+const [darkMode, setDarkMode] = useState(false);
+const [isLoggedIn, setIsLoggedIn] = useState(false);
+const [showDashboard, setShowDashboard] = useState(false);
 
   return (
     <div className={darkMode ? "dark-page" : ""}>
