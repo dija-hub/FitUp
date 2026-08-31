@@ -72,29 +72,23 @@ function Auth({ setShowSignUp, darkMode }) {
         setError(signUpError.message);
         return;
       }
-
-      // if (data.user) {
-      //   const { error: profileError } = await supabase
-      //     .from("Profiles")
-      //     .upsert(
-      //       {
-      //         user_id: data.user.id,
-      //         full_name: fullName.trim(),
-      //       },
-      //       {
-      //         onConflict: "user_id",
-      //       }
-      //     );
-
-      //   if (profileError) {
-      //     console.log("Profile Error:", profileError.message);
-      //     setError(profileError.message);
-      //     return;
-      //   }
-      // }
-
       setSuccessMessage("Account created successfully!");
-    }
+    }else {
+  const { data, error: signInError } = await supabase.auth.signInWithPassword({
+    email: email.trim(),
+    password: password,
+  });
+
+  console.log("Signin data:", data);
+  console.log("Signin error:", signInError);
+
+  if (signInError) {
+    setError(signInError.message);
+    return;
+  }
+
+  setSuccessMessage("Signed in successfully!");
+}
   }
 
   return (
