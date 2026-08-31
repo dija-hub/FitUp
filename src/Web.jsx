@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import Navbar from "./Navbar";
 import "./Web.css";
@@ -15,6 +16,7 @@ function Web() {
 
   return (
     <div className={darkMode ? "dark-page" : ""}>
+
       <Navbar
         activeSection={activeSection}
         setActiveSection={setActiveSection}
@@ -29,7 +31,9 @@ function Web() {
         <>
           <section className="hero" id="home">
             <div className="hero-content">
-              <p className="hero-tagline">BUILD STRENGTH. BUILD CONFIDENCE.</p>
+              <p className="hero-tagline">
+                BUILD STRENGTH. BUILD CONFIDENCE.
+              </p>
 
               <h1>
                 Stronger <span>Every Day</span>
@@ -248,20 +252,25 @@ function Web() {
         <Dashboard />
       )}
 
-     {showSignUp && (
-  <div className="auth-overlay" onClick={() => setShowSignUp(false)}>
-    <div onClick={(e) => e.stopPropagation()}>
-      <Auth
-        setShowSignUp={setShowSignUp}
-        darkMode={darkMode}
-        setIsLoggedIn={setIsLoggedIn}
-        setShowDashboard={setShowDashboard}
-      />
-    </div>
-  </div>
-)}
+      {showSignUp && (
+        <div
+          className="auth-overlay"
+          onClick={() => setShowSignUp(false)}
+        >
+          <div onClick={(e) => e.stopPropagation()}>
+            <Auth
+              setShowSignUp={setShowSignUp}
+              darkMode={darkMode}
+              setIsLoggedIn={setIsLoggedIn}
+              setShowDashboard={setShowDashboard}
+            />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
 
 export default Web;
+
