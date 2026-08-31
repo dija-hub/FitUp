@@ -69,13 +69,10 @@ async function handleSubmit(e) {
     console.log("Signup user:", data.user);
     console.log("Signup error:", signUpError);
 
-   if (signInError) {
-  setError(signInError.message);
-  return;
-}
-
-setIsLoggedIn(true);
-setShowSignUp(false);
+    if (signUpError) {
+      setError(signUpError.message);
+      return;
+    }
 
     setSuccessMessage("Account created successfully!");
   } else {
@@ -93,6 +90,7 @@ setShowSignUp(false);
       return;
     }
 
+    setIsLoggedIn(true);
     setShowSignUp(false);
   }
 }
