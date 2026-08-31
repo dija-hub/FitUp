@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { supabase } from "./utils/supabase";
 import {
@@ -11,7 +12,12 @@ import {
 
 import "./auth.css";
 
-function Auth({ setShowSignUp, darkMode, setIsLoggedIn }) {
+function Auth({
+  setShowSignUp,
+  darkMode,
+  setIsLoggedIn,
+  setShowDashboard,
+}) {
   const [isSignUp, setIsSignUp] = useState(true);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -22,84 +28,97 @@ function Auth({ setShowSignUp, darkMode, setIsLoggedIn }) {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-async function handleSubmit(e) {
-  e.preventDefault();
+  async function handleSubmit(e) {
+    e.preventDefault();
 
-  setError("");
-  setSuccessMessage("");
+    setError("");
+    setSuccessMessage("");
 
-  if (isSignUp && fullName.trim() === "") {
-    setError("Please enter your full name.");
-    return;
-  }
-
-  if (email.trim() === "") {
-    setError("Please enter your email.");
-    return;
-  }
-
-  if (password.trim() === "") {
-    setError("Please enter your password.");
-    return;
-  }
-
-  if (isSignUp && confirmPass.trim() === "") {
-    setError("Please confirm your password.");
-    return;
-  }
-
-  if (isSignUp && password !== confirmPass) {
-    setError("Passwords do not match.");
-    return;
-  }
-
-  if (isSignUp) {
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email: email.trim(),
-      password: password,
-      options: {
-        emailRedirectTo: "https://fit-up-rouge.vercel.app",
-        data: {
-          full_name: fullName.trim(),
-        },
-      },
-    });
-
-    console.log("Signup data:", data);
-    console.log("Signup user:", data.user);
-    console.log("Signup error:", signUpError);
-
-    if (signUpError) {
-      setError(signUpError.message);
+    if (isSignUp && fullName.trim() === "") {
+      setError("Please enter your full name.");
       return;
     }
 
-    setIsLoggedIn(true);
-setShowSignUp(false);
-  }else {
-  const { data, error: signInError } =
-    await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password: password,
-    });
+    if (email.trim() === "") {
+      setError("Please enter your email.");
+      return;
+    }
 
-  console.log("Signin data:", data);
-  console.log("Signin error:", signInError);
+    if (password.trim() === "") {
+      setError("Please enter your password.");
+      return;
+    }
 
-  if (signInError) {
-    setError(signInError.message);
-    return;
+    if (isSignUp && confirmPass.trim() === "") {
+      setError("Please confirm your password.");
+      return;
+    }
+
+    if (isSignUp && password !== confirmPass) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    if (isSignUp) {
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: email.trim(),
+        password: password,
+        options: {
+          emailRedirectTo: "https://fit-up-rouge.vercel.app",
+          data: {
+            full_name: fullName.trim(),
+          },
+        },
+      });
+
+      console.log("Signup data:", data);
+      console.log("Signup user:", data.user);
+      console.log("Signup error:", signUpError);
+
+      if (signUpError) {
+        setError(signUpError.message);
+        return;
+      }
+
+      setSuccessMessage("Account created successfully!");
+
+      setTimeout(() => {
+        setIsLoggedIn(true);
+        setShowDashboard(true);
+        setShowSignUp(false);
+      }, 1200);
+    } else {
+      const { data, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password: password,
+        });
+
+      console.log("Signin data:", data);
+      console.log("Signin error:", signInError);
+
+      if (signInError) {
+        setError(signInError.message);
+        return;
+      }
+
+      setSuccessMessage("Signed in successfully!");
+
+      setTimeout(() => {
+        setIsLoggedIn(true);
+        setShowDashboard(true);
+        setShowSignUp(false);
+      }, 1200);
+    }
   }
-
-  setIsLoggedIn(true);
-  setShowSignUp(false);
-}
-}
 
   return (
     <div className={`auth-page ${darkMode ? "auth-dark" : ""}`}>
       <div className="auth-card">
-        <button className="auth-back-btn" onClick={() => setShowSignUp(false)}>
+        <button
+          className="auth-back-btn"
+          onClick={() => setShowSignUp(false)}
+        >
           <ArrowLeft size={21} />
         </button>
 
@@ -189,7 +208,9 @@ setShowSignUp(false);
               <button
                 type="button"
                 className="password-btn"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                onClick={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
               >
                 {showConfirmPassword ? (
                   <EyeOff className="eye-icon" />
@@ -201,7 +222,10 @@ setShowSignUp(false);
           )}
 
           {error && <p className="auth-error">{error}</p>}
-          {successMessage && <p className="auth-success">{successMessage}</p>}
+
+          {successMessage && (
+            <p className="auth-success">{successMessage}</p>
+          )}
 
           <button className="auth-main-btn" type="submit">
             {isSignUp ? "Create Account" : "Sign In"}
@@ -223,11 +247,13 @@ setShowSignUp(false);
             {isSignUp ? (
               <p>
                 Already have an account?
+
                 <button
                   type="button"
                   onClick={() => {
                     setIsSignUp(false);
                     setError("");
+                    setSuccessMessage("");
                   }}
                 >
                   Sign in
@@ -236,11 +262,13 @@ setShowSignUp(false);
             ) : (
               <p>
                 Don't have an account?
+
                 <button
                   type="button"
                   onClick={() => {
                     setIsSignUp(true);
                     setError("");
+                    setSuccessMessage("");
                   }}
                 >
                   Sign up
