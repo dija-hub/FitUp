@@ -22,74 +22,77 @@ function Auth({ setShowSignUp, darkMode }) {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+async function handleSubmit(e) {
+  e.preventDefault();
 
-    setError("");
-    setSuccessMessage("");
+  setError("");
+  setSuccessMessage("");
 
-    if (isSignUp && fullName.trim() === "") {
-      setError("Please enter your full name.");
-      return;
-    }
-
-    if (email.trim() === "") {
-      setError("Please enter your email.");
-      return;
-    }
-
-    if (password.trim() === "") {
-      setError("Please enter your password.");
-      return;
-    }
-
-    if (isSignUp && confirmPass.trim() === "") {
-      setError("Please confirm your password.");
-      return;
-    }
-
-    if (isSignUp && password !== confirmPass) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    if (isSignUp) {
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email: email.trim(),
-        password: password,
-        options: {
-          emailRedirectTo: "https://fit-up-rouge.vercel.app",
-          data: {
-            full_name: fullName.trim(),
-          },
-        },
-      });
-      console.log("Signup data:", data);
-      console.log("Signup user:", data.user);
-      console.log("Signup error:", signUpError);
-      console.log("Signup error message:", signUpError?.message);
-      if (signUpError) {
-        setError(signUpError.message);
-        return;
-      }
-      setSuccessMessage("Account created successfully!");
-    }else {
-  const { data, error: signInError } = await supabase.auth.signInWithPassword({
-    email: email.trim(),
-    password: password,
-  });
-
-  console.log("Signin data:", data);
-  console.log("Signin error:", signInError);
-
-  if (signInError) {
-    setError(signInError.message);
+  if (isSignUp && fullName.trim() === "") {
+    setError("Please enter your full name.");
     return;
   }
 
-  setSuccessMessage("Signed in successfully!");
-}
+  if (email.trim() === "") {
+    setError("Please enter your email.");
+    return;
   }
+
+  if (password.trim() === "") {
+    setError("Please enter your password.");
+    return;
+  }
+
+  if (isSignUp && confirmPass.trim() === "") {
+    setError("Please confirm your password.");
+    return;
+  }
+
+  if (isSignUp && password !== confirmPass) {
+    setError("Passwords do not match.");
+    return;
+  }
+
+  if (isSignUp) {
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email: email.trim(),
+      password: password,
+      options: {
+        emailRedirectTo: "https://fit-up-rouge.vercel.app",
+        data: {
+          full_name: fullName.trim(),
+        },
+      },
+    });
+
+    console.log("Signup data:", data);
+    console.log("Signup user:", data.user);
+    console.log("Signup error:", signUpError);
+
+    if (signUpError) {
+      setError(signUpError.message);
+      return;
+    }
+
+    setSuccessMessage("Account created successfully!");
+  } else {
+    const { data, error: signInError } =
+      await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password,
+      });
+
+    console.log("Signin data:", data);
+    console.log("Signin error:", signInError);
+
+    if (signInError) {
+      setError(signInError.message);
+      return;
+    }
+
+    setSuccessMessage("Signed in successfully!");
+  }
+}
 
   return (
     <div className={`auth-page ${darkMode ? "auth-dark" : ""}`}>
