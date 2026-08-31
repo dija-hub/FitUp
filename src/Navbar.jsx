@@ -81,6 +81,12 @@ function Navbar({
             </button>
           </li>
         )}
+        <a
+  href="#dashboard"
+  onClick={() => setActiveSection("dashboard")}
+>
+  Dashboard
+</a>
       </ul>
 
       <div className="nav-buttons">

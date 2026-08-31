@@ -16,7 +16,9 @@ function Web() {
 
   return (
     <div className={darkMode ? "dark-page" : ""}>
-
+<section id="dashboard">
+  <Dashboard />
+</section>
       <Navbar
         activeSection={activeSection}
         setActiveSection={setActiveSection}
