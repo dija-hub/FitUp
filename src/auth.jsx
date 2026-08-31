@@ -1,6 +1,6 @@
-
 import { useState } from "react";
 import { supabase } from "./utils/supabase";
+
 import {
   UserRound,
   Mail,
@@ -19,12 +19,15 @@ function Auth({
   setShowDashboard,
 }) {
   const [isSignUp, setIsSignUp] = useState(true);
+
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -60,16 +63,17 @@ function Auth({
     }
 
     if (isSignUp) {
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email: email.trim(),
-        password: password,
-        options: {
-          emailRedirectTo: "https://fit-up-rouge.vercel.app",
-          data: {
-            full_name: fullName.trim(),
+      const { data, error: signUpError } =
+        await supabase.auth.signUp({
+          email: email.trim(),
+          password: password,
+          options: {
+            emailRedirectTo: "https://fit-up-rouge.vercel.app",
+            data: {
+              full_name: fullName.trim(),
+            },
           },
-        },
-      });
+        });
 
       console.log("Signup data:", data);
       console.log("Signup user:", data.user);
@@ -237,10 +241,15 @@ function Auth({
             <span></span>
           </div>
 
-          <button type="button" className="google-btn">
+          <button
+            type="button"
+            className="google-btn"
+          >
             <span className="google-icon">G</span>
 
-            {isSignUp ? "Sign up with Google" : "Sign in with Google"}
+            {isSignUp
+              ? "Sign up with Google"
+              : "Sign in with Google"}
           </button>
 
           <div className="auth-switch">

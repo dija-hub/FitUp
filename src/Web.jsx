@@ -1,24 +1,57 @@
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "./utils/supabase";
 import Navbar from "./Navbar";
-import "./Web.css";
 import Auth from "./auth";
 import Dashboard from "./dashboard";
 
-import { Flame, Palette, BarChart3, TrendingUp } from "lucide-react";
+import "./Web.css";
+
+import {
+  Flame,
+  Palette,
+  BarChart3,
+  TrendingUp,
+} from "lucide-react";
 
 function Web() {
   const [showSignUp, setShowSignUp] = useState(false);
-const [activeSection, setActiveSection] = useState("home");
-const [darkMode, setDarkMode] = useState(false);
-const [isLoggedIn, setIsLoggedIn] = useState(false);
-const [showDashboard, setShowDashboard] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
+  const [darkMode, setDarkMode] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
+
+  useEffect(() => {
+    async function checkUser() {
+      const { data } = await supabase.auth.getSession();
+
+      if (data.session) {
+        setIsLoggedIn(true);
+      }
+    }
+
+    checkUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  function openDashboard() {
+    if (isLoggedIn) {
+      setShowDashboard(true);
+    } else {
+      setShowSignUp(true);
+    }
+  }
 
   return (
     <div className={darkMode ? "dark-page" : ""}>
-<section id="dashboard">
-  <Dashboard />
-</section>
       <Navbar
         activeSection={activeSection}
         setActiveSection={setActiveSection}
@@ -251,8 +284,14 @@ const [showDashboard, setShowDashboard] = useState(false);
           </section>
         </>
       ) : (
-  <Dashboard />
-)}
+        <Dashboard
+          darkMode={darkMode}
+          setShowDashboard={setShowDashboard}
+          setIsLoggedIn={setIsLoggedIn}
+          openDashboard={openDashboard}
+        />
+      )}
+
       {showSignUp && (
         <div
           className="auth-overlay"
@@ -268,10 +307,8 @@ const [showDashboard, setShowDashboard] = useState(false);
           </div>
         </div>
       )}
-
     </div>
   );
 }
 
 export default Web;
-

@@ -1,15 +1,8 @@
-
-import './App.css'
-import Web from "./Web"
+import "./App.css";
+import Web from "./Web";
 
 function App() {
-  
-
-  return (
-   <>
-   <Web/>
-   </> 
-  )
+  return <Web />;
 }
 
-export default App
+export default App;

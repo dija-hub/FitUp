@@ -81,19 +81,11 @@ function Navbar({
             </button>
           </li>
         )}
-        <a
-  href="#dashboard"
-  onClick={() => setActiveSection("dashboard")}
->
-  Dashboard
-</a>
       </ul>
 
       <div className="nav-buttons">
         <button
-          onClick={() => {
-            setDarkMode(!darkMode);
-          }}
+          onClick={() => setDarkMode(!darkMode)}
           className={`dark-mode-btn ${
             darkMode ? "darkmode" : "lightmode"
           }`}
