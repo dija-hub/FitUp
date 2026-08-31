@@ -75,24 +75,24 @@ async function handleSubmit(e) {
     }
 
     setSuccessMessage("Account created successfully!");
-  } else {
-    const { data, error: signInError } =
-      await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password: password,
-      });
+  }else {
+  const { data, error: signInError } =
+    await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password: password,
+    });
 
-    console.log("Signin data:", data);
-    console.log("Signin error:", signInError);
+  console.log("Signin data:", data);
+  console.log("Signin error:", signInError);
 
-    if (signInError) {
-      setError(signInError.message);
-      return;
-    }
-
-    setIsLoggedIn(true);
-    setShowSignUp(false);
+  if (signInError) {
+    setError(signInError.message);
+    return;
   }
+
+  setIsLoggedIn(true);
+  setShowSignUp(false);
+}
 }
 
   return (
