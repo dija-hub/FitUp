@@ -93,7 +93,7 @@ function Auth({ setShowSignUp, darkMode }) {
       //   }
       // }
 
-      setSuccessMessage("Check your email to confirm your account.");
+      setSuccessMessage("Account created successfully!");
     }
   }
 
