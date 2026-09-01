@@ -69,18 +69,18 @@ function Navbar({
           </a>
         </li>
 
-       <a
-  href="#dashboard"
-  className={`dashboard-nav-btn ${
-    showDashboard ? "active" : ""
-  }`}
-  onClick={(e) => {
-    e.preventDefault();
-    setShowDashboard(true);
-  }}
->
-  Dashboard
-</a>
+{isLoggedIn && (
+  <li>
+    <button
+      className="dashboard-nav-btn"
+      onClick={() => {
+        setShowDashboard(true);
+      }}
+    >
+      Dashboard
+    </button>
+  </li>
+)}
       </ul>
 
       <div className="nav-buttons">
