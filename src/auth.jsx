@@ -1,294 +1,331 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "./utils/supabase";
 
+import Navbar from "./Navbar";
+import Auth from "./auth";
+import Dashboard from "./dashboard";
+
+import "./Web.css";
+
 import {
-  UserRound,
-  Mail,
-  LockKeyhole,
-  Eye,
-  EyeOff,
-  ArrowLeft,
+  Flame,
+  Palette,
+  BarChart3,
+  TrendingUp,
 } from "lucide-react";
 
-import "./auth.css";
+function Web() {
+  const [showSignUp, setShowSignUp] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
+  const [darkMode, setDarkMode] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
 
-function Auth({
-  setShowSignUp,
-  darkMode,
-  setIsLoggedIn,
-  setShowDashboard,
-}) {
-  const [isSignUp, setIsSignUp] = useState(true);
+  useEffect(() => {
+    async function checkUser() {
+      const { data } = await supabase.auth.getSession();
 
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPass, setConfirmPass] = useState("");
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-
-    setError("");
-    setSuccessMessage("");
-
-    if (isSignUp && fullName.trim() === "") {
-      setError("Please enter your full name.");
-      return;
-    }
-
-    if (email.trim() === "") {
-      setError("Please enter your email.");
-      return;
-    }
-
-    if (password.trim() === "") {
-      setError("Please enter your password.");
-      return;
-    }
-
-    if (isSignUp && confirmPass.trim() === "") {
-      setError("Please confirm your password.");
-      return;
-    }
-
-    if (isSignUp && password !== confirmPass) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    if (isSignUp) {
-      const { data, error: signUpError } =
-        await supabase.auth.signUp({
-          email: email.trim(),
-          password: password,
-          options: {
-            emailRedirectTo: "https://fit-up-rouge.vercel.app",
-            data: {
-              full_name: fullName.trim(),
-            },
-          },
-        });
-
-      console.log("Signup data:", data);
-      console.log("Signup user:", data.user);
-      console.log("Signup error:", signUpError);
-
-      if (signUpError) {
-        setError(signUpError.message);
-        return;
-      }
-
-      setSuccessMessage("Account created successfully!");
-
-      setTimeout(() => {
+      if (data.session) {
         setIsLoggedIn(true);
-        setShowDashboard(true);
-        setShowSignUp(false);
-      }, 1200);
+      } else {
+        setIsLoggedIn(false);
+      }
+    }
+
+    checkUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setIsLoggedIn(!!session);
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  function openDashboard() {
+    if (isLoggedIn) {
+      setShowDashboard(true);
+      setActiveSection("");
     } else {
-      const { data, error: signInError } =
-        await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password: password,
-        });
-
-      console.log("Signin data:", data);
-      console.log("Signin error:", signInError);
-
-      if (signInError) {
-        setError(signInError.message);
-        return;
-      }
-
-      setSuccessMessage("Signed in successfully!");
-
-      setTimeout(() => {
-        setIsLoggedIn(true);
-        setShowDashboard(true);
-        setShowSignUp(false);
-      }, 1200);
+      setShowSignUp(true);
     }
   }
 
   return (
-    <div className={`auth-page ${darkMode ? "auth-dark" : ""}`}>
-      <div className="auth-card">
-        <button
-          className="auth-back-btn"
-          onClick={() => setShowSignUp(false)}
-        >
-          <ArrowLeft size={21} />
-        </button>
+    <div className={darkMode ? "dark-page" : ""}>
+      <Navbar
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        setShowSignUp={setShowSignUp}
+        isLoggedIn={isLoggedIn}
+        setShowDashboard={setShowDashboard}
+        showDashboard={showDashboard}
+      />
 
-        <div className="auth-heading">
-          <p className="auth-label">
-            {isSignUp ? "START YOUR JOURNEY" : "WELCOME BACK"}
-          </p>
+      {!showDashboard ? (
+        <>
+          <section className="hero" id="home">
+            <div className="hero-content">
+              <p className="hero-tagline">
+                BUILD STRENGTH. BUILD CONFIDENCE.
+              </p>
 
-          <h1>
-            {isSignUp ? (
-              <>
-                Create your <span>account</span>
-              </>
-            ) : (
-              <>
-                Welcome <span>back</span>
-              </>
-            )}
-          </h1>
+              <h1>
+                Stronger <span>Every Day</span>
+              </h1>
 
-          <p>
-            {isSignUp
-              ? "Start building better habits and make progress every day."
-              : "Sign in and continue building better habits."}
-          </p>
-        </div>
+              <p className="hero-description">
+                Transform your body, boost your energy, and become
+                the best version of yourself.
+              </p>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          {isSignUp && (
-            <div className="input-box">
-              <UserRound className="input-icon" />
-
-              <input
-                type="text"
-                placeholder="Full Name"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-              />
+              <div className="hero-buttons">
+                <button
+                  className="primary-btn"
+                  onClick={() => setShowSignUp(true)}
+                >
+                  Get Started
+                </button>
+              </div>
             </div>
-          )}
+          </section>
 
-          <div className="input-box">
-            <Mail className="input-icon" />
+          <hr />
 
-            <input
-              type="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+          <section className="Features" id="features">
+            <div className="features-heading">
+              <h2>FEATURES</h2>
 
-          <div className="input-box">
-            <LockKeyhole className="input-icon" />
-
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-
-            <button
-              type="button"
-              className="password-btn"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? (
-                <EyeOff className="eye-icon" />
-              ) : (
-                <Eye className="eye-icon" />
-              )}
-            </button>
-          </div>
-
-          {isSignUp && (
-            <div className="input-box">
-              <LockKeyhole className="input-icon" />
-
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm Password"
-                value={confirmPass}
-                onChange={(e) => setConfirmPass(e.target.value)}
-              />
-
-              <button
-                type="button"
-                className="password-btn"
-                onClick={() =>
-                  setShowConfirmPassword(!showConfirmPassword)
-                }
-              >
-                {showConfirmPassword ? (
-                  <EyeOff className="eye-icon" />
-                ) : (
-                  <Eye className="eye-icon" />
-                )}
-              </button>
+              <h3>
+                Everything you need,
+                <br />
+                nothing you don't
+              </h3>
             </div>
-          )}
 
-          {error && <p className="auth-error">{error}</p>}
+            <div className="features-content">
+              <div className="feature-item">
+                <div className="feature-box">
+                  <div className="feature-icon">
+                    <Flame size={20} />
+                  </div>
 
-          {successMessage && (
-            <p className="auth-success">{successMessage}</p>
-          )}
+                  <h2>Daily Check-ins</h2>
 
-          <button className="auth-main-btn" type="submit">
-            {isSignUp ? "Create Account" : "Sign In"}
-          </button>
+                  <p>
+                    Keep track of your daily tasks and stay
+                    consistent with your habits.
+                  </p>
+                </div>
+              </div>
 
-          <div className="divider">
-            <span></span>
-            <p>or continue with</p>
-            <span></span>
-          </div>
+              <div className="feature-item">
+                <div className="feature-box">
+                  <div className="feature-icon">
+                    <Palette size={20} />
+                  </div>
 
-          <button
-            type="button"
-            className="google-btn"
-          >
-            <span className="google-icon">G</span>
+                  <h2>Habit Color Categories</h2>
 
-            {isSignUp
-              ? "Sign up with Google"
-              : "Sign in with Google"}
-          </button>
+                  <p>
+                    Organize your habits with simple colors to
+                    quickly see what needs your attention.
+                  </p>
+                </div>
+              </div>
 
-          <div className="auth-switch">
-            {isSignUp ? (
-              <p>
-                Already have an account?
+              <div className="feature-item">
+                <div className="feature-box">
+                  <div className="feature-icon">
+                    <BarChart3 size={20} />
+                  </div>
+
+                  <h2>Progress Analytics</h2>
+
+                  <p>
+                    View your progress with simple graphs and
+                    track how your habits improve over time.
+                  </p>
+                </div>
+              </div>
+
+              <div className="feature-item">
+                <div className="feature-box">
+                  <div className="feature-icon">
+                    <TrendingUp size={20} />
+                  </div>
+
+                  <h2>Progress Tracking</h2>
+
+                  <p>
+                    See your completed tasks and track your
+                    progress over time.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <hr />
+
+          <section className="how-it-works" id="work">
+            <div className="how-heading">
+              <p>HOW IT WORKS</p>
+
+              <h1>Start building better habits</h1>
+
+              <span>
+                Simple steps to turn small actions into lasting
+                routines.
+              </span>
+            </div>
+
+            <div className="steps">
+              <div className="step">
+                <div className="step-number">01</div>
+
+                <div className="step-box">
+                  <div className="step-icon">✓</div>
+
+                  <div>
+                    <h2>Create</h2>
+                    <p>Build your habits</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="step-arrow">→</div>
+
+              <div className="step">
+                <div className="step-number">02</div>
+
+                <div className="step-box">
+                  <div className="step-icon">↗</div>
+
+                  <div>
+                    <h2>Track</h2>
+                    <p>Stay consistent</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="step-arrow">→</div>
+
+              <div className="step">
+                <div className="step-number">03</div>
+
+                <div className="step-box">
+                  <div className="step-icon">★</div>
+
+                  <div>
+                    <h2>Improve</h2>
+                    <p>Become your best</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="final-cta" id="connect">
+            <div className="cta-wrapper">
+              <div className="orange-orb orb-one"></div>
+              <div className="orange-orb orb-two"></div>
+
+              <div className="cta-inner">
+                <div className="cta-label">
+                  <span className="label-dot"></span>
+                  START YOUR JOURNEY
+                </div>
+
+                <h2>
+                  Ready to build
+                  <br />
+                  <span>better habits?</span>
+                </h2>
+
+                <p>
+                  Join thousands of people building consistency,
+                  creating better routines, and making progress
+                  every single day.
+                </p>
 
                 <button
-                  type="button"
-                  onClick={() => {
-                    setIsSignUp(false);
-                    setError("");
-                    setSuccessMessage("");
-                  }}
+                  className="cta-button"
+                  onClick={() => setShowSignUp(true)}
+                >
+                  Get started
+                  <span>→</span>
+                </button>
+
+                <div className="cta-note">
+                  <span>✦</span>
+                  Free forever · No credit card required
+                </div>
+              </div>
+            </div>
+
+            <footer className="cta-footer">
+              <div
+                className="brand"
+                onClick={() => {
+                  setShowDashboard(false);
+                  setActiveSection("home");
+                }}
+              >
+                <div className="brand-icon">✚</div>
+                <span>FitUp</span>
+              </div>
+
+              <div className="footer-links">
+                <a href="#features">Features</a>
+
+                <a href="#work">How it works</a>
+
+                <button
+                  className="footer-signin"
+                  onClick={() => setShowSignUp(true)}
                 >
                   Sign in
                 </button>
-              </p>
-            ) : (
-              <p>
-                Don't have an account?
+              </div>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsSignUp(true);
-                    setError("");
-                    setSuccessMessage("");
-                  }}
-                >
-                  Sign up
-                </button>
-              </p>
-            )}
+              <p>© 2026 FitUp</p>
+            </footer>
+          </section>
+        </>
+      ) : (
+        <Dashboard
+          darkMode={darkMode}
+          setShowDashboard={setShowDashboard}
+          setIsLoggedIn={setIsLoggedIn}
+          openDashboard={openDashboard}
+        />
+      )}
+
+      {showSignUp && (
+        <div
+          className="auth-overlay"
+          onClick={() => setShowSignUp(false)}
+        >
+          <div onClick={(e) => e.stopPropagation()}>
+            <Auth
+              setShowSignUp={setShowSignUp}
+              darkMode={darkMode}
+              setIsLoggedIn={setIsLoggedIn}
+              setShowDashboard={setShowDashboard}
+            />
           </div>
-        </form>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
 
-export default Auth;
+export default Web;

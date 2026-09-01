@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   CalendarDays,
   ClipboardList,
@@ -7,35 +7,16 @@ import {
   CalendarClock,
   Plus,
   Trash2,
+  Pencil,
+  X,
+  Save,
 } from "lucide-react";
 import "./Dashboard.css";
 
 function Dashboard() {
   const [taskInput, setTaskInput] = useState("");
-const [currentTime, setCurrentTime] = useState(new Date());
-
-useEffect(() => {
-  const timer = setInterval(() => {
-    setCurrentTime(new Date());
-  }, 1000);
-
-  return () => clearInterval(timer);
-}, []);
-const date = currentTime.toLocaleDateString("en-US", {
-  month: "long",
-  day: "numeric",
-  year: "numeric",
-});
-
-const day = currentTime.toLocaleDateString("en-US", {
-  weekday: "long",
-});
-
-const time = currentTime.toLocaleTimeString("en-US", {
-  hour: "numeric",
-  minute: "2-digit",
-});
-  const tasks = [
+  const [category, setCategory] = useState("Personal");
+  const [tasks, setTasks] = useState([
     {
       id: 1,
       name: "Study React",
@@ -71,16 +52,136 @@ const time = currentTime.toLocaleTimeString("en-US", {
       color: "green",
       completed: true,
     },
-  ];
+  ]);
+
+  const [editingId, setEditingId] = useState(null);
+  const [editText, setEditText] = useState("");
+  const [editCategory, setEditCategory] = useState("Personal");
+
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const date = currentTime.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const day = currentTime.toLocaleDateString("en-US", {
+    weekday: "long",
+  });
+
+  const time = currentTime.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
+  const categoryColors = {
+    Study: "orange",
+    Personal: "green",
+    Health: "yellow",
+    Project: "red",
+    Other: "purple",
+  };
+
+  function addTask() {
+    if (taskInput.trim() === "") return;
+
+    const newTask = {
+      id: Date.now(),
+      name: taskInput.trim(),
+      category: category,
+      color: categoryColors[category],
+      completed: false,
+    };
+
+    setTasks((previousTasks) => [...previousTasks, newTask]);
+    setTaskInput("");
+    setCategory("Personal");
+  }
+
+  function deleteTask(id) {
+    setTasks((previousTasks) =>
+      previousTasks.filter((task) => task.id !== id)
+    );
+  }
+
+  function startEditing(task) {
+    setEditingId(task.id);
+    setEditText(task.name);
+    setEditCategory(task.category);
+  }
+
+  function saveEdit(id) {
+    if (editText.trim() === "") return;
+
+    setTasks((previousTasks) =>
+      previousTasks.map((task) =>
+        task.id === id
+          ? {
+              ...task,
+              name: editText.trim(),
+              category: editCategory,
+              color: categoryColors[editCategory],
+            }
+          : task
+      )
+    );
+
+    setEditingId(null);
+    setEditText("");
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditText("");
+  }
+
+  function toggleTask(id) {
+    setTasks((previousTasks) =>
+      previousTasks.map((task) =>
+        task.id === id
+          ? { ...task, completed: !task.completed }
+          : task
+      )
+    );
+  }
+
+  function clearCompleted() {
+    setTasks((previousTasks) =>
+      previousTasks.filter((task) => !task.completed)
+    );
+  }
+
+  const completedTasks = tasks.filter(
+    (task) => task.completed
+  ).length;
+
+  const pendingTasks = tasks.filter(
+    (task) => !task.completed
+  ).length;
+
+  const completionPercentage =
+    tasks.length === 0
+      ? 0
+      : Math.round((completedTasks / tasks.length) * 100);
 
   return (
     <main className="dashboard">
       <section className="dashboard-top">
         <div className="date-box">
           <CalendarDays size={24} />
+
           <div>
             <p>{date}</p>
-<span>{day}</span>
+            <span>{day}</span>
           </div>
         </div>
 
@@ -91,7 +192,7 @@ const time = currentTime.toLocaleTimeString("en-US", {
 
         <div className="time-box">
           <span>☀️</span>
-         <p>{time}</p>
+          <p>{time}</p>
         </div>
       </section>
 
@@ -100,9 +201,10 @@ const time = currentTime.toLocaleTimeString("en-US", {
           <div className="stat-icon">
             <ClipboardList size={26} />
           </div>
+
           <div>
             <p>All Tasks</p>
-            <h2>28</h2>
+            <h2>{tasks.length}</h2>
           </div>
         </div>
 
@@ -110,9 +212,10 @@ const time = currentTime.toLocaleTimeString("en-US", {
           <div className="stat-icon">
             <CheckCircle2 size={26} />
           </div>
+
           <div>
             <p>Done</p>
-            <h2>18</h2>
+            <h2>{completedTasks}</h2>
           </div>
         </div>
 
@@ -120,9 +223,10 @@ const time = currentTime.toLocaleTimeString("en-US", {
           <div className="stat-icon">
             <Clock3 size={26} />
           </div>
+
           <div>
             <p>In Progress</p>
-            <h2>6</h2>
+            <h2>{pendingTasks}</h2>
           </div>
         </div>
 
@@ -130,9 +234,10 @@ const time = currentTime.toLocaleTimeString("en-US", {
           <div className="stat-icon">
             <CalendarClock size={26} />
           </div>
+
           <div>
             <p>Pending</p>
-            <h2>4</h2>
+            <h2>{pendingTasks}</h2>
           </div>
         </div>
       </section>
@@ -148,9 +253,25 @@ const time = currentTime.toLocaleTimeString("en-US", {
                 placeholder="What do you want to do?"
                 value={taskInput}
                 onChange={(e) => setTaskInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    addTask();
+                  }
+                }}
               />
 
-              <button>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option value="Study">Study</option>
+                <option value="Personal">Personal</option>
+                <option value="Health">Health</option>
+                <option value="Project">Project</option>
+                <option value="Other">Other</option>
+              </select>
+
+              <button onClick={addTask}>
                 <Plus size={20} />
                 Add Task
               </button>
@@ -158,39 +279,133 @@ const time = currentTime.toLocaleTimeString("en-US", {
           </div>
 
           <div className="tasks-card">
-            <h2>My Tasks</h2>
+            <div className="tasks-heading">
+              <div>
+                <h2>My Tasks</h2>
+                <p>Keep track of everything you need to do.</p>
+              </div>
+
+              <span className="task-count">
+                {tasks.length} tasks
+              </span>
+            </div>
 
             <div className="task-list">
-              {tasks.map((task) => (
-                <div className="task-item" key={task.id}>
-                  <div className={`task-line ${task.color}`}></div>
-
-                  <input
-                    type="checkbox"
-                    defaultChecked={task.completed}
-                  />
-
-                  <p className={task.completed ? "completed-task" : ""}>
-                    {task.name}
-                  </p>
-
-                  <span className={`category ${task.color}`}>
-                    {task.category}
-                  </span>
-
-                  <button className="task-menu">•••</button>
+              {tasks.length === 0 ? (
+                <div className="empty-tasks">
+                  <ClipboardList size={40} />
+                  <h3>No tasks yet</h3>
+                  <p>Add your first task above.</p>
                 </div>
-              ))}
+              ) : (
+                tasks.map((task) => (
+                  <div className="task-item" key={task.id}>
+                    <div
+                      className={`task-line ${task.color}`}
+                    ></div>
+
+                    <input
+                      type="checkbox"
+                      checked={task.completed}
+                      onChange={() => toggleTask(task.id)}
+                    />
+
+                    {editingId === task.id ? (
+                      <div className="edit-task-area">
+                        <input
+                          className="edit-input"
+                          value={editText}
+                          onChange={(e) =>
+                            setEditText(e.target.value)
+                          }
+                        />
+
+                        <select
+                          value={editCategory}
+                          onChange={(e) =>
+                            setEditCategory(e.target.value)
+                          }
+                        >
+                          <option value="Study">Study</option>
+                          <option value="Personal">
+                            Personal
+                          </option>
+                          <option value="Health">Health</option>
+                          <option value="Project">
+                            Project
+                          </option>
+                          <option value="Other">Other</option>
+                        </select>
+
+                        <button
+                          className="save-btn"
+                          onClick={() => saveEdit(task.id)}
+                        >
+                          <Save size={17} />
+                        </button>
+
+                        <button
+                          className="cancel-btn"
+                          onClick={cancelEdit}
+                        >
+                          <X size={17} />
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <p
+                          className={
+                            task.completed
+                              ? "completed-task"
+                              : ""
+                          }
+                        >
+                          {task.name}
+                        </p>
+
+                        <span
+                          className={`category ${task.color}`}
+                        >
+                          {task.category}
+                        </span>
+
+                        <div className="task-actions">
+                          <button
+                            className="edit-btn"
+                            onClick={() => startEditing(task)}
+                          >
+                            <Pencil size={16} />
+                          </button>
+
+                          <button
+                            className="delete-btn"
+                            onClick={() => deleteTask(task.id)}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))
+              )}
             </div>
 
-            <div className="task-bottom">
-              <p>{tasks.length} tasks</p>
+            {tasks.length > 0 && (
+              <div className="task-bottom">
+                <p>
+                  {completedTasks} of {tasks.length} completed
+                </p>
 
-              <button className="clear-btn">
-                Clear completed
-                <Trash2 size={17} />
-              </button>
-            </div>
+                <button
+                  className="clear-btn"
+                  onClick={clearCompleted}
+                >
+                  Clear completed
+                  <Trash2 size={17} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -246,12 +461,14 @@ const time = currentTime.toLocaleTimeString("en-US", {
           <div className="completion-section">
             <div className="progress-circle">
               <div className="circle-inner">
-                <strong>60%</strong>
+                <strong>{completionPercentage}%</strong>
               </div>
             </div>
 
             <div className="completion-text">
-              <h3>3 of 5 tasks</h3>
+              <h3>
+                {completedTasks} of {tasks.length} tasks
+              </h3>
               <p>completed</p>
             </div>
           </div>

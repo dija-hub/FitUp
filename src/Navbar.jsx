@@ -9,28 +9,27 @@ function Navbar({
   setShowSignUp,
   isLoggedIn,
   setShowDashboard,
-  showDashboard,
 }) {
+  function goToSection(section) {
+    setActiveSection(section);
+    setShowDashboard(false);
+  }
+
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>
-     <div
-  className="logo"
-  onClick={() => {
-    setShowDashboard(false);
-    setActiveSection("home");
-  }}
->
-  <span>✚</span> FitUp
-</div>
+      <div
+        className="logo"
+        onClick={() => goToSection("home")}
+      >
+        <span>✚</span> FitUp
+      </div>
+
       <ul className="nav-links">
         <li>
           <a
             href="#home"
             className={activeSection === "home" ? "active" : ""}
-            onClick={() => {
-              setActiveSection("home");
-              setShowDashboard(false);
-            }}
+            onClick={() => goToSection("home")}
           >
             Home
           </a>
@@ -40,10 +39,7 @@ function Navbar({
           <a
             href="#features"
             className={activeSection === "features" ? "active" : ""}
-            onClick={() => {
-              setActiveSection("features");
-              setShowDashboard(false);
-            }}
+            onClick={() => goToSection("features")}
           >
             Features
           </a>
@@ -53,10 +49,7 @@ function Navbar({
           <a
             href="#work"
             className={activeSection === "work" ? "active" : ""}
-            onClick={() => {
-              setActiveSection("work");
-              setShowDashboard(false);
-            }}
+            onClick={() => goToSection("work")}
           >
             How it works
           </a>
@@ -66,29 +59,27 @@ function Navbar({
           <a
             href="#connect"
             className={activeSection === "connect" ? "active" : ""}
-            onClick={() => {
-              setActiveSection("connect");
-              setShowDashboard(false);
-            }}
+            onClick={() => goToSection("connect")}
           >
             Connect with us
           </a>
         </li>
 
-{isLoggedIn && (
-  <li>
-    <button
-      className={`dashboard-nav-btn ${
-        showDashboard ? "active" : ""
-      }`}
-      onClick={() => {
-        setShowDashboard(true);
-      }}
-    >
-      Dashboard
-    </button>
-  </li>
-)}
+        {isLoggedIn && (
+          <li>
+            <button
+              className={`dashboard-nav-btn ${
+                showDashboard ? "active-dashboard" : ""
+              }`}
+              onClick={() => {
+                setShowDashboard(true);
+                setActiveSection("");
+              }}
+            >
+              Dashboard
+            </button>
+          </li>
+        )}
       </ul>
 
       <div className="nav-buttons">
