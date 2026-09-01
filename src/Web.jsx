@@ -27,8 +27,6 @@ function Web() {
 
       if (data.session) {
         setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
       }
     }
 
@@ -36,11 +34,9 @@ function Web() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setIsLoggedIn(!!session);
-      }
-    );
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
 
     return () => {
       subscription.unsubscribe();
@@ -50,7 +46,7 @@ function Web() {
   function openDashboard() {
     if (isLoggedIn) {
       setShowDashboard(true);
-      setActiveSection("");
+      setActiveSection("dashboard");
     } else {
       setShowSignUp(true);
     }
@@ -66,7 +62,6 @@ function Web() {
         setShowSignUp={setShowSignUp}
         isLoggedIn={isLoggedIn}
         setShowDashboard={setShowDashboard}
-        showDashboard={showDashboard}
       />
 
       {!showDashboard ? (
@@ -82,8 +77,8 @@ function Web() {
               </h1>
 
               <p className="hero-description">
-                Transform your body, boost your energy, and become
-                the best version of yourself.
+                Transform your body, boost your energy, and become the best
+                version of yourself.
               </p>
 
               <div className="hero-buttons">
@@ -120,8 +115,8 @@ function Web() {
                   <h2>Daily Check-ins</h2>
 
                   <p>
-                    Keep track of your daily tasks and stay
-                    consistent with your habits.
+                    Keep track of your daily tasks and stay consistent with
+                    your habits.
                   </p>
                 </div>
               </div>
@@ -135,8 +130,8 @@ function Web() {
                   <h2>Habit Color Categories</h2>
 
                   <p>
-                    Organize your habits with simple colors to
-                    quickly see what needs your attention.
+                    Organize your habits with simple colors to quickly see
+                    what needs your attention.
                   </p>
                 </div>
               </div>
@@ -150,8 +145,8 @@ function Web() {
                   <h2>Progress Analytics</h2>
 
                   <p>
-                    View your progress with simple graphs and
-                    track how your habits improve over time.
+                    View your progress with simple graphs and track how your
+                    habits improve over time.
                   </p>
                 </div>
               </div>
@@ -165,8 +160,7 @@ function Web() {
                   <h2>Progress Tracking</h2>
 
                   <p>
-                    See your completed tasks and track your
-                    progress over time.
+                    See your completed tasks and track your progress over time.
                   </p>
                 </div>
               </div>
@@ -182,8 +176,7 @@ function Web() {
               <h1>Start building better habits</h1>
 
               <span>
-                Simple steps to turn small actions into lasting
-                routines.
+                Simple steps to turn small actions into lasting routines.
               </span>
             </div>
 
@@ -251,9 +244,8 @@ function Web() {
                 </h2>
 
                 <p>
-                  Join thousands of people building consistency,
-                  creating better routines, and making progress
-                  every single day.
+                  Join thousands of people building consistency, creating
+                  better routines, and making progress every single day.
                 </p>
 
                 <button
@@ -272,13 +264,7 @@ function Web() {
             </div>
 
             <footer className="cta-footer">
-              <div
-                className="brand"
-                onClick={() => {
-                  setShowDashboard(false);
-                  setActiveSection("home");
-                }}
-              >
+              <div className="brand">
                 <div className="brand-icon">✚</div>
                 <span>FitUp</span>
               </div>
@@ -314,7 +300,10 @@ function Web() {
           className="auth-overlay"
           onClick={() => setShowSignUp(false)}
         >
-          <div onClick={(e) => e.stopPropagation()}>
+          <div
+            className="auth-overlay-content"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Auth
               setShowSignUp={setShowSignUp}
               darkMode={darkMode}

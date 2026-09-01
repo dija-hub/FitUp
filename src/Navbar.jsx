@@ -10,26 +10,32 @@ function Navbar({
   isLoggedIn,
   setShowDashboard,
 }) {
-  function goToSection(section) {
-    setActiveSection(section);
+  function goHome() {
     setShowDashboard(false);
+    setActiveSection("home");
+
+    setTimeout(() => {
+      document.getElementById("home")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 50);
   }
 
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>
-      <div
-        className="logo"
-        onClick={() => goToSection("home")}
-      >
+      <button className="logo" onClick={goHome}>
         <span>✚</span> FitUp
-      </div>
+      </button>
 
       <ul className="nav-links">
         <li>
           <a
             href="#home"
-            className={activeSection === "home" ? "active" : ""}
-            onClick={() => goToSection("home")}
+            className={activeSection === "home" && !isLoggedIn ? "active" : ""}
+            onClick={(e) => {
+              e.preventDefault();
+              goHome();
+            }}
           >
             Home
           </a>
@@ -39,7 +45,15 @@ function Navbar({
           <a
             href="#features"
             className={activeSection === "features" ? "active" : ""}
-            onClick={() => goToSection("features")}
+            onClick={(e) => {
+              e.preventDefault();
+              setShowDashboard(false);
+              setActiveSection("features");
+
+              document.getElementById("features")?.scrollIntoView({
+                behavior: "smooth",
+              });
+            }}
           >
             Features
           </a>
@@ -49,7 +63,15 @@ function Navbar({
           <a
             href="#work"
             className={activeSection === "work" ? "active" : ""}
-            onClick={() => goToSection("work")}
+            onClick={(e) => {
+              e.preventDefault();
+              setShowDashboard(false);
+              setActiveSection("work");
+
+              document.getElementById("work")?.scrollIntoView({
+                behavior: "smooth",
+              });
+            }}
           >
             How it works
           </a>
@@ -59,7 +81,15 @@ function Navbar({
           <a
             href="#connect"
             className={activeSection === "connect" ? "active" : ""}
-            onClick={() => goToSection("connect")}
+            onClick={(e) => {
+              e.preventDefault();
+              setShowDashboard(false);
+              setActiveSection("connect");
+
+              document.getElementById("connect")?.scrollIntoView({
+                behavior: "smooth",
+              });
+            }}
           >
             Connect with us
           </a>
@@ -69,11 +99,11 @@ function Navbar({
           <li>
             <button
               className={`dashboard-nav-btn ${
-                showDashboard ? "active-dashboard" : ""
+                activeSection === "dashboard" ? "active" : ""
               }`}
               onClick={() => {
                 setShowDashboard(true);
-                setActiveSection("");
+                setActiveSection("dashboard");
               }}
             >
               Dashboard
