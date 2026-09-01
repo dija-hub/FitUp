@@ -12,7 +12,29 @@ import "./Dashboard.css";
 
 function Dashboard() {
   const [taskInput, setTaskInput] = useState("");
+const [currentTime, setCurrentTime] = useState(new Date());
 
+useEffect(() => {
+  const timer = setInterval(() => {
+    setCurrentTime(new Date());
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, []);
+const date = currentTime.toLocaleDateString("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
+
+const day = currentTime.toLocaleDateString("en-US", {
+  weekday: "long",
+});
+
+const time = currentTime.toLocaleTimeString("en-US", {
+  hour: "numeric",
+  minute: "2-digit",
+});
   const tasks = [
     {
       id: 1,
@@ -57,8 +79,8 @@ function Dashboard() {
         <div className="date-box">
           <CalendarDays size={24} />
           <div>
-            <p>May 24, 2025</p>
-            <span>Saturday</span>
+            <p>{date}</p>
+<span>{day}</span>
           </div>
         </div>
 
@@ -69,7 +91,7 @@ function Dashboard() {
 
         <div className="time-box">
           <span>☀️</span>
-          <p>8:45 AM</p>
+         <p>{time}</p>
         </div>
       </section>
 
