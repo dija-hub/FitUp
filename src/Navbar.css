@@ -88,17 +88,29 @@ color:#E7A93C;
 
 .dashboard-nav-btn {
   border: none;
-  background: none;
+  outline: none;
+  background: transparent;
   padding: 0;
   margin: 0;
   color: #111;
-  font-size: 22px;
-  font-weight: 400;
+  font-size: 16px;
+  font-weight: 500;
   font-family: inherit;
   cursor: pointer;
 }
 
 .dashboard-nav-btn:hover {
+  color: #e88a00;
+}
+
+.dashboard-nav-btn:focus,
+.dashboard-nav-btn:focus-visible {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
+.dashboard-nav-btn.active {
   color: #e88a00;
 }
 

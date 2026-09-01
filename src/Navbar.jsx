@@ -9,13 +9,19 @@ function Navbar({
   setShowSignUp,
   isLoggedIn,
   setShowDashboard,
+  showDashboard,
 }) {
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>
-      <div className="logo">
-        <span>✚</span> FitUp
-      </div>
-
+     <div
+  className="logo"
+  onClick={() => {
+    setShowDashboard(false);
+    setActiveSection("home");
+  }}
+>
+  <span>✚</span> FitUp
+</div>
       <ul className="nav-links">
         <li>
           <a
@@ -72,7 +78,9 @@ function Navbar({
 {isLoggedIn && (
   <li>
     <button
-      className="dashboard-nav-btn"
+      className={`dashboard-nav-btn ${
+        showDashboard ? "active" : ""
+      }`}
       onClick={() => {
         setShowDashboard(true);
       }}

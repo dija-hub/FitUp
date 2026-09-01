@@ -20,6 +20,7 @@ function Web() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
 
+
   useEffect(() => {
     async function checkUser() {
       const { data } = await supabase.auth.getSession();
@@ -52,15 +53,15 @@ function Web() {
 
   return (
     <div className={darkMode ? "dark-page" : ""}>
-      <Navbar
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-        darkMode={darkMode}
-        setDarkMode={setDarkMode}
-        setShowSignUp={setShowSignUp}
-        isLoggedIn={isLoggedIn}
-        setShowDashboard={setShowDashboard}
-      />
+     <Navbar
+  activeSection={activeSection}
+  setActiveSection={setActiveSection}
+  darkMode={darkMode}
+  setDarkMode={setDarkMode}
+  setShowSignUp={setShowSignUp}
+  isLoggedIn={isLoggedIn}
+  setShowDashboard={setShowDashboard}
+/>
 
       {!showDashboard ? (
         <>
