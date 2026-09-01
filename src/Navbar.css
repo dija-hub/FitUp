@@ -86,7 +86,25 @@ color:#E7A93C;
   font-size: 25px;
 }
 
+.dashboard-nav-btn {
+  text-decoration: none;
+  color: #111;
+  font-size: 22px;
+  font-weight: 400;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
 
+.dashboard-nav-btn:hover {
+  color: #e88a00;
+}
+
+.dashboard-nav-btn.active {
+  color: #e88a00;
+}
 
 .nav-links {
   display: flex;
