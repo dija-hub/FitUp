@@ -290,6 +290,7 @@ function Web() {
           setShowDashboard={setShowDashboard}
           setIsLoggedIn={setIsLoggedIn}
           openDashboard={openDashboard}
+          
         />
       )}
 

@@ -12,11 +12,27 @@ function Navbar({
 }) {
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>
-      <div className="logo">
+      
+      {/* LOGO */}
+      <div
+        className="logo"
+        onClick={() => {
+          setActiveSection("home");
+          setShowDashboard(false);
+
+          setTimeout(() => {
+            document
+              .getElementById("home")
+              ?.scrollIntoView({ behavior: "smooth" });
+          }, 0);
+        }}
+      >
         <span>✚</span> FitUp
       </div>
 
       <ul className="nav-links">
+
+        {/* HOME */}
         <li>
           <a
             href="#home"
@@ -30,6 +46,7 @@ function Navbar({
           </a>
         </li>
 
+        {/* FEATURES */}
         <li>
           <a
             href="#features"
@@ -43,6 +60,7 @@ function Navbar({
           </a>
         </li>
 
+        {/* HOW IT WORKS */}
         <li>
           <a
             href="#work"
@@ -56,6 +74,7 @@ function Navbar({
           </a>
         </li>
 
+        {/* CONNECT */}
         <li>
           <a
             href="#connect"
@@ -69,11 +88,15 @@ function Navbar({
           </a>
         </li>
 
+        {/* DASHBOARD */}
         {isLoggedIn && (
           <li>
             <button
-              className="dashboard-nav-btn"
+              className={`dashboard-nav-btn ${
+                activeSection === "dashboard" ? "active" : ""
+              }`}
               onClick={() => {
+                setActiveSection("dashboard");
                 setShowDashboard(true);
               }}
             >
@@ -84,6 +107,8 @@ function Navbar({
       </ul>
 
       <div className="nav-buttons">
+
+        {/* DARK MODE */}
         <button
           onClick={() => setDarkMode(!darkMode)}
           className={`dark-mode-btn ${
@@ -93,6 +118,7 @@ function Navbar({
           {darkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
+        {/* JOIN NOW */}
         {!isLoggedIn && (
           <button
             className="join-btn"

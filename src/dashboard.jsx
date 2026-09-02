@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   CalendarDays,
@@ -8,14 +8,21 @@ import {
   CalendarClock,
   Plus,
   Trash2,
+  Pencil,
+  X,
 } from "lucide-react";
 
 import "./Dashboard.css";
 
-function Dashboard() {
+function Dashboard({ darkMode }) {
   const [taskInput, setTaskInput] = useState("");
+  const [category, setCategory] = useState("Study");
+  const [editingId, setEditingId] = useState(null);
 
-  const tasks = [
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  const [tasks, setTasks] = useState([
     {
       id: 1,
       name: "Study React",
@@ -51,17 +58,173 @@ function Dashboard() {
       color: "green",
       completed: true,
     },
-  ];
+  ]);
+
+  // Update date and time
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+
+      setCurrentDate(now);
+      setCurrentTime(now);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Format date
+  const formattedDate = currentDate.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  // Format day
+  const formattedDay = currentDate.toLocaleDateString("en-US", {
+    weekday: "long",
+  });
+
+  // Format time
+  const formattedTime = currentTime.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
+  // Get color according to category
+  const getCategoryColor = (categoryName) => {
+    if (categoryName === "Study") {
+      return "orange";
+    }
+
+    if (categoryName === "Personal") {
+      return "green";
+    }
+
+    if (categoryName === "Health") {
+      return "yellow";
+    }
+
+    if (categoryName === "Project") {
+      return "red";
+    }
+
+    return "orange";
+  };
+
+  // Add or edit task
+  const handleTaskSubmit = () => {
+    if (taskInput.trim() === "") {
+      return;
+    }
+
+    const taskColor = getCategoryColor(category);
+
+    // Edit existing task
+    if (editingId !== null) {
+      setTasks((previousTasks) =>
+        previousTasks.map((task) =>
+          task.id === editingId
+            ? {
+                ...task,
+                name: taskInput.trim(),
+                category: category,
+                color: taskColor,
+              }
+            : task
+        )
+      );
+
+      setEditingId(null);
+    } else {
+      // Add new task
+      const newTask = {
+        id: Date.now(),
+        name: taskInput.trim(),
+        category: category,
+        color: taskColor,
+        completed: false,
+      };
+
+      setTasks((previousTasks) => [...previousTasks, newTask]);
+    }
+
+    setTaskInput("");
+    setCategory("Study");
+  };
+
+  // Delete task
+  const deleteTask = (id) => {
+    setTasks((previousTasks) =>
+      previousTasks.filter((task) => task.id !== id)
+    );
+  };
+
+  // Complete task
+  const toggleTask = (id) => {
+    setTasks((previousTasks) =>
+      previousTasks.map((task) =>
+        task.id === id
+          ? {
+              ...task,
+              completed: !task.completed,
+            }
+          : task
+      )
+    );
+  };
+
+  // Start editing
+  const editTask = (task) => {
+    setTaskInput(task.name);
+    setCategory(task.category);
+    setEditingId(task.id);
+  };
+
+  // Cancel editing
+  const cancelEdit = () => {
+    setTaskInput("");
+    setCategory("Study");
+    setEditingId(null);
+  };
+
+  // Clear completed
+  const clearCompleted = () => {
+    setTasks((previousTasks) =>
+      previousTasks.filter((task) => !task.completed)
+    );
+  };
+
+  // Statistics
+  const totalTasks = tasks.length;
+
+  const completedTasks = tasks.filter(
+    (task) => task.completed
+  ).length;
+
+  const pendingTasks = tasks.filter(
+    (task) => !task.completed
+  ).length;
+
+  const inProgressTasks = tasks.filter(
+    (task) => !task.completed
+  ).length;
+
+  const completionPercentage =
+    totalTasks === 0
+      ? 0
+      : Math.round((completedTasks / totalTasks) * 100);
 
   return (
-    <main className="dashboard">
+    <div className={`dashboard ${darkMode ? "dark" : ""}`}>
+      {/* ================= TOP ================= */}
+
       <section className="dashboard-top">
         <div className="date-box">
           <CalendarDays size={24} />
 
           <div>
-            <p>May 24, 2025</p>
-            <span>Saturday</span>
+            <p>{formattedDate}</p>
+            <span>{formattedDay}</span>
           </div>
         </div>
 
@@ -72,9 +235,11 @@ function Dashboard() {
 
         <div className="time-box">
           <span>☀️</span>
-          <p>8:45 AM</p>
+          <p>{formattedTime}</p>
         </div>
       </section>
+
+      {/* ================= STATS ================= */}
 
       <section className="stats-grid">
         <div className="stat-card total-card">
@@ -84,7 +249,7 @@ function Dashboard() {
 
           <div>
             <p>All Tasks</p>
-            <h2>28</h2>
+            <h2>{totalTasks}</h2>
           </div>
         </div>
 
@@ -95,7 +260,7 @@ function Dashboard() {
 
           <div>
             <p>Done</p>
-            <h2>18</h2>
+            <h2>{completedTasks}</h2>
           </div>
         </div>
 
@@ -106,7 +271,7 @@ function Dashboard() {
 
           <div>
             <p>In Progress</p>
-            <h2>6</h2>
+            <h2>{inProgressTasks}</h2>
           </div>
         </div>
 
@@ -117,72 +282,187 @@ function Dashboard() {
 
           <div>
             <p>Pending</p>
-            <h2>4</h2>
+            <h2>{pendingTasks}</h2>
           </div>
         </div>
       </section>
 
+      {/* ================= CONTENT ================= */}
+
       <section className="dashboard-content">
+
+        {/* LEFT */}
+
         <div className="left-column">
+
+          {/* ADD TASK */}
+
           <div className="add-task-card">
-            <h2>Add New Task</h2>
+            <h2>
+              {editingId !== null ? "Edit Task" : "Add New Task"}
+            </h2>
 
             <div className="add-task-row">
+
               <input
                 type="text"
                 placeholder="What do you want to do?"
                 value={taskInput}
                 onChange={(e) => setTaskInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleTaskSubmit();
+                  }
+                }}
               />
 
-              <button>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option value="Study">Study</option>
+                <option value="Personal">Personal</option>
+                <option value="Health">Health</option>
+                <option value="Project">Project</option>
+              </select>
+
+              <button
+                className="add-task-btn"
+                onClick={handleTaskSubmit}
+              >
                 <Plus size={20} />
-                Add Task
+
+                {editingId !== null
+                  ? "Save"
+                  : "Add Task"}
               </button>
+
+              {editingId !== null && (
+                <button
+                  className="cancel-btn"
+                  onClick={cancelEdit}
+                >
+                  <X size={19} />
+                </button>
+              )}
+
             </div>
           </div>
 
+          {/* TASKS */}
+
           <div className="tasks-card">
-            <h2>My Tasks</h2>
+            <div className="tasks-header">
+              <h2>My Tasks</h2>
+
+              <span className="task-count">
+                {tasks.length} tasks
+              </span>
+            </div>
 
             <div className="task-list">
-              {tasks.map((task) => (
-                <div className="task-item" key={task.id}>
-                  <div className={`task-line ${task.color}`}></div>
 
-                  <input
-                    type="checkbox"
-                    defaultChecked={task.completed}
-                  />
-
-                  <p className={task.completed ? "completed-task" : ""}>
-                    {task.name}
-                  </p>
-
-                  <span className={`category ${task.color}`}>
-                    {task.category}
-                  </span>
-
-                  <button className="task-menu">•••</button>
+              {tasks.length === 0 ? (
+                <div className="empty-tasks">
+                  <ClipboardList size={40} />
+                  <p>No tasks yet.</p>
+                  <span>Add your first task above.</span>
                 </div>
-              ))}
+              ) : (
+                tasks.map((task) => (
+                  <div
+                    className={`task-item ${
+                      task.completed ? "task-completed" : ""
+                    }`}
+                    key={task.id}
+                  >
+
+                    <div
+                      className={`task-line ${task.color}`}
+                    ></div>
+
+                    <input
+                      type="checkbox"
+                      checked={task.completed}
+                      onChange={() =>
+                        toggleTask(task.id)
+                      }
+                    />
+
+                    <p
+                      className={
+                        task.completed
+                          ? "completed-task"
+                          : ""
+                      }
+                    >
+                      {task.name}
+                    </p>
+
+                    <span
+                      className={`category ${task.color}`}
+                    >
+                      {task.category}
+                    </span>
+
+                    <div className="task-actions">
+
+                      <button
+                        className="edit-btn"
+                        onClick={() =>
+                          editTask(task)
+                        }
+                        title="Edit task"
+                      >
+                        <Pencil size={16} />
+                      </button>
+
+                      <button
+                        className="delete-btn"
+                        onClick={() =>
+                          deleteTask(task.id)
+                        }
+                        title="Delete task"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+
+                    </div>
+
+                  </div>
+                ))
+              )}
+
             </div>
 
-            <div className="task-bottom">
-              <p>{tasks.length} tasks</p>
+            {tasks.length > 0 && (
+              <div className="task-bottom">
 
-              <button className="clear-btn">
-                Clear completed
-                <Trash2 size={17} />
-              </button>
-            </div>
+                <p>
+                  {completedTasks} of {totalTasks} completed
+                </p>
+
+                <button
+                  className="clear-btn"
+                  onClick={clearCompleted}
+                >
+                  Clear completed
+                  <Trash2 size={17} />
+                </button>
+
+              </div>
+            )}
           </div>
         </div>
 
+        {/* RIGHT */}
+
         <div className="progress-card-main">
+
           <h2>Weekly Progress</h2>
 
           <div className="chart">
+
             <div className="chart-grid">
               <span className="grid-line line-1"></span>
               <span className="grid-line line-2"></span>
@@ -191,6 +471,7 @@ function Dashboard() {
             </div>
 
             <div className="bars">
+
               <div className="bar-group">
                 <div className="bar mon"></div>
                 <span>Mon</span>
@@ -225,24 +506,45 @@ function Dashboard() {
                 <div className="bar sun"></div>
                 <span>Sun</span>
               </div>
+
             </div>
           </div>
 
+          {/* COMPLETION */}
+
           <div className="completion-section">
-            <div className="progress-circle">
+
+            <div
+              className="progress-circle"
+              style={{
+                background: `conic-gradient(
+                  #ff7200 0deg ${completionPercentage * 3.6}deg,
+                  #f4e5d7 ${completionPercentage * 3.6}deg 360deg
+                )`,
+              }}
+            >
               <div className="circle-inner">
-                <strong>60%</strong>
+                <strong>
+                  {completionPercentage}%
+                </strong>
               </div>
             </div>
 
             <div className="completion-text">
-              <h3>3 of 5 tasks</h3>
+
+              <h3>
+                {completedTasks} of {totalTasks} tasks
+              </h3>
+
               <p>completed</p>
+
             </div>
+
           </div>
+
         </div>
       </section>
-    </main>
+    </div>
   );
 }
 
