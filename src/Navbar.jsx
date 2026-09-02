@@ -1,4 +1,3 @@
-
 import "./Navbar.css";
 import { Moon, Sun } from "lucide-react";
 
@@ -18,7 +17,6 @@ function Navbar({
       </div>
 
       <ul className="nav-links">
-        {/* Home */}
         <li>
           <a
             href="#home"
@@ -32,7 +30,6 @@ function Navbar({
           </a>
         </li>
 
-        {/* Features */}
         <li>
           <a
             href="#features"
@@ -46,7 +43,6 @@ function Navbar({
           </a>
         </li>
 
-        {/* How It Works */}
         <li>
           <a
             href="#work"
@@ -60,7 +56,6 @@ function Navbar({
           </a>
         </li>
 
-        {/* Connect With Us */}
         <li>
           <a
             href="#connect"
@@ -74,7 +69,6 @@ function Navbar({
           </a>
         </li>
 
-        {/* Dashboard - Only visible when logged in */}
         {isLoggedIn && (
           <li>
             <button
@@ -90,7 +84,6 @@ function Navbar({
       </ul>
 
       <div className="nav-buttons">
-        {/* Dark Mode Button */}
         <button
           onClick={() => setDarkMode(!darkMode)}
           className={`dark-mode-btn ${
@@ -100,7 +93,6 @@ function Navbar({
           {darkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
-        {/* Join Now - Only visible when logged out */}
         {!isLoggedIn && (
           <button
             className="join-btn"
@@ -115,4 +107,3 @@ function Navbar({
 }
 
 export default Navbar;
-

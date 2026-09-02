@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
 import {
   CalendarDays,
   ClipboardList,
@@ -7,16 +8,14 @@ import {
   CalendarClock,
   Plus,
   Trash2,
-  Pencil,
-  X,
-  Save,
 } from "lucide-react";
+
 import "./Dashboard.css";
 
 function Dashboard() {
   const [taskInput, setTaskInput] = useState("");
-  const [category, setCategory] = useState("Personal");
-  const [tasks, setTasks] = useState([
+
+  const tasks = [
     {
       id: 1,
       name: "Study React",
@@ -52,126 +51,7 @@ function Dashboard() {
       color: "green",
       completed: true,
     },
-  ]);
-
-  const [editingId, setEditingId] = useState(null);
-  const [editText, setEditText] = useState("");
-  const [editCategory, setEditCategory] = useState("Personal");
-
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const date = currentTime.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-
-  const day = currentTime.toLocaleDateString("en-US", {
-    weekday: "long",
-  });
-
-  const time = currentTime.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-
-  const categoryColors = {
-    Study: "orange",
-    Personal: "green",
-    Health: "yellow",
-    Project: "red",
-    Other: "purple",
-  };
-
-  function addTask() {
-    if (taskInput.trim() === "") return;
-
-    const newTask = {
-      id: Date.now(),
-      name: taskInput.trim(),
-      category: category,
-      color: categoryColors[category],
-      completed: false,
-    };
-
-    setTasks((previousTasks) => [...previousTasks, newTask]);
-    setTaskInput("");
-    setCategory("Personal");
-  }
-
-  function deleteTask(id) {
-    setTasks((previousTasks) =>
-      previousTasks.filter((task) => task.id !== id)
-    );
-  }
-
-  function startEditing(task) {
-    setEditingId(task.id);
-    setEditText(task.name);
-    setEditCategory(task.category);
-  }
-
-  function saveEdit(id) {
-    if (editText.trim() === "") return;
-
-    setTasks((previousTasks) =>
-      previousTasks.map((task) =>
-        task.id === id
-          ? {
-              ...task,
-              name: editText.trim(),
-              category: editCategory,
-              color: categoryColors[editCategory],
-            }
-          : task
-      )
-    );
-
-    setEditingId(null);
-    setEditText("");
-  }
-
-  function cancelEdit() {
-    setEditingId(null);
-    setEditText("");
-  }
-
-  function toggleTask(id) {
-    setTasks((previousTasks) =>
-      previousTasks.map((task) =>
-        task.id === id
-          ? { ...task, completed: !task.completed }
-          : task
-      )
-    );
-  }
-
-  function clearCompleted() {
-    setTasks((previousTasks) =>
-      previousTasks.filter((task) => !task.completed)
-    );
-  }
-
-  const completedTasks = tasks.filter(
-    (task) => task.completed
-  ).length;
-
-  const pendingTasks = tasks.filter(
-    (task) => !task.completed
-  ).length;
-
-  const completionPercentage =
-    tasks.length === 0
-      ? 0
-      : Math.round((completedTasks / tasks.length) * 100);
+  ];
 
   return (
     <main className="dashboard">
@@ -180,8 +60,8 @@ function Dashboard() {
           <CalendarDays size={24} />
 
           <div>
-            <p>{date}</p>
-            <span>{day}</span>
+            <p>May 24, 2025</p>
+            <span>Saturday</span>
           </div>
         </div>
 
@@ -192,7 +72,7 @@ function Dashboard() {
 
         <div className="time-box">
           <span>☀️</span>
-          <p>{time}</p>
+          <p>8:45 AM</p>
         </div>
       </section>
 
@@ -204,7 +84,7 @@ function Dashboard() {
 
           <div>
             <p>All Tasks</p>
-            <h2>{tasks.length}</h2>
+            <h2>28</h2>
           </div>
         </div>
 
@@ -215,7 +95,7 @@ function Dashboard() {
 
           <div>
             <p>Done</p>
-            <h2>{completedTasks}</h2>
+            <h2>18</h2>
           </div>
         </div>
 
@@ -226,7 +106,7 @@ function Dashboard() {
 
           <div>
             <p>In Progress</p>
-            <h2>{pendingTasks}</h2>
+            <h2>6</h2>
           </div>
         </div>
 
@@ -237,7 +117,7 @@ function Dashboard() {
 
           <div>
             <p>Pending</p>
-            <h2>{pendingTasks}</h2>
+            <h2>4</h2>
           </div>
         </div>
       </section>
@@ -253,25 +133,9 @@ function Dashboard() {
                 placeholder="What do you want to do?"
                 value={taskInput}
                 onChange={(e) => setTaskInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    addTask();
-                  }
-                }}
               />
 
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              >
-                <option value="Study">Study</option>
-                <option value="Personal">Personal</option>
-                <option value="Health">Health</option>
-                <option value="Project">Project</option>
-                <option value="Other">Other</option>
-              </select>
-
-              <button onClick={addTask}>
+              <button>
                 <Plus size={20} />
                 Add Task
               </button>
@@ -279,133 +143,39 @@ function Dashboard() {
           </div>
 
           <div className="tasks-card">
-            <div className="tasks-heading">
-              <div>
-                <h2>My Tasks</h2>
-                <p>Keep track of everything you need to do.</p>
-              </div>
-
-              <span className="task-count">
-                {tasks.length} tasks
-              </span>
-            </div>
+            <h2>My Tasks</h2>
 
             <div className="task-list">
-              {tasks.length === 0 ? (
-                <div className="empty-tasks">
-                  <ClipboardList size={40} />
-                  <h3>No tasks yet</h3>
-                  <p>Add your first task above.</p>
+              {tasks.map((task) => (
+                <div className="task-item" key={task.id}>
+                  <div className={`task-line ${task.color}`}></div>
+
+                  <input
+                    type="checkbox"
+                    defaultChecked={task.completed}
+                  />
+
+                  <p className={task.completed ? "completed-task" : ""}>
+                    {task.name}
+                  </p>
+
+                  <span className={`category ${task.color}`}>
+                    {task.category}
+                  </span>
+
+                  <button className="task-menu">•••</button>
                 </div>
-              ) : (
-                tasks.map((task) => (
-                  <div className="task-item" key={task.id}>
-                    <div
-                      className={`task-line ${task.color}`}
-                    ></div>
-
-                    <input
-                      type="checkbox"
-                      checked={task.completed}
-                      onChange={() => toggleTask(task.id)}
-                    />
-
-                    {editingId === task.id ? (
-                      <div className="edit-task-area">
-                        <input
-                          className="edit-input"
-                          value={editText}
-                          onChange={(e) =>
-                            setEditText(e.target.value)
-                          }
-                        />
-
-                        <select
-                          value={editCategory}
-                          onChange={(e) =>
-                            setEditCategory(e.target.value)
-                          }
-                        >
-                          <option value="Study">Study</option>
-                          <option value="Personal">
-                            Personal
-                          </option>
-                          <option value="Health">Health</option>
-                          <option value="Project">
-                            Project
-                          </option>
-                          <option value="Other">Other</option>
-                        </select>
-
-                        <button
-                          className="save-btn"
-                          onClick={() => saveEdit(task.id)}
-                        >
-                          <Save size={17} />
-                        </button>
-
-                        <button
-                          className="cancel-btn"
-                          onClick={cancelEdit}
-                        >
-                          <X size={17} />
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <p
-                          className={
-                            task.completed
-                              ? "completed-task"
-                              : ""
-                          }
-                        >
-                          {task.name}
-                        </p>
-
-                        <span
-                          className={`category ${task.color}`}
-                        >
-                          {task.category}
-                        </span>
-
-                        <div className="task-actions">
-                          <button
-                            className="edit-btn"
-                            onClick={() => startEditing(task)}
-                          >
-                            <Pencil size={16} />
-                          </button>
-
-                          <button
-                            className="delete-btn"
-                            onClick={() => deleteTask(task.id)}
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ))
-              )}
+              ))}
             </div>
 
-            {tasks.length > 0 && (
-              <div className="task-bottom">
-                <p>
-                  {completedTasks} of {tasks.length} completed
-                </p>
+            <div className="task-bottom">
+              <p>{tasks.length} tasks</p>
 
-                <button
-                  className="clear-btn"
-                  onClick={clearCompleted}
-                >
-                  Clear completed
-                  <Trash2 size={17} />
-                </button>
-              </div>
-            )}
+              <button className="clear-btn">
+                Clear completed
+                <Trash2 size={17} />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -461,14 +231,12 @@ function Dashboard() {
           <div className="completion-section">
             <div className="progress-circle">
               <div className="circle-inner">
-                <strong>{completionPercentage}%</strong>
+                <strong>60%</strong>
               </div>
             </div>
 
             <div className="completion-text">
-              <h3>
-                {completedTasks} of {tasks.length} tasks
-              </h3>
+              <h3>3 of 5 tasks</h3>
               <p>completed</p>
             </div>
           </div>

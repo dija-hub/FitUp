@@ -46,7 +46,6 @@ function Web() {
   function openDashboard() {
     if (isLoggedIn) {
       setShowDashboard(true);
-      setActiveSection("dashboard");
     } else {
       setShowSignUp(true);
     }
@@ -271,7 +270,6 @@ function Web() {
 
               <div className="footer-links">
                 <a href="#features">Features</a>
-
                 <a href="#work">How it works</a>
 
                 <button
@@ -300,10 +298,7 @@ function Web() {
           className="auth-overlay"
           onClick={() => setShowSignUp(false)}
         >
-          <div
-            className="auth-overlay-content"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div onClick={(e) => e.stopPropagation()}>
             <Auth
               setShowSignUp={setShowSignUp}
               darkMode={darkMode}
