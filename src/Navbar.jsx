@@ -13,7 +13,6 @@ function Navbar({
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>
       
-      {/* LOGO */}
       <div
         className="logo"
         onClick={() => {
@@ -32,7 +31,6 @@ function Navbar({
 
       <ul className="nav-links">
 
-        {/* HOME */}
         <li>
           <a
             href="#home"
@@ -46,7 +44,6 @@ function Navbar({
           </a>
         </li>
 
-        {/* FEATURES */}
         <li>
           <a
             href="#features"
@@ -60,7 +57,6 @@ function Navbar({
           </a>
         </li>
 
-        {/* HOW IT WORKS */}
         <li>
           <a
             href="#work"
@@ -74,7 +70,6 @@ function Navbar({
           </a>
         </li>
 
-        {/* CONNECT */}
         <li>
           <a
             href="#connect"
@@ -88,7 +83,6 @@ function Navbar({
           </a>
         </li>
 
-        {/* DASHBOARD */}
         {isLoggedIn && (
           <li>
             <button
@@ -108,7 +102,6 @@ function Navbar({
 
       <div className="nav-buttons">
 
-        {/* DARK MODE */}
         <button
           onClick={() => setDarkMode(!darkMode)}
           className={`dark-mode-btn ${
@@ -118,7 +111,6 @@ function Navbar({
           {darkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
-        {/* JOIN NOW */}
         {!isLoggedIn && (
           <button
             className="join-btn"
