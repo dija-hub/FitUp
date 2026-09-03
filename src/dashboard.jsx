@@ -10,6 +10,10 @@ import {
   Trash2,
   Pencil,
   X,
+  Timer,
+  Play,
+  Pause,
+  RotateCcw,
 } from "lucide-react";
 
 import "./Dashboard.css";
@@ -21,6 +25,9 @@ function Dashboard({ darkMode }) {
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  const [timerSeconds, setTimerSeconds] = useState(25 * 60);
+  const [timerRunning, setTimerRunning] = useState(false);
 
   const [tasks, setTasks] = useState([
     {
@@ -71,6 +78,32 @@ function Dashboard({ darkMode }) {
 
     return () => clearInterval(timer);
   }, []);
+
+  // Focus timer
+  useEffect(() => {
+    if (!timerRunning) return;
+
+    const timer = setInterval(() => {
+      setTimerSeconds((previousSeconds) => {
+        if (previousSeconds <= 1) {
+          setTimerRunning(false);
+          return 0;
+        }
+        return previousSeconds - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timerRunning]);
+
+  const formattedTimer = `${String(Math.floor(timerSeconds / 60)).padStart(2, "0")}:${String(
+    timerSeconds % 60
+  ).padStart(2, "0")}`;
+
+  const resetTimer = () => {
+    setTimerRunning(false);
+    setTimerSeconds(25 * 60);
+  };
 
   // Format date
   const formattedDate = currentDate.toLocaleDateString("en-US", {
@@ -220,8 +253,6 @@ function Dashboard({ darkMode }) {
 
       <section className="dashboard-top">
         <div className="date-box">
-          <CalendarDays size={24} />
-
           <div>
             <p>{formattedDate}</p>
             <span>{formattedDay}</span>
@@ -229,12 +260,11 @@ function Dashboard({ darkMode }) {
         </div>
 
         <div className="greeting">
-          <h1>Good morning, Khadija! 👋</h1>
+          <h1>Good morning, Khadija!</h1>
           <p>Let's make today productive.</p>
         </div>
 
         <div className="time-box">
-          <span>☀️</span>
           <p>{formattedTime}</p>
         </div>
       </section>
@@ -540,6 +570,39 @@ function Dashboard({ darkMode }) {
 
             </div>
 
+          </div>
+
+
+          {/* FOCUS TIMER */}
+
+          <div className="focus-timer">
+            <div className="focus-timer-header">
+              <div className="focus-timer-title">
+                <Timer size={20} />
+                <h3>Focus Timer</h3>
+              </div>
+              <span>25 min focus</span>
+            </div>
+
+            <div className="timer-display">{formattedTimer}</div>
+
+            <div className="timer-actions">
+              <button
+                className="timer-main-btn"
+                onClick={() => setTimerRunning((previous) => !previous)}
+              >
+                {timerRunning ? <Pause size={18} /> : <Play size={18} />}
+                {timerRunning ? "Pause" : "Start"}
+              </button>
+
+              <button
+                className="timer-reset-btn"
+                onClick={resetTimer}
+                title="Reset timer"
+              >
+                <RotateCcw size={18} />
+              </button>
+            </div>
           </div>
 
         </div>
