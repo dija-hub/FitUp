@@ -280,22 +280,7 @@ function Dashboard({ darkMode }) {
 
   return (
     <div className={`dashboard ${darkMode ? "dark" : ""}`}>
-      <nav className="dashboard-nav">
-        <div className="dashboard-logo">
-          <span>✚</span> FitUp
-        </div>
-
-        <div className="dashboard-welcome">
-          Welcome back, <strong>{fullName}</strong>!
-        </div>
-
-        <button
-          className="signout-btn"
-          onClick={handleSignOut}
-        >
-          Sign Out
-        </button>
-      </nav>
+    
 
       <section className="dashboard-top">
         <div className="date-box">

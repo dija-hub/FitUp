@@ -220,7 +220,25 @@
     justify-content: center;
   }
 }
+.signout-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  background: #ff7200;
+  color: white;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
 
+.signout-nav-btn:hover {
+  background: #e65f00;
+  transform: translateY(-1px);
+}
 .dashboard-nav-btn {
   border: none;
   background: transparent;

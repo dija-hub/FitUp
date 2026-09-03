@@ -14,12 +14,16 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-function Web() {
+function Web({
+  isLoggedIn,
+  setIsLoggedIn,
+  showDashboard,
+  setShowDashboard,
+}) {
   const [showSignUp, setShowSignUp] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [darkMode, setDarkMode] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showDashboard, setShowDashboard] = useState(false);
+  
 
   useEffect(() => {
     async function checkUser() {
@@ -53,16 +57,16 @@ function Web() {
 
   return (
     <div className={darkMode ? "dark-page" : ""}>
-      <Navbar
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-        darkMode={darkMode}
-        setDarkMode={setDarkMode}
-        setShowSignUp={setShowSignUp}
-        isLoggedIn={isLoggedIn}
-        setShowDashboard={setShowDashboard}
-      />
-
+<Navbar
+  activeSection={activeSection}
+  setActiveSection={setActiveSection}
+  darkMode={darkMode}
+  setDarkMode={setDarkMode}
+  setShowSignUp={setShowSignUp}
+  isLoggedIn={isLoggedIn}
+  setIsLoggedIn={setIsLoggedIn}
+  setShowDashboard={setShowDashboard}
+/>
       {!showDashboard ? (
         <>
           <section className="hero" id="home">

@@ -193,7 +193,49 @@
   flex-direction: column;
   gap: 18px;
 }
+.dashboard-nav {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0 30px;
+}
 
+.dashboard-logo {
+  font-size: 27px;
+  font-weight: 700;
+  color: #222;
+}
+
+.dashboard-logo span {
+  color: #ff7200;
+}
+
+.dashboard-welcome {
+  font-size: 15px;
+  color: #777;
+}
+
+.dashboard-welcome strong {
+  color: #222;
+}
+
+.signout-btn {
+  border: 1px solid #ff7200;
+  background: transparent;
+  color: #ff7200;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.signout-btn:hover {
+  background: #ff7200;
+  color: white;
+}
 .add-task-card,
 .tasks-card,
 .progress-card-main {

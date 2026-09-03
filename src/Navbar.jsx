@@ -1,6 +1,6 @@
 import "./Navbar.css";
-import { Moon, Sun } from "lucide-react";
-
+import { Moon, Sun, LogOut } from "lucide-react";
+import { supabase } from "./utils/supabase";
 function Navbar({
   activeSection,
   setActiveSection,
@@ -8,6 +8,7 @@ function Navbar({
   setDarkMode,
   setShowSignUp,
   isLoggedIn,
+  setIsLoggedIn,
   setShowDashboard,
 }) {
   return (
@@ -101,7 +102,20 @@ function Navbar({
       </ul>
 
       <div className="nav-buttons">
-
+{isLoggedIn && (
+  <button
+    className="signout-nav-btn"
+    onClick={async () => {
+      await supabase.auth.signOut();
+      setIsLoggedIn(false);
+      setShowDashboard(false);
+      setActiveSection("home");
+    }}
+  >
+    <LogOut size={17} />
+    Sign Out
+  </button>
+)}
         <button
           onClick={() => setDarkMode(!darkMode)}
           className={`dark-mode-btn ${
