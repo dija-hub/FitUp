@@ -189,10 +189,6 @@
   box-shadow: 0 8px 25px rgba(80, 45, 15, 0.05);
 }
 
-/* =====================================
-   ADD TASK
-===================================== */
-
 .add-task-card {
   padding: 25px;
 }
@@ -229,7 +225,6 @@
   color: #999;
 }
 
-/* CATEGORY SELECT */
 
 .add-task-row select {
   height: 48px;
@@ -247,7 +242,6 @@
   border-color: #ff7a00;
 }
 
-/* ADD BUTTON */
 
 .add-task-btn {
   height: 48px;
@@ -275,8 +269,6 @@
   transform: translateY(-1px);
 }
 
-/* CANCEL */
-
 .cancel-btn {
   width: 48px;
   height: 48px;
@@ -298,9 +290,6 @@
   border-color: #ff7a00;
 }
 
-/* =====================================
-   TASKS
-===================================== */
 
 .tasks-card {
   padding: 22px;
@@ -382,9 +371,6 @@
   color: #898989 !important;
 }
 
-/* =====================================
-   CATEGORY
-===================================== */
 
 .category {
   padding: 7px 12px;
@@ -413,9 +399,6 @@
   color: #d65227;
 }
 
-/* =====================================
-   TASK ACTIONS
-===================================== */
 
 .task-actions {
   display: flex;
@@ -456,9 +439,6 @@
   background: #ffe9e2;
 }
 
-/* =====================================
-   EMPTY TASKS
-===================================== */
 
 .empty-tasks {
   min-height: 150px;
@@ -479,10 +459,6 @@
 .empty-tasks span {
   font-size: 13px;
 }
-
-/* =====================================
-   TASK BOTTOM
-===================================== */
 
 .task-bottom {
   display: flex;
@@ -515,10 +491,6 @@
 .clear-btn:hover {
   color: #c84f00;
 }
-
-/* =====================================
-   WEEKLY PROGRESS
-===================================== */
 
 .progress-card-main {
   padding: 25px;
@@ -628,9 +600,6 @@
   color: #555;
 }
 
-/* =====================================
-   COMPLETION
-===================================== */
 
 .completion-section {
   display: flex;
@@ -683,16 +652,12 @@
   color: #555;
 }
 
-/* =====================================
-   DARK MODE
-===================================== */
-
 .dashboard.dark {
   background: #15161b;
   color: #f5f5f5;
 }
 
-/* TOP */
+
 
 .dashboard.dark .date-box p {
   color: #f5f5f5;
@@ -716,7 +681,6 @@
   color: #ffffff;
 }
 
-/* CARDS */
 
 .dashboard.dark .stat-card,
 .dashboard.dark .add-task-card,
@@ -727,7 +691,7 @@
   box-shadow: none;
 }
 
-/* STAT TEXT */
+
 
 .dashboard.dark .stat-card p {
   color: #c7c7c7;
@@ -737,7 +701,7 @@
   color: #ffffff;
 }
 
-/* STAT COLORS */
+
 
 .dashboard.dark .total-card .stat-icon {
   background: #352719;
@@ -755,7 +719,7 @@
   background: #38231d;
 }
 
-/* ADD TASK */
+
 
 .dashboard.dark .add-task-card h2,
 .dashboard.dark .tasks-header h2,
@@ -785,7 +749,6 @@
   color: #ccc;
 }
 
-/* TASKS */
 
 .dashboard.dark .task-item {
   border-color: #383940;
@@ -804,7 +767,7 @@
   color: #ff9a3d;
 }
 
-/* CHART */
+
 
 .dashboard.dark .chart {
   border-color: #3b3c43;
@@ -826,7 +789,7 @@
   color: #aaa;
 }
 
-/* COMPLETION */
+
 
 .dashboard.dark .circle-inner {
   background: #1f2026;
@@ -840,9 +803,7 @@
   color: #aaa;
 }
 
-/* =====================================
-   RESPONSIVE
-===================================== */
+
 
 @media (max-width: 1000px) {
 
