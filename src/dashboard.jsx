@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 import {
-  CalendarDays,
   ClipboardList,
   CheckCircle2,
   Clock3,
@@ -357,7 +356,10 @@ function Dashboard({ darkMode }) {
                   className={`category-select ${categoryOpen ? "open" : ""}`}
                   onClick={() => setCategoryOpen((previous) => !previous)}
                 >
-                  <span>{category}</span>
+                  <span className="category-current">
+                    <span className={`option-dot ${getCategoryColor(category)}`}></span>
+                    <span>{category}</span>
+                  </span>
                   <ChevronDown
                     size={18}
                     className={categoryOpen ? "category-chevron rotated" : "category-chevron"}

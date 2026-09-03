@@ -1,7 +1,3 @@
-/* =====================================
-   DASHBOARD
-===================================== */
-
 .dashboard {
   width: 100%;
   min-height: 100vh;
@@ -1124,5 +1120,524 @@
 
   .timer-display {
     font-size: 36px;
+  }
+}
+
+
+/* =====================================
+   BALANCED FITUP CONTROLS
+===================================== */
+
+.add-task-row {
+  align-items: center;
+}
+
+.category-dropdown {
+  position: relative;
+  width: 150px;
+  flex-shrink: 0;
+}
+
+.category-select {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #eadfd6;
+  border-radius: 12px;
+  outline: none;
+  background: #fff;
+  color: #292929;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.category-select:hover,
+.category-select.open {
+  border-color: #ff9f2f;
+  background: #fffaf5;
+}
+
+.category-chevron {
+  transition: transform 0.2s ease;
+}
+
+.category-chevron.rotated {
+  transform: rotate(180deg);
+}
+
+.category-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 7px);
+  left: 0;
+  right: 0;
+  padding: 6px;
+  border: 1px solid #eadfd6;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(50, 35, 20, 0.12);
+  animation: dropdownIn 0.15s ease;
+}
+
+.category-option {
+  width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #353535;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.category-option:hover {
+  background: #fff4e7;
+  color: #d86b00;
+}
+
+.category-option.selected {
+  background: #fff0df;
+  color: #d86b00;
+  font-weight: 600;
+}
+
+.option-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.option-dot.orange {
+  background: #ff9f2f;
+}
+
+.option-dot.green {
+  background: #69a968;
+}
+
+.option-dot.yellow {
+  background: #eab02b;
+}
+
+.option-dot.red {
+  background: #e8663b;
+}
+
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Make the dashboard feel less stretched */
+
+.stats-grid {
+  gap: 18px;
+}
+
+.stat-card {
+  min-height: 118px;
+  padding: 20px 24px;
+}
+
+.dashboard-content {
+  grid-template-columns: minmax(0, 1.35fr) minmax(330px, 0.65fr);
+  gap: 22px;
+}
+
+.add-task-card,
+.tasks-card,
+.progress-card-main {
+  border-radius: 16px;
+}
+
+.progress-card-main {
+  padding: 22px;
+}
+
+.chart {
+  height: 195px;
+}
+
+.completion-section {
+  gap: 24px;
+  padding-top: 24px;
+}
+
+.progress-circle {
+  width: 112px;
+  height: 112px;
+}
+
+.circle-inner {
+  width: 84px;
+  height: 84px;
+}
+
+.focus-timer {
+  margin-top: 22px;
+  padding: 18px;
+}
+
+.timer-display {
+  margin: 17px 0 14px;
+  font-size: 38px;
+}
+
+/* Keep buttons visually consistent */
+
+.add-task-btn,
+.timer-main-btn {
+  background: #ff9f2f;
+}
+
+.add-task-btn:hover,
+.timer-main-btn:hover {
+  background: #f28c16;
+}
+
+.task-count {
+  background: #fff0df;
+  color: #d86b00;
+}
+
+/* Dark dropdown */
+
+.dashboard.dark .category-select {
+  background: #292a30;
+  border-color: #44454d;
+  color: #fff;
+}
+
+.dashboard.dark .category-select:hover,
+.dashboard.dark .category-select.open {
+  border-color: #ff9f2f;
+  background: #303138;
+}
+
+.dashboard.dark .category-menu {
+  background: #292a30;
+  border-color: #44454d;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard.dark .category-option {
+  color: #eee;
+}
+
+.dashboard.dark .category-option:hover {
+  background: #3a2b1d;
+  color: #ffad55;
+}
+
+.dashboard.dark .category-option.selected {
+  background: #3a2b1d;
+  color: #ffad55;
+}
+
+@media (max-width: 750px) {
+  .category-dropdown {
+    flex: 1;
+    width: auto;
+  }
+}
+
+@media (max-width: 500px) {
+  .category-dropdown {
+    width: 100%;
+  }
+}
+
+
+/* =====================================
+   POLISHED CATEGORY CONTROL
+===================================== */
+
+.category-dropdown {
+  width: 158px;
+}
+
+.category-select {
+  position: relative;
+  height: 48px;
+  padding: 0 13px;
+  border: 1px solid #e9ddd2;
+  border-radius: 13px;
+  background: linear-gradient(180deg, #ffffff 0%, #fffaf5 100%);
+  box-shadow: 0 3px 10px rgba(80, 45, 15, 0.04);
+  font-weight: 600;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease,
+    background 0.25s ease, transform 0.2s ease;
+}
+
+.category-select:hover {
+  border-color: #ffb45d;
+  box-shadow: 0 5px 16px rgba(232, 117, 0, 0.10);
+  transform: translateY(-1px);
+}
+
+.category-select.open {
+  border-color: #ff9f2f;
+  background: #fff8ef;
+  box-shadow: 0 7px 18px rgba(232, 117, 0, 0.12);
+}
+
+.category-current {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.category-current .option-dot {
+  width: 9px;
+  height: 9px;
+  box-shadow: 0 0 0 4px rgba(255, 159, 47, 0.10);
+}
+
+.category-current .option-dot.green {
+  box-shadow: 0 0 0 4px rgba(105, 169, 104, 0.11);
+}
+
+.category-current .option-dot.yellow {
+  box-shadow: 0 0 0 4px rgba(234, 176, 43, 0.12);
+}
+
+.category-current .option-dot.red {
+  box-shadow: 0 0 0 4px rgba(232, 102, 59, 0.11);
+}
+
+.category-menu {
+  top: calc(100% + 8px);
+  padding: 7px;
+  border-radius: 14px;
+  box-shadow: 0 16px 34px rgba(50, 35, 20, 0.15);
+  transform-origin: top center;
+  animation: categoryMenuIn 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.category-option {
+  height: 40px;
+  padding: 0 11px;
+  gap: 11px;
+  border-radius: 9px;
+  font-weight: 500;
+  transition: background 0.2s ease, color 0.2s ease, padding-left 0.2s ease;
+}
+
+.category-option:hover {
+  padding-left: 14px;
+}
+
+.category-option.selected {
+  position: relative;
+  box-shadow: inset 3px 0 0 #ff9f2f;
+}
+
+.category-option.selected::after {
+  content: "✓";
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: #e87500;
+}
+
+.option-dot {
+  width: 9px;
+  height: 9px;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.035);
+}
+
+@keyframes categoryMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-7px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =====================================
+   BALANCED LOWER SECTION
+===================================== */
+
+.dashboard-content {
+  align-items: stretch;
+}
+
+.left-column {
+  min-width: 0;
+  height: 100%;
+}
+
+.tasks-card {
+  flex: 1;
+}
+
+.progress-card-main {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.progress-card-main .completion-section {
+  flex-shrink: 0;
+}
+
+.focus-timer {
+  margin-top: auto;
+}
+
+/* =====================================
+   SMOOTH FITUP MOTION
+===================================== */
+
+.stat-card,
+.add-task-card,
+.tasks-card,
+.progress-card-main,
+.task-item,
+.category,
+.task-count,
+.edit-btn,
+.delete-btn,
+.clear-btn,
+.cancel-btn,
+.add-task-btn,
+.timer-main-btn,
+.timer-reset-btn {
+  transition: transform 0.25s ease, box-shadow 0.25s ease,
+    border-color 0.25s ease, background-color 0.25s ease,
+    color 0.25s ease, opacity 0.25s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(80, 45, 15, 0.07);
+}
+
+.task-item {
+  transition: background-color 0.25s ease, transform 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.task-item:hover {
+  background: #fffaf5;
+}
+
+.task-item p {
+  transition: color 0.25s ease, opacity 0.25s ease;
+}
+
+.task-item input[type="checkbox"] {
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    transform 0.18s ease, box-shadow 0.2s ease;
+}
+
+.task-item input[type="checkbox"]:active {
+  transform: scale(0.9);
+}
+
+.add-task-btn:active,
+.timer-main-btn:active,
+.timer-reset-btn:active,
+.category-select:active,
+.category-option:active {
+  transform: scale(0.97);
+}
+
+/* Smooth chart movement when progress values change */
+.bar {
+  transition: height 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.3s ease, transform 0.25s ease;
+}
+
+.bar:hover {
+  transform: translateY(-3px);
+}
+
+/* Make the completion area feel anchored with the timer */
+.completion-section {
+  min-height: 150px;
+}
+
+.focus-timer {
+  border: 1px solid #eadfd4;
+  box-shadow: 0 6px 20px rgba(80, 45, 15, 0.045);
+  transition: transform 0.25s ease, box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.focus-timer:hover {
+  transform: translateY(-2px);
+  border-color: #f0c18f;
+  box-shadow: 0 10px 25px rgba(80, 45, 15, 0.08);
+}
+
+.timer-display {
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+/* Dark mode */
+
+.dashboard.dark .category-select {
+  background: linear-gradient(180deg, #292a30 0%, #25262b 100%);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+}
+
+.dashboard.dark .category-select:hover,
+.dashboard.dark .category-select.open {
+  background: #303138;
+  border-color: #ff9f2f;
+}
+
+.dashboard.dark .category-menu {
+  background: #292a30;
+  border-color: #44454d;
+}
+
+.dashboard.dark .category-option:hover {
+  background: #3a2b1d;
+  color: #ffad55;
+}
+
+.dashboard.dark .category-option.selected {
+  background: #3a2b1d;
+  color: #ffad55;
+}
+
+.dashboard.dark .task-item:hover {
+  background: #25262b;
+}
+
+.dashboard.dark .focus-timer:hover {
+  border-color: #684523;
+}
+
+@media (max-width: 750px) {
+  .dashboard-content {
+    align-items: stretch;
+  }
+
+  .progress-card-main {
+    height: auto;
   }
 }
