@@ -14,7 +14,6 @@ import {
   RotateCcw,
   ChevronDown,
 } from "lucide-react";
-import { supabase } from "./utils/supabase";
 import "./Dashboard.css";
 
 function Dashboard({ darkMode }) {
@@ -29,7 +28,6 @@ function Dashboard({ darkMode }) {
   const [timerSeconds, setTimerSeconds] = useState(25 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
 
-  const [fullName, setFullName] = useState("");
   const [animatedPercentage, setAnimatedPercentage] = useState(0);
 
   const [tasks, setTasks] = useState([
@@ -71,33 +69,18 @@ function Dashboard({ darkMode }) {
   ]);
 
   useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user) {
-        setFullName(user.user_metadata?.full_name || "User");
-      }
-    };
-
-    getUser();
-  }, []);
-
-  useEffect(() => {
-    const clock = setInterval(() => {
+    const timer = setInterval(() => {
       const now = new Date();
+
       setCurrentDate(now);
       setCurrentTime(now);
     }, 1000);
 
-    return () => clearInterval(clock);
+    return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
-    if (!timerRunning) {
-      return;
-    }
+    if (!timerRunning) return;
 
     const timer = setInterval(() => {
       setTimerSeconds((previousSeconds) => {
@@ -133,24 +116,32 @@ function Dashboard({ darkMode }) {
       : Math.round((completedTasks / totalTasks) * 100);
 
   useEffect(() => {
-    const difference = completionPercentage - animatedPercentage;
+    const timer = setInterval(() => {
+      setAnimatedPercentage((previous) => {
+        if (previous < completionPercentage) {
+          return previous + 1;
+        }
 
-    if (difference === 0) {
-      return;
-    }
+        if (previous > completionPercentage) {
+          return previous - 1;
+        }
 
-    const step = difference > 0 ? 1 : -1;
-
-    const timer = setTimeout(() => {
-      setAnimatedPercentage((previous) => previous + step);
+        clearInterval(timer);
+        return previous;
+      });
     }, 20);
 
-    return () => clearTimeout(timer);
-  }, [completionPercentage, animatedPercentage]);
+    return () => clearInterval(timer);
+  }, [completionPercentage]);
 
   const formattedTimer = `${String(
     Math.floor(timerSeconds / 60)
   ).padStart(2, "0")}:${String(timerSeconds % 60).padStart(2, "0")}`;
+
+  const resetTimer = () => {
+    setTimerRunning(false);
+    setTimerSeconds(25 * 60);
+  };
 
   const formattedDate = currentDate.toLocaleDateString("en-US", {
     month: "long",
@@ -201,7 +192,7 @@ function Dashboard({ darkMode }) {
             ? {
                 ...task,
                 name: taskInput.trim(),
-                category,
+                category: category,
                 color: taskColor,
               }
             : task
@@ -213,7 +204,7 @@ function Dashboard({ darkMode }) {
       const newTask = {
         id: Date.now(),
         name: taskInput.trim(),
-        category,
+        category: category,
         color: taskColor,
         completed: false,
       };
@@ -229,6 +220,12 @@ function Dashboard({ darkMode }) {
     setCategoryOpen(false);
   };
 
+  const deleteTask = (id) => {
+    setTasks((previousTasks) =>
+      previousTasks.filter((task) => task.id !== id)
+    );
+  };
+
   const toggleTask = (id) => {
     setTasks((previousTasks) =>
       previousTasks.map((task) =>
@@ -242,24 +239,18 @@ function Dashboard({ darkMode }) {
     );
   };
 
-  const deleteTask = (id) => {
-    setTasks((previousTasks) =>
-      previousTasks.filter((task) => task.id !== id)
-    );
-  };
-
   const editTask = (task) => {
     setTaskInput(task.name);
     setCategory(task.category);
-    setEditingId(task.id);
     setCategoryOpen(false);
+    setEditingId(task.id);
   };
 
   const cancelEdit = () => {
     setTaskInput("");
     setCategory("Study");
-    setEditingId(null);
     setCategoryOpen(false);
+    setEditingId(null);
   };
 
   const clearCompleted = () => {
@@ -268,35 +259,21 @@ function Dashboard({ darkMode }) {
     );
   };
 
-  const resetTimer = () => {
-    setTimerRunning(false);
-    setTimerSeconds(25 * 60);
+  useEffect(() => {
+  const getUserName = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      setFullName(user.user_metadata?.full_name || "User");
+    }
   };
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/";
-  };
-
+  getUserName();
+}, []);
   return (
     <div className={`dashboard ${darkMode ? "dark" : ""}`}>
-      <nav className="dashboard-nav">
-        <div className="dashboard-logo">
-          <span>✚</span> FitUp
-        </div>
-
-        <div className="dashboard-welcome">
-          Welcome back, <strong>{fullName}</strong>!
-        </div>
-
-        <button
-          className="signout-btn"
-          onClick={handleSignOut}
-        >
-          Sign Out
-        </button>
-      </nav>
-
       <section className="dashboard-top">
         <div className="date-box">
           <div>
@@ -306,8 +283,8 @@ function Dashboard({ darkMode }) {
         </div>
 
         <div className="greeting">
-          <h1>Let's make today productive.</h1>
-          <p>Stay consistent and keep moving forward.</p>
+         <h1>Good morning, {fullName}!</h1>
+          <p>Let's make today productive.</p>
         </div>
 
         <div className="time-box">
@@ -388,7 +365,9 @@ function Dashboard({ darkMode }) {
               <div className="category-dropdown">
                 <button
                   type="button"
-                  className="category-select"
+                  className={`category-select ${
+                    categoryOpen ? "open" : ""
+                  }`}
                   onClick={() =>
                     setCategoryOpen(
                       (previous) => !previous
@@ -402,10 +381,17 @@ function Dashboard({ darkMode }) {
                       )}`}
                     ></span>
 
-                    {category}
+                    <span>{category}</span>
                   </span>
 
-                  <ChevronDown size={18} />
+                  <ChevronDown
+                    size={18}
+                    className={
+                      categoryOpen
+                        ? "category-chevron rotated"
+                        : "category-chevron"
+                    }
+                  />
                 </button>
 
                 {categoryOpen && (
@@ -419,7 +405,11 @@ function Dashboard({ darkMode }) {
                       <button
                         type="button"
                         key={item}
-                        className="category-option"
+                        className={`category-option ${
+                          category === item
+                            ? "selected"
+                            : ""
+                        }`}
                         onClick={() => {
                           setCategory(item);
                           setCategoryOpen(false);
@@ -520,6 +510,7 @@ function Dashboard({ darkMode }) {
                         onClick={() =>
                           editTask(task)
                         }
+                        title="Edit task"
                       >
                         <Pencil size={16} />
                       </button>
@@ -529,6 +520,7 @@ function Dashboard({ darkMode }) {
                         onClick={() =>
                           deleteTask(task.id)
                         }
+                        title="Delete task"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -610,8 +602,12 @@ function Dashboard({ darkMode }) {
               className="progress-circle"
               style={{
                 background: `conic-gradient(
-                  #ff7200 0deg ${animatedPercentage * 3.6}deg,
-                  #f4e5d7 ${animatedPercentage * 3.6}deg 360deg
+                  #ff7200 0deg ${
+                    animatedPercentage * 3.6
+                  }deg,
+                  #f4e5d7 ${
+                    animatedPercentage * 3.6
+                  }deg 360deg
                 )`,
               }}
             >
@@ -666,6 +662,7 @@ function Dashboard({ darkMode }) {
               <button
                 className="timer-reset-btn"
                 onClick={resetTimer}
+                title="Reset timer"
               >
                 <RotateCcw size={18} />
               </button>
