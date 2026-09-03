@@ -574,22 +574,18 @@ function Dashboard({ darkMode }) {
 
           <div className="completion-section">
 
-            <div
-              className="progress-circle"
-              style={{
-                background: `conic-gradient(
-                  #ff7200 0deg ${completionPercentage * 3.6}deg,
-                  #f4e5d7 ${completionPercentage * 3.6}deg 360deg
-                )`,
-              }}
-            >
-              <div className="circle-inner">
-                <strong>
-                  {completionPercentage}%
-                </strong>
-              </div>
-            </div>
-
+           <div
+  className="progress-circle"
+  style={{
+    "--progress": `${completionPercentage * 3.6}deg`,
+  }}
+>
+  <div className="circle-inner">
+    <strong>
+      {completionPercentage}%
+    </strong>
+  </div>
+</div>
             <div className="completion-text">
 
               <h3>
