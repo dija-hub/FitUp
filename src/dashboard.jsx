@@ -68,7 +68,7 @@ function Dashboard({ darkMode }) {
     },
   ]);
 
-  // Update date and time
+  
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
@@ -80,7 +80,7 @@ function Dashboard({ darkMode }) {
     return () => clearInterval(timer);
   }, []);
 
-  // Focus timer
+
   useEffect(() => {
     if (!timerRunning) return;
 
@@ -106,25 +106,25 @@ function Dashboard({ darkMode }) {
     setTimerSeconds(25 * 60);
   };
 
-  // Format date
+  
   const formattedDate = currentDate.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
   });
 
-  // Format day
+  
   const formattedDay = currentDate.toLocaleDateString("en-US", {
     weekday: "long",
   });
 
-  // Format time
+
   const formattedTime = currentTime.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
   });
 
-  // Get color according to category
+  
   const getCategoryColor = (categoryName) => {
     if (categoryName === "Study") {
       return "orange";
@@ -145,7 +145,7 @@ function Dashboard({ darkMode }) {
     return "orange";
   };
 
-  // Add or edit task
+
   const handleTaskSubmit = () => {
     if (taskInput.trim() === "") {
       return;
@@ -153,7 +153,7 @@ function Dashboard({ darkMode }) {
 
     const taskColor = getCategoryColor(category);
 
-    // Edit existing task
+    
     if (editingId !== null) {
       setTasks((previousTasks) =>
         previousTasks.map((task) =>
@@ -170,7 +170,7 @@ function Dashboard({ darkMode }) {
 
       setEditingId(null);
     } else {
-      // Add new task
+     
       const newTask = {
         id: Date.now(),
         name: taskInput.trim(),
@@ -187,14 +187,14 @@ function Dashboard({ darkMode }) {
     setCategoryOpen(false);
   };
 
-  // Delete task
+  
   const deleteTask = (id) => {
     setTasks((previousTasks) =>
       previousTasks.filter((task) => task.id !== id)
     );
   };
 
-  // Complete task
+  
   const toggleTask = (id) => {
     setTasks((previousTasks) =>
       previousTasks.map((task) =>
@@ -208,7 +208,7 @@ function Dashboard({ darkMode }) {
     );
   };
 
-  // Start editing
+ 
   const editTask = (task) => {
     setTaskInput(task.name);
     setCategory(task.category);
@@ -216,7 +216,7 @@ function Dashboard({ darkMode }) {
     setEditingId(task.id);
   };
 
-  // Cancel editing
+  
   const cancelEdit = () => {
     setTaskInput("");
     setCategory("Study");
@@ -224,14 +224,14 @@ function Dashboard({ darkMode }) {
     setEditingId(null);
   };
 
-  // Clear completed
+
   const clearCompleted = () => {
     setTasks((previousTasks) =>
       previousTasks.filter((task) => !task.completed)
     );
   };
 
-  // Statistics
+
   const totalTasks = tasks.length;
 
   const completedTasks = tasks.filter(
@@ -253,7 +253,7 @@ function Dashboard({ darkMode }) {
 
   return (
     <div className={`dashboard ${darkMode ? "dark" : ""}`}>
-      {/* ================= TOP ================= */}
+     
 
       <section className="dashboard-top">
         <div className="date-box">
@@ -273,7 +273,6 @@ function Dashboard({ darkMode }) {
         </div>
       </section>
 
-      {/* ================= STATS ================= */}
 
       <section className="stats-grid">
         <div className="stat-card total-card">
@@ -321,15 +320,14 @@ function Dashboard({ darkMode }) {
         </div>
       </section>
 
-      {/* ================= CONTENT ================= */}
+      
 
       <section className="dashboard-content">
 
-        {/* LEFT */}
 
         <div className="left-column">
 
-          {/* ADD TASK */}
+          
 
           <div className="add-task-card">
             <h2>
@@ -411,7 +409,7 @@ function Dashboard({ darkMode }) {
             </div>
           </div>
 
-          {/* TASKS */}
+         
 
           <div className="tasks-card">
             <div className="tasks-header">
@@ -517,7 +515,7 @@ function Dashboard({ darkMode }) {
           </div>
         </div>
 
-        {/* RIGHT */}
+      
 
         <div className="progress-card-main">
 
@@ -572,7 +570,7 @@ function Dashboard({ darkMode }) {
             </div>
           </div>
 
-          {/* COMPLETION */}
+        
 
           <div className="completion-section">
 
@@ -605,7 +603,6 @@ function Dashboard({ darkMode }) {
           </div>
 
 
-          {/* FOCUS TIMER */}
 
           <div className="focus-timer">
             <div className="focus-timer-header">

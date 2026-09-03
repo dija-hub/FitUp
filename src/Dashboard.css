@@ -13,9 +13,6 @@
   box-sizing: border-box;
 }
 
-/* =====================================
-   TOP
-===================================== */
 
 .dashboard-top {
   display: grid;
@@ -80,10 +77,6 @@
   border-radius: 12px;
   font-weight: 600;
 }
-
-/* =====================================
-   STATS
-===================================== */
 
 .stats-grid {
   display: grid;
@@ -159,9 +152,6 @@
   color: #d64b28;
 }
 
-/* =====================================
-   MAIN CONTENT
-===================================== */
 
 .dashboard-content {
   display: grid;
@@ -894,9 +884,6 @@
   }
 }
 
-/* =====================================
-   FITUP FOCUS TIMER
-===================================== */
 
 .focus-timer {
   margin-top: 28px;
@@ -993,7 +980,6 @@
   background: #fff8f0;
 }
 
-/* FitUp theme refinements */
 
 .dashboard {
   background: #fffaf5;
@@ -1124,10 +1110,6 @@
 }
 
 
-/* =====================================
-   BALANCED FITUP CONTROLS
-===================================== */
-
 .add-task-row {
   align-items: center;
 }
@@ -1246,7 +1228,6 @@
   }
 }
 
-/* Make the dashboard feel less stretched */
 
 .stats-grid {
   gap: 18px;
@@ -1301,7 +1282,6 @@
   font-size: 38px;
 }
 
-/* Keep buttons visually consistent */
 
 .add-task-btn,
 .timer-main-btn {
@@ -1318,7 +1298,7 @@
   color: #d86b00;
 }
 
-/* Dark dropdown */
+
 
 .dashboard.dark .category-select {
   background: #292a30;
@@ -1366,9 +1346,6 @@
 }
 
 
-/* =====================================
-   POLISHED CATEGORY CONTROL
-===================================== */
 
 .category-dropdown {
   width: 158px;
@@ -1475,9 +1452,7 @@
   }
 }
 
-/* =====================================
-   BALANCED LOWER SECTION
-===================================== */
+
 
 .dashboard-content {
   align-items: stretch;
@@ -1505,10 +1480,6 @@
 .focus-timer {
   margin-top: auto;
 }
-
-/* =====================================
-   SMOOTH FITUP MOTION
-===================================== */
 
 .stat-card,
 .add-task-card,
@@ -1564,7 +1535,6 @@
   transform: scale(0.97);
 }
 
-/* Smooth chart movement when progress values change */
 .bar {
   transition: height 0.7s cubic-bezier(0.22, 1, 0.36, 1),
     background-color 0.3s ease, transform 0.25s ease;
@@ -1574,7 +1544,6 @@
   transform: translateY(-3px);
 }
 
-/* Make the completion area feel anchored with the timer */
 .completion-section {
   min-height: 150px;
 }
@@ -1596,7 +1565,7 @@
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
-/* Dark mode */
+
 
 .dashboard.dark .category-select {
   background: linear-gradient(180deg, #292a30 0%, #25262b 100%);
