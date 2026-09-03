@@ -134,23 +134,14 @@
   color: #287b35;
 }
 
-.progress-circle {
-  width: 130px;
-  height: 130px;
-
-  flex-shrink: 0;
-
-  border-radius: 50%;
-
-  display: grid;
-  place-items: center;
-
-  transform: rotate(-35deg);
-  
-
-  background: conic-gradient(#ff7200 0% 50%, #f7eae1 50% 100%);
+.progress-card .stat-icon {
+  color: #f0a000;
+  background: #fff5db;
 }
 
+.progress-card h2 {
+  color: #e79600;
+}
 
 .pending-card .stat-icon {
   color: #e85b35;
