@@ -14,6 +14,7 @@ import {
   Play,
   Pause,
   RotateCcw,
+  ChevronDown,
 } from "lucide-react";
 
 import "./Dashboard.css";
@@ -21,6 +22,7 @@ import "./Dashboard.css";
 function Dashboard({ darkMode }) {
   const [taskInput, setTaskInput] = useState("");
   const [category, setCategory] = useState("Study");
+  const [categoryOpen, setCategoryOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -183,6 +185,7 @@ function Dashboard({ darkMode }) {
 
     setTaskInput("");
     setCategory("Study");
+    setCategoryOpen(false);
   };
 
   // Delete task
@@ -210,6 +213,7 @@ function Dashboard({ darkMode }) {
   const editTask = (task) => {
     setTaskInput(task.name);
     setCategory(task.category);
+    setCategoryOpen(false);
     setEditingId(task.id);
   };
 
@@ -217,6 +221,7 @@ function Dashboard({ darkMode }) {
   const cancelEdit = () => {
     setTaskInput("");
     setCategory("Study");
+    setCategoryOpen(false);
     setEditingId(null);
   };
 
@@ -346,15 +351,40 @@ function Dashboard({ darkMode }) {
                 }}
               />
 
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              >
-                <option value="Study">Study</option>
-                <option value="Personal">Personal</option>
-                <option value="Health">Health</option>
-                <option value="Project">Project</option>
-              </select>
+              <div className="category-dropdown">
+                <button
+                  type="button"
+                  className={`category-select ${categoryOpen ? "open" : ""}`}
+                  onClick={() => setCategoryOpen((previous) => !previous)}
+                >
+                  <span>{category}</span>
+                  <ChevronDown
+                    size={18}
+                    className={categoryOpen ? "category-chevron rotated" : "category-chevron"}
+                  />
+                </button>
+
+                {categoryOpen && (
+                  <div className="category-menu">
+                    {["Study", "Personal", "Health", "Project"].map((item) => (
+                      <button
+                        type="button"
+                        key={item}
+                        className={`category-option ${
+                          category === item ? "selected" : ""
+                        }`}
+                        onClick={() => {
+                          setCategory(item);
+                          setCategoryOpen(false);
+                        }}
+                      >
+                        <span className={`option-dot ${getCategoryColor(item)}`}></span>
+                        {item}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               <button
                 className="add-task-btn"
