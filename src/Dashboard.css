@@ -134,13 +134,41 @@
   color: #287b35;
 }
 
-.progress-card .stat-icon {
-  color: #f0a000;
-  background: #fff5db;
+.progress-circle {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  position: relative;
+  background: #f4e5d7;
 }
 
-.progress-card h2 {
-  color: #e79600;
+.progress-circle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    #ff7200 0deg var(--progress),
+    transparent var(--progress) 360deg
+  );
+  transition: all 0.8s ease;
+}
+
+.circle-inner {
+  width: 98px;
+  height: 98px;
+  border-radius: 50%;
+  background: white;
+  display: grid;
+  place-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.circle-inner strong {
+  font-size: 24px;
 }
 
 .pending-card .stat-icon {
