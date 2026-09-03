@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import {
   ClipboardList,
   CheckCircle2,
@@ -15,7 +14,6 @@ import {
   RotateCcw,
   ChevronDown,
 } from "lucide-react";
-
 import "./Dashboard.css";
 
 function Dashboard({ darkMode }) {
@@ -29,6 +27,8 @@ function Dashboard({ darkMode }) {
 
   const [timerSeconds, setTimerSeconds] = useState(25 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
+
+  const [animatedPercentage, setAnimatedPercentage] = useState(0);
 
   const [tasks, setTasks] = useState([
     {
@@ -68,7 +68,6 @@ function Dashboard({ darkMode }) {
     },
   ]);
 
-  
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
@@ -80,7 +79,6 @@ function Dashboard({ darkMode }) {
     return () => clearInterval(timer);
   }, []);
 
-
   useEffect(() => {
     if (!timerRunning) return;
 
@@ -90,147 +88,13 @@ function Dashboard({ darkMode }) {
           setTimerRunning(false);
           return 0;
         }
+
         return previousSeconds - 1;
       });
     }, 1000);
 
     return () => clearInterval(timer);
   }, [timerRunning]);
-
-  const formattedTimer = `${String(Math.floor(timerSeconds / 60)).padStart(2, "0")}:${String(
-    timerSeconds % 60
-  ).padStart(2, "0")}`;
-
-  const resetTimer = () => {
-    setTimerRunning(false);
-    setTimerSeconds(25 * 60);
-  };
-
-  
-  const formattedDate = currentDate.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-
-  
-  const formattedDay = currentDate.toLocaleDateString("en-US", {
-    weekday: "long",
-  });
-
-
-  const formattedTime = currentTime.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-
-  
-  const getCategoryColor = (categoryName) => {
-    if (categoryName === "Study") {
-      return "orange";
-    }
-
-    if (categoryName === "Personal") {
-      return "green";
-    }
-
-    if (categoryName === "Health") {
-      return "yellow";
-    }
-
-    if (categoryName === "Project") {
-      return "red";
-    }
-
-    return "orange";
-  };
-
-
-  const handleTaskSubmit = () => {
-    if (taskInput.trim() === "") {
-      return;
-    }
-
-    const taskColor = getCategoryColor(category);
-
-    
-    if (editingId !== null) {
-      setTasks((previousTasks) =>
-        previousTasks.map((task) =>
-          task.id === editingId
-            ? {
-                ...task,
-                name: taskInput.trim(),
-                category: category,
-                color: taskColor,
-              }
-            : task
-        )
-      );
-
-      setEditingId(null);
-    } else {
-     
-      const newTask = {
-        id: Date.now(),
-        name: taskInput.trim(),
-        category: category,
-        color: taskColor,
-        completed: false,
-      };
-
-      setTasks((previousTasks) => [...previousTasks, newTask]);
-    }
-
-    setTaskInput("");
-    setCategory("Study");
-    setCategoryOpen(false);
-  };
-
-  
-  const deleteTask = (id) => {
-    setTasks((previousTasks) =>
-      previousTasks.filter((task) => task.id !== id)
-    );
-  };
-
-  
-  const toggleTask = (id) => {
-    setTasks((previousTasks) =>
-      previousTasks.map((task) =>
-        task.id === id
-          ? {
-              ...task,
-              completed: !task.completed,
-            }
-          : task
-      )
-    );
-  };
-
- 
-  const editTask = (task) => {
-    setTaskInput(task.name);
-    setCategory(task.category);
-    setCategoryOpen(false);
-    setEditingId(task.id);
-  };
-
-  
-  const cancelEdit = () => {
-    setTaskInput("");
-    setCategory("Study");
-    setCategoryOpen(false);
-    setEditingId(null);
-  };
-
-
-  const clearCompleted = () => {
-    setTasks((previousTasks) =>
-      previousTasks.filter((task) => !task.completed)
-    );
-  };
-
 
   const totalTasks = tasks.length;
 
@@ -251,10 +115,152 @@ function Dashboard({ darkMode }) {
       ? 0
       : Math.round((completedTasks / totalTasks) * 100);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setAnimatedPercentage((previous) => {
+        if (previous < completionPercentage) {
+          return previous + 1;
+        }
+
+        if (previous > completionPercentage) {
+          return previous - 1;
+        }
+
+        clearInterval(timer);
+        return previous;
+      });
+    }, 20);
+
+    return () => clearInterval(timer);
+  }, [completionPercentage]);
+
+  const formattedTimer = `${String(
+    Math.floor(timerSeconds / 60)
+  ).padStart(2, "0")}:${String(timerSeconds % 60).padStart(2, "0")}`;
+
+  const resetTimer = () => {
+    setTimerRunning(false);
+    setTimerSeconds(25 * 60);
+  };
+
+  const formattedDate = currentDate.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const formattedDay = currentDate.toLocaleDateString("en-US", {
+    weekday: "long",
+  });
+
+  const formattedTime = currentTime.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
+  const getCategoryColor = (categoryName) => {
+    if (categoryName === "Study") {
+      return "orange";
+    }
+
+    if (categoryName === "Personal") {
+      return "green";
+    }
+
+    if (categoryName === "Health") {
+      return "yellow";
+    }
+
+    if (categoryName === "Project") {
+      return "red";
+    }
+
+    return "orange";
+  };
+
+  const handleTaskSubmit = () => {
+    if (taskInput.trim() === "") {
+      return;
+    }
+
+    const taskColor = getCategoryColor(category);
+
+    if (editingId !== null) {
+      setTasks((previousTasks) =>
+        previousTasks.map((task) =>
+          task.id === editingId
+            ? {
+                ...task,
+                name: taskInput.trim(),
+                category: category,
+                color: taskColor,
+              }
+            : task
+        )
+      );
+
+      setEditingId(null);
+    } else {
+      const newTask = {
+        id: Date.now(),
+        name: taskInput.trim(),
+        category: category,
+        color: taskColor,
+        completed: false,
+      };
+
+      setTasks((previousTasks) => [
+        ...previousTasks,
+        newTask,
+      ]);
+    }
+
+    setTaskInput("");
+    setCategory("Study");
+    setCategoryOpen(false);
+  };
+
+  const deleteTask = (id) => {
+    setTasks((previousTasks) =>
+      previousTasks.filter((task) => task.id !== id)
+    );
+  };
+
+  const toggleTask = (id) => {
+    setTasks((previousTasks) =>
+      previousTasks.map((task) =>
+        task.id === id
+          ? {
+              ...task,
+              completed: !task.completed,
+            }
+          : task
+      )
+    );
+  };
+
+  const editTask = (task) => {
+    setTaskInput(task.name);
+    setCategory(task.category);
+    setCategoryOpen(false);
+    setEditingId(task.id);
+  };
+
+  const cancelEdit = () => {
+    setTaskInput("");
+    setCategory("Study");
+    setCategoryOpen(false);
+    setEditingId(null);
+  };
+
+  const clearCompleted = () => {
+    setTasks((previousTasks) =>
+      previousTasks.filter((task) => !task.completed)
+    );
+  };
+
   return (
     <div className={`dashboard ${darkMode ? "dark" : ""}`}>
-     
-
       <section className="dashboard-top">
         <div className="date-box">
           <div>
@@ -272,7 +278,6 @@ function Dashboard({ darkMode }) {
           <p>{formattedTime}</p>
         </div>
       </section>
-
 
       <section className="stats-grid">
         <div className="stat-card total-card">
@@ -320,27 +325,23 @@ function Dashboard({ darkMode }) {
         </div>
       </section>
 
-      
-
       <section className="dashboard-content">
-
-
         <div className="left-column">
-
-          
-
           <div className="add-task-card">
             <h2>
-              {editingId !== null ? "Edit Task" : "Add New Task"}
+              {editingId !== null
+                ? "Edit Task"
+                : "Add New Task"}
             </h2>
 
             <div className="add-task-row">
-
               <input
                 type="text"
                 placeholder="What do you want to do?"
                 value={taskInput}
-                onChange={(e) => setTaskInput(e.target.value)}
+                onChange={(e) =>
+                  setTaskInput(e.target.value)
+                }
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     handleTaskSubmit();
@@ -351,34 +352,62 @@ function Dashboard({ darkMode }) {
               <div className="category-dropdown">
                 <button
                   type="button"
-                  className={`category-select ${categoryOpen ? "open" : ""}`}
-                  onClick={() => setCategoryOpen((previous) => !previous)}
+                  className={`category-select ${
+                    categoryOpen ? "open" : ""
+                  }`}
+                  onClick={() =>
+                    setCategoryOpen(
+                      (previous) => !previous
+                    )
+                  }
                 >
                   <span className="category-current">
-                    <span className={`option-dot ${getCategoryColor(category)}`}></span>
+                    <span
+                      className={`option-dot ${getCategoryColor(
+                        category
+                      )}`}
+                    ></span>
+
                     <span>{category}</span>
                   </span>
+
                   <ChevronDown
                     size={18}
-                    className={categoryOpen ? "category-chevron rotated" : "category-chevron"}
+                    className={
+                      categoryOpen
+                        ? "category-chevron rotated"
+                        : "category-chevron"
+                    }
                   />
                 </button>
 
                 {categoryOpen && (
                   <div className="category-menu">
-                    {["Study", "Personal", "Health", "Project"].map((item) => (
+                    {[
+                      "Study",
+                      "Personal",
+                      "Health",
+                      "Project",
+                    ].map((item) => (
                       <button
                         type="button"
                         key={item}
                         className={`category-option ${
-                          category === item ? "selected" : ""
+                          category === item
+                            ? "selected"
+                            : ""
                         }`}
                         onClick={() => {
                           setCategory(item);
                           setCategoryOpen(false);
                         }}
                       >
-                        <span className={`option-dot ${getCategoryColor(item)}`}></span>
+                        <span
+                          className={`option-dot ${getCategoryColor(
+                            item
+                          )}`}
+                        ></span>
+
                         {item}
                       </button>
                     ))}
@@ -405,11 +434,8 @@ function Dashboard({ darkMode }) {
                   <X size={19} />
                 </button>
               )}
-
             </div>
           </div>
-
-         
 
           <div className="tasks-card">
             <div className="tasks-header">
@@ -421,7 +447,6 @@ function Dashboard({ darkMode }) {
             </div>
 
             <div className="task-list">
-
               {tasks.length === 0 ? (
                 <div className="empty-tasks">
                   <ClipboardList size={40} />
@@ -432,11 +457,12 @@ function Dashboard({ darkMode }) {
                 tasks.map((task) => (
                   <div
                     className={`task-item ${
-                      task.completed ? "task-completed" : ""
+                      task.completed
+                        ? "task-completed"
+                        : ""
                     }`}
                     key={task.id}
                   >
-
                     <div
                       className={`task-line ${task.color}`}
                     ></div>
@@ -466,7 +492,6 @@ function Dashboard({ darkMode }) {
                     </span>
 
                     <div className="task-actions">
-
                       <button
                         className="edit-btn"
                         onClick={() =>
@@ -486,18 +511,14 @@ function Dashboard({ darkMode }) {
                       >
                         <Trash2 size={16} />
                       </button>
-
                     </div>
-
                   </div>
                 ))
               )}
-
             </div>
 
             {tasks.length > 0 && (
               <div className="task-bottom">
-
                 <p>
                   {completedTasks} of {totalTasks} completed
                 </p>
@@ -509,20 +530,15 @@ function Dashboard({ darkMode }) {
                   Clear completed
                   <Trash2 size={17} />
                 </button>
-
               </div>
             )}
           </div>
         </div>
 
-      
-
         <div className="progress-card-main">
-
           <h2>Weekly Progress</h2>
 
           <div className="chart">
-
             <div className="chart-grid">
               <span className="grid-line line-1"></span>
               <span className="grid-line line-2"></span>
@@ -531,7 +547,6 @@ function Dashboard({ darkMode }) {
             </div>
 
             <div className="bars">
-
               <div className="bar-group">
                 <div className="bar mon"></div>
                 <span>Mon</span>
@@ -566,39 +581,38 @@ function Dashboard({ darkMode }) {
                 <div className="bar sun"></div>
                 <span>Sun</span>
               </div>
-
             </div>
           </div>
 
-        
-
           <div className="completion-section">
+            <div
+              className="progress-circle"
+              style={{
+                background: `conic-gradient(
+                  #ff7200 0deg ${
+                    animatedPercentage * 3.6
+                  }deg,
+                  #f4e5d7 ${
+                    animatedPercentage * 3.6
+                  }deg 360deg
+                )`,
+              }}
+            >
+              <div className="circle-inner">
+                <strong>
+                  {animatedPercentage}%
+                </strong>
+              </div>
+            </div>
 
-           <div
-  className="progress-circle"
-  style={{
-    "--progress": `${completionPercentage * 3.6}deg`,
-  }}
->
-  <div className="circle-inner">
-    <strong>
-      {completionPercentage}%
-    </strong>
-  </div>
-</div>
             <div className="completion-text">
-
               <h3>
                 {completedTasks} of {totalTasks} tasks
               </h3>
 
               <p>completed</p>
-
             </div>
-
           </div>
-
-
 
           <div className="focus-timer">
             <div className="focus-timer-header">
@@ -606,17 +620,29 @@ function Dashboard({ darkMode }) {
                 <Timer size={20} />
                 <h3>Focus Timer</h3>
               </div>
+
               <span>25 min focus</span>
             </div>
 
-            <div className="timer-display">{formattedTimer}</div>
+            <div className="timer-display">
+              {formattedTimer}
+            </div>
 
             <div className="timer-actions">
               <button
                 className="timer-main-btn"
-                onClick={() => setTimerRunning((previous) => !previous)}
+                onClick={() =>
+                  setTimerRunning(
+                    (previous) => !previous
+                  )
+                }
               >
-                {timerRunning ? <Pause size={18} /> : <Play size={18} />}
+                {timerRunning ? (
+                  <Pause size={18} />
+                ) : (
+                  <Play size={18} />
+                )}
+
                 {timerRunning ? "Pause" : "Start"}
               </button>
 
@@ -629,7 +655,6 @@ function Dashboard({ darkMode }) {
               </button>
             </div>
           </div>
-
         </div>
       </section>
     </div>
