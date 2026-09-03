@@ -62,7 +62,12 @@ function Web() {
         isLoggedIn={isLoggedIn}
         setShowDashboard={setShowDashboard}
       />
-
+<Auth
+  setShowSignUp={setShowSignUp}
+  darkMode={darkMode}
+  setIsLoggedIn={setIsLoggedIn}
+  setShowDashboard={setShowDashboard}
+/>
       {!showDashboard ? (
         <>
           <section className="hero" id="home">
