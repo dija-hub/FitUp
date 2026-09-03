@@ -259,6 +259,19 @@ function Dashboard({ darkMode }) {
     );
   };
 
+  useEffect(() => {
+  const getUserName = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      setFullName(user.user_metadata?.full_name || "User");
+    }
+  };
+
+  getUserName();
+}, []);
   return (
     <div className={`dashboard ${darkMode ? "dark" : ""}`}>
       <section className="dashboard-top">
@@ -270,7 +283,7 @@ function Dashboard({ darkMode }) {
         </div>
 
         <div className="greeting">
-          <h1>Good morning, Khadija!</h1>
+         <h1>Good morning, {fullName}!</h1>
           <p>Let's make today productive.</p>
         </div>
 
