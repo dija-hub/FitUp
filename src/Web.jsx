@@ -23,6 +23,7 @@ function Web({
   const [showSignUp, setShowSignUp] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [darkMode, setDarkMode] = useState(false);
+  
 
   useEffect(() => {
     async function checkUser() {
@@ -44,63 +45,32 @@ function Web({
     return () => {
       subscription.unsubscribe();
     };
-  }, [setIsLoggedIn]);
-
-
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace("#", "");
-
-      if (hash === "dashboard") {
-        if (isLoggedIn) {
-          setShowDashboard(true);
-        }
-      } else {
-        setShowDashboard(false);
-
-        if (hash) {
-          setActiveSection(hash);
-        }
-      }
-    };
-
-    handleHashChange();
-
-    window.addEventListener("hashchange", handleHashChange);
-
-    return () => {
-      window.removeEventListener("hashchange", handleHashChange);
-    };
-  }, [isLoggedIn, setShowDashboard]);
-
+  }, []);
 
   function openDashboard() {
     if (isLoggedIn) {
       setShowDashboard(true);
-      window.location.hash = "dashboard";
     } else {
       setShowSignUp(true);
     }
   }
 
-
   return (
     <div className={darkMode ? "dark-page" : ""}>
-
-  <Navbar
+<Navbar
+  activeSection={activeSection}
+  setActiveSection={setActiveSection}
   darkMode={darkMode}
   setDarkMode={setDarkMode}
+  setShowSignUp={setShowSignUp}
+  isLoggedIn={isLoggedIn}
+  setIsLoggedIn={setIsLoggedIn}
   setShowDashboard={setShowDashboard}
-  showDashboard={showDashboard}
 />
-
-
       {!showDashboard ? (
         <>
-
           <section className="hero" id="home">
             <div className="hero-content">
-
               <p className="hero-tagline">
                 BUILD STRENGTH. BUILD CONFIDENCE.
               </p>
@@ -115,27 +85,20 @@ function Web({
               </p>
 
               <div className="hero-buttons">
-
                 <button
                   className="primary-btn"
                   onClick={() => setShowSignUp(true)}
                 >
                   Get Started
                 </button>
-
               </div>
-
             </div>
           </section>
 
-
           <hr />
 
-
           <section className="Features" id="features">
-
             <div className="features-heading">
-
               <h2>FEATURES</h2>
 
               <h3>
@@ -143,16 +106,11 @@ function Web({
                 <br />
                 nothing you don't
               </h3>
-
             </div>
 
-
             <div className="features-content">
-
               <div className="feature-item">
-
                 <div className="feature-box">
-
                   <div className="feature-icon">
                     <Flame size={20} />
                   </div>
@@ -163,16 +121,11 @@ function Web({
                     Keep track of your daily tasks and stay consistent with
                     your habits.
                   </p>
-
                 </div>
-
               </div>
 
-
               <div className="feature-item">
-
                 <div className="feature-box">
-
                   <div className="feature-icon">
                     <Palette size={20} />
                   </div>
@@ -183,16 +136,11 @@ function Web({
                     Organize your habits with simple colors to quickly see
                     what needs your attention.
                   </p>
-
                 </div>
-
               </div>
 
-
               <div className="feature-item">
-
                 <div className="feature-box">
-
                   <div className="feature-icon">
                     <BarChart3 size={20} />
                   </div>
@@ -203,16 +151,11 @@ function Web({
                     View your progress with simple graphs and track how your
                     habits improve over time.
                   </p>
-
                 </div>
-
               </div>
 
-
               <div className="feature-item">
-
                 <div className="feature-box">
-
                   <div className="feature-icon">
                     <TrendingUp size={20} />
                   </div>
@@ -222,26 +165,15 @@ function Web({
                   <p>
                     See your completed tasks and track your progress over time.
                   </p>
-
                 </div>
-
               </div>
-
             </div>
-
           </section>
-
 
           <hr />
 
-
-          <section
-            className="how-it-works"
-            id="how-it-works"
-          >
-
+          <section className="how-it-works" id="work">
             <div className="how-heading">
-
               <p>HOW IT WORKS</p>
 
               <h1>Start building better habits</h1>
@@ -249,104 +181,60 @@ function Web({
               <span>
                 Simple steps to turn small actions into lasting routines.
               </span>
-
             </div>
 
-
             <div className="steps">
-
               <div className="step">
-
-                <div className="step-number">
-                  01
-                </div>
+                <div className="step-number">01</div>
 
                 <div className="step-box">
-
-                  <div className="step-icon">
-                    ✓
-                  </div>
+                  <div className="step-icon">✓</div>
 
                   <div>
                     <h2>Create</h2>
                     <p>Build your habits</p>
                   </div>
-
                 </div>
-
               </div>
 
-
-              <div className="step-arrow">
-                →
-              </div>
-
+              <div className="step-arrow">→</div>
 
               <div className="step">
-
-                <div className="step-number">
-                  02
-                </div>
+                <div className="step-number">02</div>
 
                 <div className="step-box">
-
-                  <div className="step-icon">
-                    ↗
-                  </div>
+                  <div className="step-icon">↗</div>
 
                   <div>
                     <h2>Track</h2>
                     <p>Stay consistent</p>
                   </div>
-
                 </div>
-
               </div>
 
-
-              <div className="step-arrow">
-                →
-              </div>
-
+              <div className="step-arrow">→</div>
 
               <div className="step">
-
-                <div className="step-number">
-                  03
-                </div>
+                <div className="step-number">03</div>
 
                 <div className="step-box">
-
-                  <div className="step-icon">
-                    ★
-                  </div>
+                  <div className="step-icon">★</div>
 
                   <div>
                     <h2>Improve</h2>
                     <p>Become your best</p>
                   </div>
-
                 </div>
-
               </div>
-
             </div>
-
           </section>
 
-
-          <section
-            className="final-cta"
-            id="connect"
-          >
-
+          <section className="final-cta" id="connect">
             <div className="cta-wrapper">
-
               <div className="orange-orb orb-one"></div>
               <div className="orange-orb orb-two"></div>
 
               <div className="cta-inner">
-
                 <div className="cta-label">
                   <span className="label-dot"></span>
                   START YOUR JOURNEY
@@ -375,44 +263,18 @@ function Web({
                   <span>✦</span>
                   Free forever · No credit card required
                 </div>
-
               </div>
-
             </div>
 
-
             <footer className="cta-footer">
-
               <div className="brand">
-
-                <div className="brand-icon">
-                  ✚
-                </div>
-
+                <div className="brand-icon">✚</div>
                 <span>FitUp</span>
-
               </div>
 
-
               <div className="footer-links">
-
-                <button
-                  onClick={() => {
-                    setShowDashboard(false);
-                    window.location.hash = "features";
-                  }}
-                >
-                  Features
-                </button>
-
-                <button
-                  onClick={() => {
-                    setShowDashboard(false);
-                    window.location.hash = "how-it-works";
-                  }}
-                >
-                  How it works
-                </button>
+                <a href="#features">Features</a>
+                <a href="#work">How it works</a>
 
                 <button
                   className="footer-signin"
@@ -420,56 +282,37 @@ function Web({
                 >
                   Sign in
                 </button>
-
               </div>
 
-
-              <p>
-                © 2026 FitUp
-              </p>
-
+              <p>© 2026 FitUp</p>
             </footer>
-
           </section>
-
         </>
-
       ) : (
-
         <Dashboard
           darkMode={darkMode}
           setShowDashboard={setShowDashboard}
           setIsLoggedIn={setIsLoggedIn}
           openDashboard={openDashboard}
+          
         />
-
       )}
 
-
       {showSignUp && (
-
         <div
           className="auth-overlay"
           onClick={() => setShowSignUp(false)}
         >
-
-          <div
-            onClick={(e) => e.stopPropagation()}
-          >
-
+          <div onClick={(e) => e.stopPropagation()}>
             <Auth
               setShowSignUp={setShowSignUp}
               darkMode={darkMode}
               setIsLoggedIn={setIsLoggedIn}
               setShowDashboard={setShowDashboard}
             />
-
           </div>
-
         </div>
-
       )}
-
     </div>
   );
 }

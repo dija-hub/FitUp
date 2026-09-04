@@ -9,31 +9,21 @@ function Navbar({
   showDashboard,
 }) {
   const goTo = (section) => {
-    setShowDashboard(false);
-
-    setTimeout(() => {
-      const element = document.getElementById(section);
-
-      if (element) {
-        element.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    }, 0);
+    window.location.hash = section;
   };
 
   const handleDashboard = () => {
-    setShowDashboard(true);
+    if (setShowDashboard) {
+      setShowDashboard(true);
+    }
+
+    window.location.href = "/#dashboard";
   };
 
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>
 
-      <div
-        className="logo"
-        onClick={() => goTo("home")}
-      >
+      <div className="logo" onClick={() => goTo("home")}>
         <span>+</span>
         FitUp
       </div>
@@ -41,39 +31,31 @@ function Navbar({
       <ul className="nav-links">
 
         <li>
-          <button
-            className={`nav-link-btn ${!showDashboard ? "active" : ""}`}
+          <a
+            href="#home"
+            className={!showDashboard ? "active" : ""}
             onClick={() => goTo("home")}
           >
             Home
-          </button>
+          </a>
         </li>
 
         <li>
-          <button
-            className="nav-link-btn"
-            onClick={() => goTo("features")}
-          >
+          <a href="#features" onClick={() => goTo("features")}>
             Features
-          </button>
+          </a>
         </li>
 
         <li>
-          <button
-            className="nav-link-btn"
-            onClick={() => goTo("work")}
-          >
+          <a href="#how-it-works" onClick={() => goTo("how-it-works")}>
             How it works
-          </button>
+          </a>
         </li>
 
         <li>
-          <button
-            className="nav-link-btn"
-            onClick={() => goTo("connect")}
-          >
+          <a href="#connect" onClick={() => goTo("connect")}>
             Connect with us
-          </button>
+          </a>
         </li>
 
         <li>
