@@ -87,23 +87,12 @@ function Web({
   return (
     <div className={darkMode ? "dark-page" : ""}>
 
-      <Navbar
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-        darkMode={darkMode}
-        setDarkMode={setDarkMode}
-        setShowSignUp={setShowSignUp}
-        isLoggedIn={isLoggedIn}
-        setIsLoggedIn={setIsLoggedIn}
-        setShowDashboard={setShowDashboard}
-        showDashboard={showDashboard}
-        onSignOut={async () => {
-          await supabase.auth.signOut();
-          setIsLoggedIn(false);
-          setShowDashboard(false);
-          window.location.hash = "home";
-        }}
-      />
+  <Navbar
+  darkMode={darkMode}
+  setDarkMode={setDarkMode}
+  setShowDashboard={setShowDashboard}
+  showDashboard={showDashboard}
+/>
 
 
       {!showDashboard ? (

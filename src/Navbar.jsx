@@ -11,8 +11,6 @@ function Navbar({
   const goTo = (section) => {
     setShowDashboard(false);
 
-    window.location.hash = section;
-
     setTimeout(() => {
       const element = document.getElementById(section);
 
@@ -26,11 +24,7 @@ function Navbar({
   };
 
   const handleDashboard = () => {
-    if (showDashboard) return;
-
     setShowDashboard(true);
-    window.location.hash = "dashboard";
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -48,7 +42,7 @@ function Navbar({
 
         <li>
           <button
-            className={!showDashboard ? "active" : ""}
+            className={`nav-link-btn ${!showDashboard ? "active" : ""}`}
             onClick={() => goTo("home")}
           >
             Home
@@ -57,6 +51,7 @@ function Navbar({
 
         <li>
           <button
+            className="nav-link-btn"
             onClick={() => goTo("features")}
           >
             Features
@@ -65,7 +60,8 @@ function Navbar({
 
         <li>
           <button
-            onClick={() => goTo("how-it-works")}
+            className="nav-link-btn"
+            onClick={() => goTo("work")}
           >
             How it works
           </button>
@@ -73,6 +69,7 @@ function Navbar({
 
         <li>
           <button
+            className="nav-link-btn"
             onClick={() => goTo("connect")}
           >
             Connect with us

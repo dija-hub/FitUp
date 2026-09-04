@@ -384,3 +384,39 @@
   }
 
 }
+
+.nav-link-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+
+  color: #111827;
+
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 500;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition: color 0.25s ease, transform 0.2s ease;
+}
+
+.nav-link-btn:hover {
+  color: #e89a20;
+  transform: translateY(-1px);
+}
+
+.nav-link-btn.active {
+  color: #e89a20;
+}
+
+.navbar.dark .nav-link-btn {
+  color: #f5f5f5;
+}
+
+.navbar.dark .nav-link-btn:hover,
+.navbar.dark .nav-link-btn.active {
+  color: #e99a16;
+}
