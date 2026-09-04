@@ -112,7 +112,7 @@ function Navbar({
       setActiveSection("home");
     }}
   >
-    <LogOut size={17} />
+    
     Sign Out
   </button>
 )}
