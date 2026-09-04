@@ -7,60 +7,96 @@ function Navbar({
   onSignOut,
   setShowDashboard,
   showDashboard,
+  isLoggedIn,
+  setShowSignUp,
+  setActiveSection,
 }) {
   const goTo = (section) => {
-    window.location.hash = section;
+    setShowDashboard(false);
+
+    if (setActiveSection) {
+      setActiveSection(section);
+    }
+
+    setTimeout(() => {
+      const element = document.getElementById(section);
+
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 0);
   };
 
   const handleDashboard = () => {
-    if (setShowDashboard) {
-      setShowDashboard(true);
+    if (!isLoggedIn) {
+      setShowSignUp(true);
+      return;
     }
 
-    window.location.href = "/#dashboard";
+    setShowDashboard(true);
   };
 
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>
 
-      <div className="logo" onClick={() => goTo("home")}>
+      <button
+        type="button"
+        className="logo"
+        onClick={() => goTo("home")}
+      >
         <span>+</span>
         FitUp
-      </div>
+      </button>
 
       <ul className="nav-links">
 
         <li>
-          <a
-            href="#home"
-            className={!showDashboard ? "active" : ""}
+          <button
+            type="button"
+            className={`nav-link ${!showDashboard ? "active" : ""}`}
             onClick={() => goTo("home")}
           >
             Home
-          </a>
-        </li>
-
-        <li>
-          <a href="#features" onClick={() => goTo("features")}>
-            Features
-          </a>
-        </li>
-
-        <li>
-          <a href="#how-it-works" onClick={() => goTo("how-it-works")}>
-            How it works
-          </a>
-        </li>
-
-        <li>
-          <a href="#connect" onClick={() => goTo("connect")}>
-            Connect with us
-          </a>
+          </button>
         </li>
 
         <li>
           <button
-            className={`dashboard-nav-btn ${
+            type="button"
+            className="nav-link"
+            onClick={() => goTo("features")}
+          >
+            Features
+          </button>
+        </li>
+
+        <li>
+          <button
+            type="button"
+            className="nav-link"
+            onClick={() => goTo("work")}
+          >
+            How it works
+          </button>
+        </li>
+
+        <li>
+          <button
+            type="button"
+            className="nav-link"
+            onClick={() => goTo("connect")}
+          >
+            Connect with us
+          </button>
+        </li>
+
+        <li>
+          <button
+            type="button"
+            className={`nav-link dashboard-nav-btn ${
               showDashboard ? "active" : ""
             }`}
             onClick={handleDashboard}
@@ -73,14 +109,18 @@ function Navbar({
 
       <div className="nav-buttons">
 
-        <button
-          className="signout-nav-btn"
-          onClick={onSignOut}
-        >
-          Sign Out
-        </button>
+        {isLoggedIn && (
+          <button
+            type="button"
+            className="signout-nav-btn"
+            onClick={onSignOut}
+          >
+            Sign Out
+          </button>
+        )}
 
         <button
+          type="button"
           className={`dark-mode-btn ${
             darkMode ? "darkmode" : "lightmode"
           }`}

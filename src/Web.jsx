@@ -23,50 +23,81 @@ function Web({
   const [showSignUp, setShowSignUp] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [darkMode, setDarkMode] = useState(false);
-  
 
   useEffect(() => {
-    async function checkUser() {
-      const { data } = await supabase.auth.getSession();
+    let mounted = true;
 
-      if (data.session) {
-        setIsLoggedIn(true);
+    const checkUser = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (mounted) {
+        setIsLoggedIn(!!session);
       }
-    }
+    };
 
     checkUser();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoggedIn(!!session);
+      if (mounted) {
+        setIsLoggedIn(!!session);
+      }
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [setIsLoggedIn]);
 
-  function openDashboard() {
-    if (isLoggedIn) {
+  const openDashboard = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (session) {
+      setIsLoggedIn(true);
+      setShowSignUp(false);
       setShowDashboard(true);
+      setActiveSection("dashboard");
     } else {
+      setIsLoggedIn(false);
+      setShowDashboard(false);
       setShowSignUp(true);
     }
-  }
+  };
+
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error("Sign out error:", error);
+      return;
+    }
+
+    setIsLoggedIn(false);
+    setShowDashboard(false);
+    setShowSignUp(false);
+    setActiveSection("home");
+  };
 
   return (
     <div className={darkMode ? "dark-page" : ""}>
-<Navbar
-  activeSection={activeSection}
-  setActiveSection={setActiveSection}
-  darkMode={darkMode}
-  setDarkMode={setDarkMode}
-  setShowSignUp={setShowSignUp}
-  isLoggedIn={isLoggedIn}
-  setIsLoggedIn={setIsLoggedIn}
-  setShowDashboard={setShowDashboard}
-/>
+      <Navbar
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        onSignOut={handleSignOut}
+        setShowDashboard={setShowDashboard}
+        showDashboard={showDashboard}
+        isLoggedIn={isLoggedIn}
+        setShowSignUp={setShowSignUp}
+        setActiveSection={setActiveSection}
+        openDashboard={openDashboard}
+      />
+
       {!showDashboard ? (
         <>
           <section className="hero" id="home">
@@ -163,7 +194,8 @@ function Web({
                   <h2>Progress Tracking</h2>
 
                   <p>
-                    See your completed tasks and track your progress over time.
+                    See your completed tasks and track your progress over
+                    time.
                   </p>
                 </div>
               </div>
@@ -274,6 +306,7 @@ function Web({
 
               <div className="footer-links">
                 <a href="#features">Features</a>
+
                 <a href="#work">How it works</a>
 
                 <button
@@ -294,7 +327,6 @@ function Web({
           setShowDashboard={setShowDashboard}
           setIsLoggedIn={setIsLoggedIn}
           openDashboard={openDashboard}
-          
         />
       )}
 
