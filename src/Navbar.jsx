@@ -1,139 +1,122 @@
+import { Sun, Moon } from "lucide-react";
 import "./Navbar.css";
-import { Moon, Sun, LogOut } from "lucide-react";
-import { supabase } from "./utils/supabase";
+
 function Navbar({
-  activeSection,
-  setActiveSection,
   darkMode,
   setDarkMode,
-  setShowSignUp,
-  isLoggedIn,
-  setIsLoggedIn,
+  onSignOut,
   setShowDashboard,
+  showDashboard,
 }) {
+  const goTo = (section) => {
+    setShowDashboard(false);
+
+    window.location.hash = section;
+
+    setTimeout(() => {
+      const element = document.getElementById(section);
+
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 0);
+  };
+
+  const handleDashboard = () => {
+    if (showDashboard) return;
+
+    setShowDashboard(true);
+    window.location.hash = "dashboard";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>
-      
+
       <div
         className="logo"
-        onClick={() => {
-          setActiveSection("home");
-          setShowDashboard(false);
-
-          setTimeout(() => {
-            document
-              .getElementById("home")
-              ?.scrollIntoView({ behavior: "smooth" });
-          }, 0);
-        }}
+        onClick={() => goTo("home")}
       >
-        <span>✚</span> FitUp
+        <span>+</span>
+        FitUp
       </div>
 
       <ul className="nav-links">
 
         <li>
-          <a
-            href="#home"
-            className={activeSection === "home" ? "active" : ""}
-            onClick={() => {
-              setActiveSection("home");
-              setShowDashboard(false);
-            }}
+          <button
+            className={!showDashboard ? "active" : ""}
+            onClick={() => goTo("home")}
           >
             Home
-          </a>
+          </button>
         </li>
 
         <li>
-          <a
-            href="#features"
-            className={activeSection === "features" ? "active" : ""}
-            onClick={() => {
-              setActiveSection("features");
-              setShowDashboard(false);
-            }}
+          <button
+            onClick={() => goTo("features")}
           >
             Features
-          </a>
+          </button>
         </li>
 
         <li>
-          <a
-            href="#work"
-            className={activeSection === "work" ? "active" : ""}
-            onClick={() => {
-              setActiveSection("work");
-              setShowDashboard(false);
-            }}
+          <button
+            onClick={() => goTo("how-it-works")}
           >
             How it works
-          </a>
+          </button>
         </li>
 
         <li>
-          <a
-            href="#connect"
-            className={activeSection === "connect" ? "active" : ""}
-            onClick={() => {
-              setActiveSection("connect");
-              setShowDashboard(false);
-            }}
+          <button
+            onClick={() => goTo("connect")}
           >
             Connect with us
-          </a>
+          </button>
         </li>
 
-        {isLoggedIn && (
-          <li>
-            <button
-              className={`dashboard-nav-btn ${
-                activeSection === "dashboard" ? "active" : ""
-              }`}
-              onClick={() => {
-                setActiveSection("dashboard");
-                setShowDashboard(true);
-              }}
-            >
-              Dashboard
-            </button>
-          </li>
-        )}
+        <li>
+          <button
+            className={`dashboard-nav-btn ${
+              showDashboard ? "active" : ""
+            }`}
+            onClick={handleDashboard}
+          >
+            Dashboard
+          </button>
+        </li>
+
       </ul>
 
       <div className="nav-buttons">
-{isLoggedIn && (
-  <button
-    className="signout-nav-btn"
-    onClick={async () => {
-      await supabase.auth.signOut();
-      setIsLoggedIn(false);
-      setShowDashboard(false);
-      setActiveSection("home");
-    }}
-  >
-    
-    Sign Out
-  </button>
-)}
+
         <button
-          onClick={() => setDarkMode(!darkMode)}
+          className="signout-nav-btn"
+          onClick={onSignOut}
+        >
+          Sign Out
+        </button>
+
+        <button
           className={`dark-mode-btn ${
             darkMode ? "darkmode" : "lightmode"
           }`}
+          onClick={() => setDarkMode(!darkMode)}
+          aria-label="Toggle dark mode"
         >
-          {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+          {darkMode ? (
+            <Sun size={20} />
+          ) : (
+            <Moon size={20} />
+          )}
         </button>
 
-        {!isLoggedIn && (
-          <button
-            className="join-btn"
-            onClick={() => setShowSignUp(true)}
-          >
-            Join Now
-          </button>
-        )}
       </div>
+
     </nav>
   );
 }
