@@ -2,21 +2,20 @@ import { Sun, Moon } from "lucide-react";
 import "./Navbar.css";
 
 function Navbar({
+  activeSection,
+  setActiveSection,
   darkMode,
   setDarkMode,
-  onSignOut,
-  setShowDashboard,
-  showDashboard,
-  isLoggedIn,
   setShowSignUp,
-  setActiveSection,
+  isLoggedIn,
+  setIsLoggedIn,
+  showDashboard,
+  setShowDashboard,
+  onSignOut,
 }) {
   const goTo = (section) => {
     setShowDashboard(false);
-
-    if (setActiveSection) {
-      setActiveSection(section);
-    }
+    setActiveSection(section);
 
     setTimeout(() => {
       const element = document.getElementById(section);
@@ -36,6 +35,8 @@ function Navbar({
       return;
     }
 
+    setShowSignUp(false);
+    setActiveSection("dashboard");
     setShowDashboard(true);
   };
 
@@ -56,7 +57,11 @@ function Navbar({
         <li>
           <button
             type="button"
-            className={`nav-link ${!showDashboard ? "active" : ""}`}
+            className={`nav-link ${
+              activeSection === "home" && !showDashboard
+                ? "active"
+                : ""
+            }`}
             onClick={() => goTo("home")}
           >
             Home
@@ -66,7 +71,11 @@ function Navbar({
         <li>
           <button
             type="button"
-            className="nav-link"
+            className={`nav-link ${
+              activeSection === "features" && !showDashboard
+                ? "active"
+                : ""
+            }`}
             onClick={() => goTo("features")}
           >
             Features
@@ -76,7 +85,11 @@ function Navbar({
         <li>
           <button
             type="button"
-            className="nav-link"
+            className={`nav-link ${
+              activeSection === "work" && !showDashboard
+                ? "active"
+                : ""
+            }`}
             onClick={() => goTo("work")}
           >
             How it works
@@ -86,55 +99,66 @@ function Navbar({
         <li>
           <button
             type="button"
-            className="nav-link"
+            className={`nav-link ${
+              activeSection === "connect" && !showDashboard
+                ? "active"
+                : ""
+            }`}
             onClick={() => goTo("connect")}
           >
             Connect with us
           </button>
         </li>
 
-        <li>
-          <button
-            type="button"
-            className={`nav-link dashboard-nav-btn ${
-              showDashboard ? "active" : ""
-            }`}
-            onClick={handleDashboard}
-          >
-            Dashboard
-          </button>
-        </li>
+        {isLoggedIn && (
+          <li>
+            <button
+              type="button"
+              className={`dashboard-nav-btn ${
+                activeSection === "dashboard"
+                  ? "active"
+                  : ""
+              }`}
+              onClick={handleDashboard}
+            >
+              Dashboard
+            </button>
+          </li>
+        )}
 
       </ul>
 
-      <div className="nav-buttons">
+     <div className="nav-buttons">
+{isLoggedIn ? (
+  <button
+    type="button"
+    className="signout-nav-btn"
+    onClick={onSignOut}
+  >
+    Sign Out
+  </button>
+) : (
+  <button
+    type="button"
+    className="join-btn"
+    onClick={() => setShowSignUp(true)}
+  >
+    Join Now
+  </button>
+)}
 
-        {isLoggedIn && (
-          <button
-            type="button"
-            className="signout-nav-btn"
-            onClick={onSignOut}
-          >
-            Sign Out
-          </button>
-        )}
+  <button
+    type="button"
+    className={`dark-mode-btn ${
+      darkMode ? "darkmode" : "lightmode"
+    }`}
+    onClick={() => setDarkMode(!darkMode)}
+    aria-label="Toggle dark mode"
+  >
+    {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+  </button>
 
-        <button
-          type="button"
-          className={`dark-mode-btn ${
-            darkMode ? "darkmode" : "lightmode"
-          }`}
-          onClick={() => setDarkMode(!darkMode)}
-          aria-label="Toggle dark mode"
-        >
-          {darkMode ? (
-            <Sun size={20} />
-          ) : (
-            <Moon size={20} />
-          )}
-        </button>
-
-      </div>
+</div>
 
     </nav>
   );

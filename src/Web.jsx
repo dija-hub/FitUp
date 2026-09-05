@@ -86,17 +86,18 @@ function Web({
 
   return (
     <div className={darkMode ? "dark-page" : ""}>
-      <Navbar
-        darkMode={darkMode}
-        setDarkMode={setDarkMode}
-        onSignOut={handleSignOut}
-        setShowDashboard={setShowDashboard}
-        showDashboard={showDashboard}
-        isLoggedIn={isLoggedIn}
-        setShowSignUp={setShowSignUp}
-        setActiveSection={setActiveSection}
-        openDashboard={openDashboard}
-      />
+ <Navbar
+  activeSection={activeSection}
+  setActiveSection={setActiveSection}
+  darkMode={darkMode}
+  setDarkMode={setDarkMode}
+  setShowSignUp={setShowSignUp}
+  setIsLoggedIn={setIsLoggedIn}
+  setShowDashboard={setShowDashboard}
+  isLoggedIn={isLoggedIn}
+  showDashboard={showDashboard}
+  onSignOut={handleSignOut}
+/>
 
       {!showDashboard ? (
         <>
