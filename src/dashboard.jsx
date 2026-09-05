@@ -25,30 +25,44 @@ function Dashboard({
   const [taskInput, setTaskInput] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Study");
 
+  const getToday = () => {
+    const date = new Date();
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
   const [tasks, setTasks] = useState([
     {
       id: 1,
       title: "Study React",
       category: "Study",
       completed: false,
+      completedAt: null,
     },
     {
       id: 2,
       title: "Read a book",
       category: "Personal",
       completed: true,
+      completedAt: getToday(),
     },
     {
       id: 3,
       title: "Practice basketball",
       category: "Fitness",
       completed: false,
+      completedAt: null,
     },
     {
       id: 4,
       title: "Build ToDo App",
       category: "Work",
       completed: true,
+      completedAt: getToday(),
     },
   ]);
 
@@ -84,8 +98,6 @@ function Dashboard({
     getUserName();
   }, []);
 
-
-
   const addTask = () => {
     if (taskInput.trim() === "") {
       return;
@@ -96,6 +108,7 @@ function Dashboard({
       title: taskInput.trim(),
       category: selectedCategory,
       completed: false,
+      completedAt: null,
     };
 
     setTasks((prevTasks) => [...prevTasks, newTask]);
@@ -103,15 +116,22 @@ function Dashboard({
   };
 
   const toggleTask = (id) => {
+    const today = getToday();
+
     setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === id
-          ? {
-              ...task,
-              completed: !task.completed,
-            }
-          : task
-      )
+      prevTasks.map((task) => {
+        if (task.id !== id) {
+          return task;
+        }
+
+        const completed = !task.completed;
+
+        return {
+          ...task,
+          completed,
+          completedAt: completed ? today : null,
+        };
+      })
     );
   };
 
@@ -153,6 +173,7 @@ function Dashboard({
       minute: "2-digit",
     }
   );
+
   const getGreeting = () => {
     const hour = currentTime.getHours();
 
@@ -170,8 +191,70 @@ function Dashboard({
 
     return "Good Night";
   };
+
+  const getWeekStart = () => {
+    const date = new Date();
+    const day = date.getDay();
+
+    const difference = day === 0 ? -6 : 1 - day;
+
+    date.setDate(date.getDate() + difference);
+    date.setHours(0, 0, 0, 0);
+
+    return date;
+  };
+
+  const getWeekDays = () => {
+    const weekStart = getWeekStart();
+
+    return Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(weekStart);
+
+      date.setDate(weekStart.getDate() + index);
+
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      return {
+        date: `${year}-${month}-${day}`,
+        name: date.toLocaleDateString("en-US", {
+          weekday: "short",
+        }),
+      };
+    });
+  };
+
+  const weekDays = getWeekDays();
+
+  const weeklyProgress = weekDays.map((day) => {
+    const completed = tasks.filter(
+      (task) =>
+        task.completed &&
+        task.completedAt === day.date
+    ).length;
+
+    return {
+      ...day,
+      completed,
+    };
+  });
+
+  const highestWeeklyValue = Math.max(
+    ...weeklyProgress.map((day) => day.completed),
+    1
+  );
+
+  const weeklyTotal = weeklyProgress.reduce(
+    (total, day) => total + day.completed,
+    0
+  );
+
+  const today = getToday();
+
   return (
     <div className={`dashboard ${darkMode ? "dark" : ""}`}>
+
       <div className="dashboard-top">
 
         <div className="dashboard-date">
@@ -180,15 +263,15 @@ function Dashboard({
         </div>
 
         <div className="dashboard-welcome">
-         <div className="dashboard-welcome">
-  <h1>
-    {getGreeting()}, {userName || "there"}!
-  </h1>
+          <div className="dashboard-welcome">
+            <h1>
+              {getGreeting()}, {userName || "there"}!
+            </h1>
 
-  <p>
-    Stay consistent and keep moving forward.
-  </p>
-</div>
+            <p>
+              Stay consistent and keep moving forward.
+            </p>
+          </div>
         </div>
 
         <div className="dashboard-clock">
@@ -388,7 +471,71 @@ function Dashboard({
 
         </div>
 
+        <div className="weekly-progress">
+
+          <div className="weekly-header">
+            <div>
+              <h2>Weekly Progress</h2>
+              <p>Tasks completed this week</p>
+            </div>
+
+            <strong>
+              {weeklyTotal}
+            </strong>
+          </div>
+
+          <div className="weekly-chart">
+
+            {weeklyProgress.map((day) => {
+
+              const barHeight =
+                day.completed === 0
+                  ? 0
+                  : (day.completed /
+                      highestWeeklyValue) *
+                    100;
+
+              return (
+                <div
+                  className={`weekly-day ${
+                    day.date === today
+                      ? "active-day"
+                      : ""
+                  }`}
+                  key={day.date}
+                >
+
+                  <div className="weekly-bar-area">
+
+                    {day.completed > 0 && (
+                      <span className="weekly-number">
+                        {day.completed}
+                      </span>
+                    )}
+
+                    <div
+                      className="weekly-bar"
+                      style={{
+                        height: `${barHeight}%`,
+                      }}
+                    ></div>
+
+                  </div>
+
+                  <span className="weekly-day-name">
+                    {day.name}
+                  </span>
+
+                </div>
+              );
+            })}
+
+          </div>
+
+        </div>
+
       </div>
+
     </div>
   );
 }

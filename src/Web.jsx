@@ -25,16 +25,12 @@ function Web({
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    let mounted = true;
-
     const checkUser = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
 
-      if (mounted) {
-        setIsLoggedIn(!!session);
-      }
+      setIsLoggedIn(!!session);
     };
 
     checkUser();
@@ -42,13 +38,10 @@ function Web({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (mounted) {
-        setIsLoggedIn(!!session);
-      }
+      setIsLoggedIn(!!session);
     });
 
     return () => {
-      mounted = false;
       subscription.unsubscribe();
     };
   }, [setIsLoggedIn]);
