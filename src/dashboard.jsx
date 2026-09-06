@@ -35,6 +35,30 @@ function Dashboard({
     return `${year}-${month}-${day}`;
   };
 
+  const getWeekStart = () => {
+    const date = new Date();
+    const day = date.getDay();
+
+    const difference = day === 0 ? -6 : 1 - day;
+
+    date.setDate(date.getDate() + difference);
+    date.setHours(0, 0, 0, 0);
+
+    return date;
+  };
+
+  const getWeekDate = (index) => {
+    const date = getWeekStart();
+
+    date.setDate(date.getDate() + index);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
   const [tasks, setTasks] = useState([
     {
       id: 1,
@@ -48,7 +72,7 @@ function Dashboard({
       title: "Read a book",
       category: "Personal",
       completed: true,
-      completedAt: getToday(),
+      completedAt: getWeekDate(0),
     },
     {
       id: 3,
@@ -62,7 +86,14 @@ function Dashboard({
       title: "Build ToDo App",
       category: "Work",
       completed: true,
-      completedAt: getToday(),
+      completedAt: getWeekDate(3),
+    },
+    {
+      id: 5,
+      title: "Morning Workout",
+      category: "Fitness",
+      completed: true,
+      completedAt: getWeekDate(4),
     },
   ]);
 
@@ -91,6 +122,8 @@ function Dashboard({
 
         if (fullName) {
           setUserName(fullName);
+        } else {
+          setUserName("there");
         }
       }
     };
@@ -124,12 +157,12 @@ function Dashboard({
           return task;
         }
 
-        const completed = !task.completed;
+        const newCompletedState = !task.completed;
 
         return {
           ...task,
-          completed,
-          completedAt: completed ? today : null,
+          completed: newCompletedState,
+          completedAt: newCompletedState ? today : null,
         };
       })
     );
@@ -192,18 +225,6 @@ function Dashboard({
     return "Good Night";
   };
 
-  const getWeekStart = () => {
-    const date = new Date();
-    const day = date.getDay();
-
-    const difference = day === 0 ? -6 : 1 - day;
-
-    date.setDate(date.getDate() + difference);
-    date.setHours(0, 0, 0, 0);
-
-    return date;
-  };
-
   const getWeekDays = () => {
     const weekStart = getWeekStart();
 
@@ -263,15 +284,13 @@ function Dashboard({
         </div>
 
         <div className="dashboard-welcome">
-          <div className="dashboard-welcome">
-            <h1>
-              {getGreeting()}, {userName || "there"}!
-            </h1>
+          <h1>
+            {getGreeting()}, {userName || "there"}!
+          </h1>
 
-            <p>
-              Stay consistent and keep moving forward.
-            </p>
-          </div>
+          <p>
+            Stay consistent and keep moving forward.
+          </p>
         </div>
 
         <div className="dashboard-clock">
@@ -474,6 +493,7 @@ function Dashboard({
         <div className="weekly-progress">
 
           <div className="weekly-header">
+
             <div>
               <h2>Weekly Progress</h2>
               <p>Tasks completed this week</p>
@@ -482,11 +502,14 @@ function Dashboard({
             <strong>
               {weeklyTotal}
             </strong>
+
           </div>
 
           <div className="weekly-chart">
 
             {weeklyProgress.map((day) => {
+
+              const isToday = day.date === today;
 
               const barHeight =
                 day.completed === 0
@@ -498,9 +521,7 @@ function Dashboard({
               return (
                 <div
                   className={`weekly-day ${
-                    day.date === today
-                      ? "active-day"
-                      : ""
+                    isToday ? "active-day" : ""
                   }`}
                   key={day.date}
                 >
@@ -518,7 +539,7 @@ function Dashboard({
                       style={{
                         height: `${barHeight}%`,
                       }}
-                    ></div>
+                    />
 
                   </div>
 
