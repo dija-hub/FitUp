@@ -19,45 +19,32 @@ function Dashboard({
   setIsLoggedIn,
   openDashboard,
 }) {
+  
+  const [greeting, setGreeting] = useState("");
+
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [userName, setUserName] = useState("");
 
   const [taskInput, setTaskInput] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Study");
+  const [userName, setUserName] = useState("");
 
-  const getToday = () => {
-    const date = new Date();
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
+      if (user) {
+        const name = user.user_metadata?.full_name;
 
-    return `${year}-${month}-${day}`;
-  };
+        if (name) {
+          setUserName(name);
+        }
+      }
+    };
 
-  const getWeekStart = () => {
-    const date = new Date();
-    const day = date.getDay();
-
-    const difference = day === 0 ? -6 : 1 - day;
-
-    date.setDate(date.getDate() + difference);
-    date.setHours(0, 0, 0, 0);
-
-    return date;
-  };
-
-  const getWeekDate = (index) => {
-    const date = getWeekStart();
-
-    date.setDate(date.getDate() + index);
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  };
+    getUser();
+  }, []);
 
   const [tasks, setTasks] = useState([
     {
@@ -65,44 +52,51 @@ function Dashboard({
       title: "Study React",
       category: "Study",
       completed: false,
-      completedAt: null,
     },
     {
       id: 2,
       title: "Read a book",
       category: "Personal",
       completed: true,
-      completedAt: getWeekDate(0),
     },
     {
       id: 3,
       title: "Practice basketball",
       category: "Fitness",
       completed: false,
-      completedAt: null,
     },
     {
       id: 4,
       title: "Build ToDo App",
       category: "Work",
       completed: true,
-      completedAt: getWeekDate(3),
-    },
-    {
-      id: 5,
-      title: "Morning Workout",
-      category: "Fitness",
-      completed: true,
-      completedAt: getWeekDate(4),
     },
   ]);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000);
+    const getGreeting = () => {
+      const hour = new Date().getHours();
 
-    return () => clearInterval(timer);
+      if (hour < 12) {
+        return "Good Morning";
+      }
+
+      if (hour < 17) {
+        return "Good Afternoon";
+      }
+
+      if (hour < 21) {
+        return "Good Evening";
+      }
+
+      return "Good Night";
+    };
+
+    updateGreeting();
+
+    const interval = setInterval(updateGreeting, 60000);
+
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -141,7 +135,6 @@ function Dashboard({
       title: taskInput.trim(),
       category: selectedCategory,
       completed: false,
-      completedAt: null,
     };
 
     setTasks((prevTasks) => [...prevTasks, newTask]);
@@ -149,22 +142,15 @@ function Dashboard({
   };
 
   const toggleTask = (id) => {
-    const today = getToday();
-
     setTasks((prevTasks) =>
-      prevTasks.map((task) => {
-        if (task.id !== id) {
-          return task;
-        }
-
-        const newCompletedState = !task.completed;
-
-        return {
-          ...task,
-          completed: newCompletedState,
-          completedAt: newCompletedState ? today : null,
-        };
-      })
+      prevTasks.map((task) =>
+        task.id === id
+          ? {
+              ...task,
+              completed: !task.completed,
+            }
+          : task
+      )
     );
   };
 
@@ -207,77 +193,9 @@ function Dashboard({
     }
   );
 
-  const getGreeting = () => {
-    const hour = currentTime.getHours();
-
-    if (hour < 12) {
-      return "Good Morning";
-    }
-
-    if (hour < 17) {
-      return "Good Afternoon";
-    }
-
-    if (hour < 21) {
-      return "Good Evening";
-    }
-
-    return "Good Night";
-  };
-
-  const getWeekDays = () => {
-    const weekStart = getWeekStart();
-
-    return Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(weekStart);
-
-      date.setDate(weekStart.getDate() + index);
-
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-
-      return {
-        date: `${year}-${month}-${day}`,
-        name: date.toLocaleDateString("en-US", {
-          weekday: "short",
-        }),
-      };
-    });
-  };
-
-  const weekDays = getWeekDays();
-
-  const weeklyProgress = weekDays.map((day) => {
-    const completed = tasks.filter(
-      (task) =>
-        task.completed &&
-        task.completedAt === day.date
-    ).length;
-
-    return {
-      ...day,
-      completed,
-    };
-  });
-
-  const highestWeeklyValue = Math.max(
-    ...weeklyProgress.map((day) => day.completed),
-    1
-  );
-
-  const weeklyTotal = weeklyProgress.reduce(
-    (total, day) => total + day.completed,
-    0
-  );
-
-  const today = getToday();
-
   return (
     <div className={`dashboard ${darkMode ? "dark" : ""}`}>
-
       <div className="dashboard-top">
-
         <div className="dashboard-date">
           <CalendarDays size={20} />
           <span>{formattedDate}</span>
@@ -288,20 +206,20 @@ function Dashboard({
             {getGreeting()}, {userName || "there"}!
           </h1>
 
-          <p>
+          <p>Stay consistent and keep moving forward.</p>
+
+          <span>
             Stay consistent and keep moving forward.
-          </p>
+          </span>
         </div>
 
         <div className="dashboard-clock">
           <Clock3 size={19} />
           <span>{formattedTime}</span>
         </div>
-
       </div>
 
       <div className="dashboard-stats">
-
         <div className="dashboard-stat">
           <div className="stat-icon">
             <ClipboardList size={21} />
@@ -345,13 +263,10 @@ function Dashboard({
             <h2>{progress}%</h2>
           </div>
         </div>
-
       </div>
 
       <div className="dashboard-main">
-
         <div className="tasks-section">
-
           <div className="section-header">
             <div>
               <h2>Today's Tasks</h2>
@@ -364,7 +279,6 @@ function Dashboard({
           </div>
 
           <div className="add-task">
-
             <input
               type="text"
               placeholder="Add a new task..."
@@ -395,11 +309,9 @@ function Dashboard({
               <Plus size={18} />
               Add
             </button>
-
           </div>
 
           <div className="task-list">
-
             {tasks.map((task) => (
               <div
                 className={`task ${
@@ -407,7 +319,6 @@ function Dashboard({
                 }`}
                 key={task.id}
               >
-
                 <button
                   className="task-check"
                   onClick={() => toggleTask(task.id)}
@@ -418,7 +329,6 @@ function Dashboard({
                 </button>
 
                 <div className="task-info">
-
                   <h3>{task.title}</h3>
 
                   <span
@@ -426,7 +336,6 @@ function Dashboard({
                   >
                     {task.category}
                   </span>
-
                 </div>
 
                 <button
@@ -435,16 +344,12 @@ function Dashboard({
                 >
                   <Trash2 size={18} />
                 </button>
-
               </div>
             ))}
-
           </div>
-
         </div>
 
         <div className="progress-section">
-
           <div className="section-header">
             <div>
               <h2>Today's Progress</h2>
@@ -453,7 +358,6 @@ function Dashboard({
           </div>
 
           <div className="progress-circle">
-
             <div
               className="progress-value"
               style={{
@@ -462,18 +366,14 @@ function Dashboard({
                 }deg, #eeeeee 0deg)`,
               }}
             >
-
               <div className="progress-inner">
                 <strong>{progress}%</strong>
                 <span>Complete</span>
               </div>
-
             </div>
-
           </div>
 
           <div className="progress-info">
-
             <div>
               <span></span>
               <p>Completed</p>
@@ -485,78 +385,9 @@ function Dashboard({
               <p>Remaining</p>
               <strong>{pendingTasks}</strong>
             </div>
-
           </div>
-
         </div>
-
-        <div className="weekly-progress">
-
-          <div className="weekly-header">
-
-            <div>
-              <h2>Weekly Progress</h2>
-              <p>Tasks completed this week</p>
-            </div>
-
-            <strong>
-              {weeklyTotal}
-            </strong>
-
-          </div>
-
-          <div className="weekly-chart">
-
-            {weeklyProgress.map((day) => {
-
-              const isToday = day.date === today;
-
-              const barHeight =
-                day.completed === 0
-                  ? 0
-                  : (day.completed /
-                      highestWeeklyValue) *
-                    100;
-
-              return (
-                <div
-                  className={`weekly-day ${
-                    isToday ? "active-day" : ""
-                  }`}
-                  key={day.date}
-                >
-
-                  <div className="weekly-bar-area">
-
-                    {day.completed > 0 && (
-                      <span className="weekly-number">
-                        {day.completed}
-                      </span>
-                    )}
-
-                    <div
-                      className="weekly-bar"
-                      style={{
-                        height: `${barHeight}%`,
-                      }}
-                    />
-
-                  </div>
-
-                  <span className="weekly-day-name">
-                    {day.name}
-                  </span>
-
-                </div>
-              );
-            })}
-
-          </div>
-
-        </div>
-
       </div>
-
     </div>
   );
 }
