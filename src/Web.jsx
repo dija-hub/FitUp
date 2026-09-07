@@ -3,9 +3,7 @@ import { supabase } from "./utils/supabase";
 import Navbar from "./Navbar";
 import Auth from "./auth";
 import Dashboard from "./Dashboard";
-
 import "./Web.css";
-
 import {
   Flame,
   Palette,
