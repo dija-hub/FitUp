@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Check,
   Plus,
@@ -6,19 +6,25 @@ import {
   Edit3,
   ListTodo,
   TrendingUp,
-  Target,
-  CircleCheck,
+  Clock,
   CalendarDays,
+  Play,
+  RotateCcw,
 } from "lucide-react";
+
 import "./Dashboard.css";
 
-function Dashboard({ darkMode, setShowDashboard, setIsLoggedIn }) {
+function Dashboard({
+  darkMode,
+  setShowDashboard,
+  setIsLoggedIn,
+}) {
   const [tasks, setTasks] = useState([
     {
       id: 1,
       title: "Study React",
       category: "Study",
-      completed: true,
+      completed: false,
     },
     {
       id: 2,
@@ -29,52 +35,85 @@ function Dashboard({ darkMode, setShowDashboard, setIsLoggedIn }) {
     {
       id: 3,
       title: "Practice basketball",
-      category: "Fitness",
+      category: "Health",
       completed: false,
     },
     {
       id: 4,
       title: "Build ToDo App",
-      category: "Work",
+      category: "Project",
       completed: false,
     },
     {
       id: 5,
-      title: "Morning walk",
-      category: "Fitness",
-      completed: false,
+      title: "Morning Workout",
+      category: "Health",
+      completed: true,
     },
   ]);
 
-  const completedTasks = tasks.filter((task) => task.completed).length;
+  const [newTask, setNewTask] = useState("");
+  const [category, setCategory] = useState("Study");
+
+  const [time, setTime] = useState(new Date());
+
+  const [timerSeconds, setTimerSeconds] = useState(25 * 60);
+  const [timerRunning, setTimerRunning] = useState(false);
+
+  /* ---------------- DATE / CLOCK ---------------- */
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  /* ---------------- FOCUS TIMER ---------------- */
+
+  useEffect(() => {
+    if (!timerRunning) return;
+
+    const interval = setInterval(() => {
+      setTimerSeconds((seconds) => {
+        if (seconds <= 1) {
+          setTimerRunning(false);
+          return 25 * 60;
+        }
+
+        return seconds - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timerRunning]);
+
+  /* ---------------- TASK DATA ---------------- */
+
+  const completedTasks = tasks.filter(
+    (task) => task.completed
+  ).length;
+
   const totalTasks = tasks.length;
-  const remainingTasks = totalTasks - completedTasks;
+
+  const pendingTasks = totalTasks - completedTasks;
 
   const progress =
     totalTasks === 0
       ? 0
       : Math.round((completedTasks / totalTasks) * 100);
 
-  const weeklyProgress = [
-    { day: "Mon", value: 4 },
-    { day: "Tue", value: 6 },
-    { day: "Wed", value: 3 },
-    { day: "Thu", value: 7 },
-    { day: "Fri", value: 5 },
-    { day: "Sat", value: 8 },
-    { day: "Sun", value: completedTasks },
-  ];
-
-  const maxWeeklyValue = Math.max(
-    ...weeklyProgress.map((item) => item.value),
-    1
-  );
+  /* ---------------- TASK FUNCTIONS ---------------- */
 
   const toggleTask = (id) => {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
         task.id === id
-          ? { ...task, completed: !task.completed }
+          ? {
+              ...task,
+              completed: !task.completed,
+            }
           : task
       )
     );
@@ -86,44 +125,46 @@ function Dashboard({ darkMode, setShowDashboard, setIsLoggedIn }) {
     );
   };
 
-  const addTask = () => {
-    const title = window.prompt("Enter your task");
-
-    if (!title || title.trim() === "") {
-      return;
-    }
-
-    setTasks((currentTasks) => [
-      ...currentTasks,
-      {
-        id: Date.now(),
-        title: title.trim(),
-        category: "Personal",
-        completed: false,
-      },
-    ]);
-  };
-
   const editTask = (id) => {
     const task = tasks.find((item) => item.id === id);
 
-    if (!task) {
-      return;
-    }
+    if (!task) return;
 
-    const newTitle = window.prompt("Edit your task", task.title);
+    const updatedTitle = window.prompt(
+      "Edit task",
+      task.title
+    );
 
-    if (!newTitle || newTitle.trim() === "") {
+    if (!updatedTitle || updatedTitle.trim() === "") {
       return;
     }
 
     setTasks((currentTasks) =>
       currentTasks.map((item) =>
         item.id === id
-          ? { ...item, title: newTitle.trim() }
+          ? {
+              ...item,
+              title: updatedTitle.trim(),
+            }
           : item
       )
     );
+  };
+
+  const addTask = () => {
+    if (!newTask.trim()) return;
+
+    setTasks((currentTasks) => [
+      ...currentTasks,
+      {
+        id: Date.now(),
+        title: newTask.trim(),
+        category,
+        completed: false,
+      },
+    ]);
+
+    setNewTask("");
   };
 
   const clearCompleted = () => {
@@ -132,351 +173,455 @@ function Dashboard({ darkMode, setShowDashboard, setIsLoggedIn }) {
     );
   };
 
+  /* ---------------- TIMER ---------------- */
+
+  const toggleTimer = () => {
+    setTimerRunning((current) => !current);
+  };
+
+  const resetTimer = () => {
+    setTimerRunning(false);
+    setTimerSeconds(25 * 60);
+  };
+
+  const minutes = Math.floor(timerSeconds / 60)
+    .toString()
+    .padStart(2, "0");
+
+  const seconds = (timerSeconds % 60)
+    .toString()
+    .padStart(2, "0");
+
+  /* ---------------- WEEKLY DATA ---------------- */
+
+  const weeklyProgress = [
+    { day: "Mon", value: 3 },
+    { day: "Tue", value: 4 },
+    { day: "Wed", value: 5 },
+    { day: "Thu", value: 7 },
+    { day: "Fri", value: 4 },
+    { day: "Sat", value: 5 },
+    { day: "Sun", value: 6 },
+  ];
+
+  const maxWeeklyValue = 7;
+
+  /* ---------------- SIGN OUT ---------------- */
+
   const handleSignOut = async () => {
     setIsLoggedIn(false);
     setShowDashboard(false);
   };
 
-  const getCategoryClass = (category) => {
-    return category.toLowerCase();
-  };
-
   return (
-    <div className={`dashboard ${darkMode ? "dashboard-dark" : ""}`}>
+    <div
+      className={`dashboard ${
+        darkMode ? "dashboard-dark" : ""
+      }`}
+    >
       <main className="dashboard-content">
 
-        <div className="dashboard-date">
-          <CalendarDays size={15} />
-          <span className="today-label">TODAY</span>
-          <span className="date-dot">•</span>
-          <span>
-            {new Date().toLocaleDateString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
-          </span>
-        </div>
+        {/* ================= TOP ================= */}
 
-        <div className="dashboard-header">
-          <div>
+        <div className="top-area">
+
+          <div className="date-box">
+            <strong>
+              {time.toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </strong>
+
+            <span>
+              {time.toLocaleDateString("en-US", {
+                weekday: "long",
+              })}
+            </span>
+          </div>
+
+          <div className="welcome-box">
             <h1>
-              Good evening, <span>Falak.</span>
+              Let's make today productive.
             </h1>
 
             <p>
-              Small steps today create big results tomorrow.
+              Stay consistent and keep moving forward.
             </p>
           </div>
 
-          <button className="add-task-btn" onClick={addTask}>
-            <Plus size={19} />
-            Add Task
-          </button>
+          <div className="clock-box">
+            {time.toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+            })}
+          </div>
+
         </div>
+
+        {/* ================= STATS ================= */}
 
         <section className="stats-grid">
 
           <div className="stat-card">
-            <div className="stat-top">
-              <div className="stat-icon orange">
-                <ListTodo size={21} />
-              </div>
-
-              <span className="stat-label">TODAY</span>
+            <div className="stat-icon orange">
+              <ListTodo size={25} />
             </div>
-
-            <div className="stat-number">{totalTasks}</div>
-
-            <p>Total tasks</p>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-top">
-              <div className="stat-icon green">
-                <CircleCheck size={21} />
-              </div>
-
-              <span className="stat-label">DONE</span>
-            </div>
-
-            <div className="stat-number">{completedTasks}</div>
-
-            <p>Tasks completed</p>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-top">
-              <div className="stat-icon blue">
-                <TrendingUp size={21} />
-              </div>
-
-              <span className="stat-label">PROGRESS</span>
-            </div>
-
-            <div className="stat-number">{progress}%</div>
-
-            <p>Daily progress</p>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-top">
-              <div className="stat-icon purple">
-                <Target size={21} />
-              </div>
-
-              <span className="stat-label">LEFT</span>
-            </div>
-
-            <div className="stat-number">{remainingTasks}</div>
-
-            <p>Tasks remaining</p>
-          </div>
-
-        </section>
-
-        <section className="progress-card">
-
-          <div className="progress-info">
-            <div>
-              <span className="section-label">
-                TODAY'S PROGRESS
-              </span>
-
-              <h2>
-                Keep going!
-              </h2>
-
-              <p>
-                {completedTasks} of {totalTasks} tasks completed today.
-              </p>
-            </div>
-
-            <div className="progress-circle">
-              <svg viewBox="0 0 100 100">
-                <circle
-                  className="progress-background"
-                  cx="50"
-                  cy="50"
-                  r="42"
-                />
-
-                <circle
-                  className="progress-value"
-                  cx="50"
-                  cy="50"
-                  r="42"
-                  style={{
-                    strokeDasharray: `${progress * 2.64} 264`,
-                  }}
-                />
-              </svg>
-
-              <span>{progress}%</span>
-            </div>
-          </div>
-
-          <div className="progress-bar">
-            <div
-              className="progress-fill"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-
-        </section>
-
-        <section className="task-section">
-
-          <div className="task-header">
 
             <div>
-              <span className="section-label">
-                YOUR TASKS
+              <span className="stat-title">
+                All Tasks
               </span>
 
-              <h2>Today's Tasks</h2>
-
-              <p>
-                Stay consistent and keep moving forward.
-              </p>
-            </div>
-
-            <div className="task-header-actions">
-
-              {completedTasks > 0 && (
-                <button
-                  className="clear-btn"
-                  onClick={clearCompleted}
-                >
-                  Clear completed
-                </button>
-              )}
-
-              <button
-                className="task-add-small"
-                onClick={addTask}
-              >
-                <Plus size={18} />
-              </button>
-
-            </div>
-
-          </div>
-
-          <div className="task-counter">
-            <span>
-              {completedTasks} of {totalTasks} completed
-            </span>
-
-            <span>{remainingTasks} remaining</span>
-          </div>
-
-          <div className="task-list">
-
-            {tasks.length === 0 ? (
-              <div className="empty-tasks">
-                <CircleCheck size={40} />
-                <h3>No tasks yet</h3>
-                <p>
-                  Add a task and start making progress.
-                </p>
-
-                <button onClick={addTask}>
-                  <Plus size={17} />
-                  Add your first task
-                </button>
-              </div>
-            ) : (
-              tasks.map((task) => (
-                <div
-                  className={`task-item ${
-                    task.completed ? "task-completed" : ""
-                  }`}
-                  key={task.id}
-                >
-
-                  <button
-                    className={`task-check ${
-                      task.completed ? "checked" : ""
-                    }`}
-                    onClick={() => toggleTask(task.id)}
-                  >
-                    {task.completed && <Check size={16} />}
-                  </button>
-
-                  <div className="task-info">
-
-                    <div className="task-title-row">
-                      <span
-                        className={`category-dot ${getCategoryClass(
-                          task.category
-                        )}`}
-                      ></span>
-
-                      <h3>{task.title}</h3>
-                    </div>
-
-                    <span className="task-category">
-                      {task.category}
-                    </span>
-
-                  </div>
-
-                  <div className="task-actions">
-
-                    <button
-                      onClick={() => editTask(task.id)}
-                      aria-label="Edit task"
-                    >
-                      <Edit3 size={17} />
-                    </button>
-
-                    <button
-                      onClick={() => deleteTask(task.id)}
-                      aria-label="Delete task"
-                    >
-                      <Trash2 size={17} />
-                    </button>
-
-                  </div>
-
-                </div>
-              ))
-            )}
-
-          </div>
-
-        </section>
-
-        <section className="weekly-section">
-
-          <div className="weekly-header">
-            <div>
-              <span className="section-label">
-                THIS WEEK
-              </span>
-
-              <h2>Weekly Progress</h2>
-
-              <p>
-                Your activity throughout the week.
-              </p>
-            </div>
-
-            <div className="weekly-total">
-              <strong>
-                {weeklyProgress.reduce(
-                  (total, item) => total + item.value,
-                  0
-                )}
+              <strong className="stat-number orange-text">
+                {totalTasks}
               </strong>
-
-              <span>tasks</span>
             </div>
           </div>
 
-          <div className="weekly-chart">
+          <div className="stat-card">
+            <div className="stat-icon green">
+              <Check size={25} />
+            </div>
 
-            {weeklyProgress.map((item) => (
-              <div className="week-day" key={item.day}>
+            <div>
+              <span className="stat-title">
+                Done
+              </span>
 
-                <div className="bar-area">
+              <strong className="stat-number green-text">
+                {completedTasks}
+              </strong>
+            </div>
+          </div>
 
-                  <div
-                    className={`week-bar ${
-                      item.value === 0 ? "empty-bar" : ""
-                    }`}
-                    style={{
-                      height: `${
-                        Math.max(
-                          (item.value / maxWeeklyValue) * 100,
-                          item.value === 0 ? 0 : 15
-                        )
-                      }%`,
-                    }}
-                  >
-                    {item.value > 0 && (
-                      <span>{item.value}</span>
-                    )}
-                  </div>
+          <div className="stat-card">
+            <div className="stat-icon dark-icon">
+              <Clock size={25} />
+            </div>
 
-                </div>
+            <div>
+              <span className="stat-title">
+                In Progress
+              </span>
 
-                <span className="week-label">
-                  {item.day}
+              <strong className="stat-number">
+                {pendingTasks}
+              </strong>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon red-icon">
+              <CalendarDays size={25} />
+            </div>
+
+            <div>
+              <span className="stat-title">
+                Pending
+              </span>
+
+              <strong className="stat-number red-text">
+                {pendingTasks}
+              </strong>
+            </div>
+          </div>
+
+        </section>
+
+        {/* ================= MAIN GRID ================= */}
+
+        <div className="dashboard-grid">
+
+          {/* ================= LEFT ================= */}
+
+          <div className="left-column">
+
+            {/* ADD TASK */}
+
+            <section className="add-task-section">
+
+              <h2>Add New Task</h2>
+
+              <div className="add-task-row">
+
+                <input
+                  type="text"
+                  value={newTask}
+                  onChange={(e) =>
+                    setNewTask(e.target.value)
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      addTask();
+                    }
+                  }}
+                  placeholder="What do you want to do?"
+                />
+
+                <select
+                  value={category}
+                  onChange={(e) =>
+                    setCategory(e.target.value)
+                  }
+                >
+                  <option>Study</option>
+                  <option>Personal</option>
+                  <option>Health</option>
+                  <option>Project</option>
+                </select>
+
+                <button
+                  className="add-button"
+                  onClick={addTask}
+                >
+                  <Plus size={21} />
+                  Add Task
+                </button>
+
+              </div>
+
+            </section>
+
+            {/* MY TASKS */}
+
+            <section className="tasks-section">
+
+              <div className="tasks-heading">
+
+                <h2>My Tasks</h2>
+
+                <span>
+                  {totalTasks} tasks
                 </span>
 
               </div>
-            ))}
+
+              <div className="task-list">
+
+                {tasks.length === 0 ? (
+                  <div className="empty-tasks">
+                    <p>No tasks yet.</p>
+                  </div>
+                ) : (
+                  tasks.map((task) => (
+                    <div
+                      className={`task-item ${
+                        task.completed
+                          ? "task-completed"
+                          : ""
+                      }`}
+                      key={task.id}
+                    >
+
+                      <button
+                        className={`task-check ${
+                          task.completed
+                            ? "checked"
+                            : ""
+                        }`}
+                        onClick={() =>
+                          toggleTask(task.id)
+                        }
+                      >
+                        {task.completed && (
+                          <Check size={16} />
+                        )}
+                      </button>
+
+                      <div className="task-title">
+                        <h3>{task.title}</h3>
+                      </div>
+
+                      <span
+                        className={`category ${
+                          task.category.toLowerCase()
+                        }`}
+                      >
+                        {task.category}
+                      </span>
+
+                      <div className="task-actions">
+
+                        <button
+                          onClick={() =>
+                            editTask(task.id)
+                          }
+                        >
+                          <Edit3 size={17} />
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            deleteTask(task.id)
+                          }
+                        >
+                          <Trash2 size={17} />
+                        </button>
+
+                      </div>
+
+                    </div>
+                  ))
+                )}
+
+              </div>
+
+              <div className="tasks-footer">
+
+                <span>
+                  {completedTasks} of {totalTasks} completed
+                </span>
+
+                {completedTasks > 0 && (
+                  <button
+                    onClick={clearCompleted}
+                  >
+                    Clear completed
+                    <Trash2 size={15} />
+                  </button>
+                )}
+
+              </div>
+
+            </section>
 
           </div>
 
-        </section>
+          {/* ================= RIGHT ================= */}
+
+          <div className="right-column">
+
+            {/* WEEKLY PROGRESS */}
+
+            <section className="weekly-section">
+
+              <h2>Weekly Progress</h2>
+
+              <div className="weekly-chart">
+
+                {weeklyProgress.map((item) => (
+                  <div
+                    className="week-day"
+                    key={item.day}
+                  >
+
+                    <div className="bar-container">
+
+                      <div
+                        className={`week-bar ${
+                          item.day === "Thu"
+                            ? "active-bar"
+                            : ""
+                        }`}
+                        style={{
+                          height: `${
+                            (item.value /
+                              maxWeeklyValue) *
+                            100
+                          }%`,
+                        }}
+                      />
+
+                    </div>
+
+                    <span>
+                      {item.day}
+                    </span>
+
+                  </div>
+                ))}
+
+              </div>
+
+              <div className="weekly-divider" />
+
+              {/* PROGRESS */}
+
+              <div className="completion-area">
+
+                <div
+                  className="progress-ring"
+                  style={{
+                    "--progress": `${progress}%`,
+                  }}
+                >
+                  <div>
+                    <strong>{progress}%</strong>
+                  </div>
+                </div>
+
+                <div className="completion-text">
+                  <strong>
+                    {completedTasks} of {totalTasks} tasks
+                  </strong>
+
+                  <span>completed</span>
+                </div>
+
+              </div>
+
+              {/* TIMER */}
+
+              <div className="timer-card">
+
+                <div className="timer-header">
+
+                  <div>
+                    <Clock size={20} />
+                    <strong>
+                      Focus Timer
+                    </strong>
+                  </div>
+
+                  <span>
+                    25 min focus
+                  </span>
+
+                </div>
+
+                <div className="timer-display">
+                  {minutes}:{seconds}
+                </div>
+
+                <div className="timer-controls">
+
+                  <button
+                    className="timer-start"
+                    onClick={toggleTimer}
+                  >
+                    <Play size={18} />
+
+                    {timerRunning
+                      ? "Pause"
+                      : "Start"}
+                  </button>
+
+                  <button
+                    className="timer-reset"
+                    onClick={resetTimer}
+                  >
+                    <RotateCcw size={18} />
+                  </button>
+
+                </div>
+
+              </div>
+
+            </section>
+
+          </div>
+
+        </div>
+
+        {/* ================= FOOTER ================= */}
 
         <div className="dashboard-footer">
 
           <p>
-            Keep showing up. Progress happens one day at a time.
+            Keep showing up. Progress happens one day
+            at a time.
           </p>
 
           <button onClick={handleSignOut}>
