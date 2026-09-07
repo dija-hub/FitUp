@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./utils/supabase";
 import Navbar from "./Navbar";
-import Auth from "./auth";
+import Auth from "./Auth";
 import Dashboard from "./Dashboard";
 import "./Web.css";
 import {
