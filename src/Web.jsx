@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "./utils/supabase";
 import Navbar from "./Navbar";
 import Auth from "./auth";
-import Dashboard from "./Dashboard";
+import Dashboard from "./dashboard";
 
 import "./Web.css";
 
