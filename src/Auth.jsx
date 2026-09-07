@@ -10,7 +10,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 
-import "./auth.css";
+import "./Auth.css";
 
 function Auth({
   setShowSignUp,
