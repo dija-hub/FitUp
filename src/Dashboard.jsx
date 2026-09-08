@@ -64,13 +64,6 @@ function Dashboard({
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState("Study");
 
-  // DAILY STREAK
-  const [completionDates, setCompletionDates] = useState(() => {
-    const savedDates = localStorage.getItem("fitup-completion-dates");
-
-    return savedDates ? JSON.parse(savedDates) : [];
-  });
-
   useEffect(() => {
     const interval = setInterval(() => {
       setTime(new Date());
@@ -96,14 +89,6 @@ function Dashboard({
     return () => clearInterval(interval);
   }, [timerRunning]);
 
-  // Save completion dates
-  useEffect(() => {
-    localStorage.setItem(
-      "fitup-completion-dates",
-      JSON.stringify(completionDates)
-    );
-  }, [completionDates]);
-
   const completedTasks = tasks.filter(
     (task) => task.completed
   ).length;
@@ -117,58 +102,6 @@ function Dashboard({
       ? 0
       : Math.round((completedTasks / totalTasks) * 100);
 
-  // ---------------- DAILY STREAK ----------------
-
-  const getToday = () => {
-    const today = new Date();
-
-    return `${today.getFullYear()}-${String(
-      today.getMonth() + 1
-    ).padStart(2, "0")}-${String(today.getDate()).padStart(
-      2,
-      "0"
-    )}`;
-  };
-
-  const updateStreak = () => {
-    const today = getToday();
-
-    setCompletionDates((dates) => {
-      if (!dates.includes(today)) {
-        return [...dates, today];
-      }
-
-      return dates;
-    });
-  };
-
-  const calculateStreak = () => {
-    let streak = 0;
-    const currentDate = new Date();
-
-    while (true) {
-      const dateString = `${currentDate.getFullYear()}-${String(
-        currentDate.getMonth() + 1
-      ).padStart(2, "0")}-${String(
-        currentDate.getDate()
-      ).padStart(2, "0")}`;
-
-      if (!completionDates.includes(dateString)) {
-        break;
-      }
-
-      streak++;
-
-      currentDate.setDate(currentDate.getDate() - 1);
-    }
-
-    return streak;
-  };
-
-  const dailyStreak = calculateStreak();
-
-  // ---------------- TASK FUNCTIONS ----------------
-
   const toggleTask = (id) => {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
@@ -180,12 +113,6 @@ function Dashboard({
           : task
       )
     );
-
-    const task = tasks.find((task) => task.id === id);
-
-    if (task && !task.completed) {
-      updateStreak();
-    }
   };
 
   const deleteTask = (id) => {
@@ -258,6 +185,18 @@ function Dashboard({
   const seconds = (timerSeconds % 60)
     .toString()
     .padStart(2, "0");
+
+  const weeklyProgress = [
+    { day: "Mon", value: 3 },
+    { day: "Tue", value: 4 },
+    { day: "Wed", value: 5 },
+    { day: "Thu", value: 7 },
+    { day: "Fri", value: 4 },
+    { day: "Sat", value: 5 },
+    { day: "Sun", value: 6 },
+  ];
+
+  const maxWeeklyValue = 7;
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -481,32 +420,38 @@ function Dashboard({
           </div>
 
           <div className="right-column">
-            <section className="daily-streak-section">
-              <h2>Daily Streak</h2>
+            <section className="weekly-section">
+              <h2>Weekly Progress</h2>
 
-              <div className="daily-streak-content">
-                <div className="streak-number">
-                  {dailyStreak}
-                </div>
+              <div className="weekly-chart">
+                {weeklyProgress.map((item) => (
+                  <div
+                    className="week-day"
+                    key={item.day}
+                  >
+                    <div className="bar-container">
+                      <div
+                        className={`week-bar ${
+                          item.day === "Thu"
+                            ? "active-bar"
+                            : ""
+                        }`}
+                        style={{
+                          height: `${
+                            (item.value /
+                              maxWeeklyValue) *
+                            100
+                          }%`,
+                        }}
+                      />
+                    </div>
 
-                <div className="streak-text">
-                  <strong>
-                    {dailyStreak === 0
-                      ? "Start Your Streak"
-                      : dailyStreak === 1
-                      ? "1 Day Streak"
-                      : `${dailyStreak} Day Streak`}
-                  </strong>
-
-                  <span>
-                    {dailyStreak === 0
-                      ? "Complete a task today to start your streak!"
-                      : dailyStreak === 1
-                      ? "Great start! Come back tomorrow to keep it going."
-                      : "Keep completing tasks every day and build your streak."}
-                  </span>
-                </div>
+                    <span>{item.day}</span>
+                  </div>
+                ))}
               </div>
+
+              <div className="weekly-divider" />
 
               <div className="completion-area">
                 <div
