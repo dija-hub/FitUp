@@ -27,7 +27,14 @@ function Web({
         data: { session },
       } = await supabase.auth.getSession();
 
-      setIsLoggedIn(!!session);
+      if (session) {
+        setIsLoggedIn(true);
+        setShowDashboard(true);
+        setActiveSection("dashboard");
+      } else {
+        setIsLoggedIn(false);
+        setShowDashboard(false);
+      }
     };
 
     checkUser();
@@ -35,13 +42,20 @@ function Web({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoggedIn(!!session);
+      if (session) {
+        setIsLoggedIn(true);
+        setShowDashboard(true);
+        setActiveSection("dashboard");
+      } else {
+        setIsLoggedIn(false);
+        setShowDashboard(false);
+      }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [setIsLoggedIn]);
+  }, [setIsLoggedIn, setShowDashboard]);
 
   const openDashboard = async () => {
     const {
@@ -76,18 +90,18 @@ function Web({
 
   return (
     <div className={darkMode ? "dark-page" : ""}>
- <Navbar
-  activeSection={activeSection}
-  setActiveSection={setActiveSection}
-  darkMode={darkMode}
-  setDarkMode={setDarkMode}
-  setShowSignUp={setShowSignUp}
-  setIsLoggedIn={setIsLoggedIn}
-  setShowDashboard={setShowDashboard}
-  isLoggedIn={isLoggedIn}
-  showDashboard={showDashboard}
-  onSignOut={handleSignOut}
-/>
+      <Navbar
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        setShowSignUp={setShowSignUp}
+        setIsLoggedIn={setIsLoggedIn}
+        setShowDashboard={setShowDashboard}
+        isLoggedIn={isLoggedIn}
+        showDashboard={showDashboard}
+        onSignOut={handleSignOut}
+      />
 
       {!showDashboard ? (
         <>

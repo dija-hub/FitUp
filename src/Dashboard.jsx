@@ -11,6 +11,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 
+import { supabase } from "./utils/supabase";
 import "./Dashboard.css";
 
 function Dashboard({
@@ -198,6 +199,13 @@ function Dashboard({
   const maxWeeklyValue = 7;
 
   const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error("Sign out error:", error);
+      return;
+    }
+
     setIsLoggedIn(false);
     setShowDashboard(false);
   };
@@ -448,9 +456,9 @@ function Dashboard({
               <div className="completion-area">
                 <div
                   className="progress-ring"
-       style={{
-  "--progress": `${progress * 3.6}deg`,
-}}
+                  style={{
+                    "--progress": `${progress * 3.6}deg`,
+                  }}
                 >
                   <div>
                     <strong>{progress}%</strong>
