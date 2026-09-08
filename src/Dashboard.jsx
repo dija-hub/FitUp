@@ -9,8 +9,6 @@ import {
   CalendarDays,
   Play,
   RotateCcw,
-  X,
-  Save,
 } from "lucide-react";
 
 import "./Dashboard.css";
@@ -56,14 +54,14 @@ function Dashboard({
   const [newTask, setNewTask] = useState("");
   const [category, setCategory] = useState("Study");
 
-  const [editingId, setEditingId] = useState(null);
-  const [editingTitle, setEditingTitle] = useState("");
-  const [editingCategory, setEditingCategory] = useState("Study");
-
   const [time, setTime] = useState(new Date());
 
   const [timerSeconds, setTimerSeconds] = useState(25 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
+
+  const [editingTask, setEditingTask] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editCategory, setEditCategory] = useState("Study");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -120,40 +118,32 @@ function Dashboard({
     setTasks((currentTasks) =>
       currentTasks.filter((task) => task.id !== id)
     );
-
-    if (editingId === id) {
-      setEditingId(null);
-    }
   };
 
-  const startEdit = (task) => {
-    setEditingId(task.id);
-    setEditingTitle(task.title);
-    setEditingCategory(task.category);
+  const editTask = (task) => {
+    setEditingTask(task);
+    setEditTitle(task.title);
+    setEditCategory(task.category);
   };
 
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditingTitle("");
-    setEditingCategory("Study");
-  };
-
-  const saveEdit = (id) => {
-    if (!editingTitle.trim()) return;
+  const saveEdit = () => {
+    if (!editTitle.trim()) return;
 
     setTasks((currentTasks) =>
-      currentTasks.map((task) =>
-        task.id === id
+      currentTasks.map((item) =>
+        item.id === editingTask.id
           ? {
-              ...task,
-              title: editingTitle.trim(),
-              category: editingCategory,
+              ...item,
+              title: editTitle.trim(),
+              category: editCategory,
             }
-          : task
+          : item
       )
     );
 
-    cancelEdit();
+    setEditingTask(null);
+    setEditTitle("");
+    setEditCategory("Study");
   };
 
   const addTask = () => {
@@ -219,7 +209,6 @@ function Dashboard({
       }`}
     >
       <main className="dashboard-content">
-
         <div className="top-area">
           <div className="date-box">
             <strong>
@@ -243,7 +232,6 @@ function Dashboard({
           </div>
 
           <div className="clock-box">
-            <Clock size={19} />
             {time.toLocaleTimeString("en-US", {
               hour: "numeric",
               minute: "2-digit",
@@ -252,7 +240,6 @@ function Dashboard({
         </div>
 
         <section className="stats-grid">
-
           <div className="stat-card">
             <div className="stat-icon orange">
               <ListTodo size={25} />
@@ -285,8 +272,8 @@ function Dashboard({
             </div>
 
             <div>
-              <span className="stat-title">Active</span>
-              <strong className="stat-number active-text">
+              <span className="stat-title">In Progress</span>
+              <strong className="stat-number dark-text">
                 {pendingTasks}
               </strong>
             </div>
@@ -304,24 +291,18 @@ function Dashboard({
               </strong>
             </div>
           </div>
-
         </section>
 
         <div className="dashboard-grid">
-
           <div className="left-column">
-
             <section className="add-task-section">
               <h2>Add New Task</h2>
 
               <div className="add-task-row">
-
                 <input
                   type="text"
                   value={newTask}
-                  onChange={(e) =>
-                    setNewTask(e.target.value)
-                  }
+                  onChange={(e) => setNewTask(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       addTask();
@@ -330,17 +311,19 @@ function Dashboard({
                   placeholder="What do you want to do?"
                 />
 
-                <select
-                  value={category}
-                  onChange={(e) =>
-                    setCategory(e.target.value)
-                  }
-                >
-                  <option>Study</option>
-                  <option>Personal</option>
-                  <option>Health</option>
-                  <option>Project</option>
-                </select>
+                <div className="category-select-wrapper">
+                  <select
+                    value={category}
+                    onChange={(e) =>
+                      setCategory(e.target.value)
+                    }
+                  >
+                    <option value="Study">Study</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Health">Health</option>
+                    <option value="Project">Project</option>
+                  </select>
+                </div>
 
                 <button
                   className="add-button"
@@ -349,23 +332,17 @@ function Dashboard({
                   <Plus size={21} />
                   Add Task
                 </button>
-
               </div>
             </section>
 
             <section className="tasks-section">
-
               <div className="tasks-heading">
-                <div>
-                  <h2>My Tasks</h2>
-                  <p>Stay organized and get things done.</p>
-                </div>
+                <h2>My Tasks</h2>
 
                 <span>{totalTasks} tasks</span>
               </div>
 
               <div className="task-list">
-
                 {tasks.length === 0 ? (
                   <div className="empty-tasks">
                     <p>No tasks yet.</p>
@@ -377,117 +354,46 @@ function Dashboard({
                         task.completed
                           ? "task-completed"
                           : ""
-                      } ${
-                        editingId === task.id
-                          ? "task-editing"
-                          : ""
                       }`}
                       key={task.id}
                     >
+                      <button
+                        className={`task-check ${
+                          task.completed ? "checked" : ""
+                        }`}
+                        onClick={() => toggleTask(task.id)}
+                      >
+                        {task.completed && (
+                          <Check size={16} />
+                        )}
+                      </button>
 
-                      {editingId === task.id ? (
-                        <div className="edit-task-row">
+                      <div className="task-title">
+                        <h3>{task.title}</h3>
+                      </div>
 
-                          <input
-                            className="edit-task-input"
-                            value={editingTitle}
-                            onChange={(e) =>
-                              setEditingTitle(e.target.value)
-                            }
-                            autoFocus
-                          />
+                      <span
+                        className={`category ${task.category.toLowerCase()}`}
+                      >
+                        {task.category}
+                      </span>
 
-                          <select
-                            className="edit-category-select"
-                            value={editingCategory}
-                            onChange={(e) =>
-                              setEditingCategory(e.target.value)
-                            }
-                          >
-                            <option>Study</option>
-                            <option>Personal</option>
-                            <option>Health</option>
-                            <option>Project</option>
-                          </select>
+                      <div className="task-actions">
+                        <button
+                          onClick={() => editTask(task)}
+                        >
+                          <Edit3 size={17} />
+                        </button>
 
-                          <div className="edit-actions">
-
-                            <button
-                              className="save-edit"
-                              onClick={() =>
-                                saveEdit(task.id)
-                              }
-                            >
-                              <Save size={16} />
-                            </button>
-
-                            <button
-                              className="cancel-edit"
-                              onClick={cancelEdit}
-                            >
-                              <X size={16} />
-                            </button>
-
-                          </div>
-
-                        </div>
-                      ) : (
-                        <>
-                          <button
-                            className={`task-check ${
-                              task.completed
-                                ? "checked"
-                                : ""
-                            }`}
-                            onClick={() =>
-                              toggleTask(task.id)
-                            }
-                          >
-                            {task.completed && (
-                              <Check size={16} />
-                            )}
-                          </button>
-
-                          <div className="task-title">
-                            <h3>{task.title}</h3>
-                          </div>
-
-                          <span
-                            className={`category ${
-                              task.category.toLowerCase()
-                            }`}
-                          >
-                            {task.category}
-                          </span>
-
-                          <div className="task-actions">
-
-                            <button
-                              onClick={() =>
-                                startEdit(task)
-                              }
-                              title="Edit task"
-                            >
-                              <Edit3 size={17} />
-                            </button>
-
-                            <button
-                              onClick={() =>
-                                deleteTask(task.id)
-                              }
-                              title="Delete task"
-                            >
-                              <Trash2 size={17} />
-                            </button>
-
-                          </div>
-                        </>
-                      )}
-
+                        <button
+                          onClick={() => deleteTask(task.id)}
+                        >
+                          <Trash2 size={17} />
+                        </button>
+                      </div>
                     </div>
                   ))
                 )}
-
               </div>
 
               <div className="tasks-footer">
@@ -502,34 +408,20 @@ function Dashboard({
                   </button>
                 )}
               </div>
-
             </section>
-
           </div>
 
           <div className="right-column">
-
             <section className="weekly-section">
-
-              <div className="weekly-heading">
-                <div>
-                  <h2>Weekly Progress</h2>
-                  <p>Tasks completed this week</p>
-                </div>
-
-                <strong>{completedTasks}</strong>
-              </div>
+              <h2>Weekly Progress</h2>
 
               <div className="weekly-chart">
-
                 {weeklyProgress.map((item) => (
                   <div
                     className="week-day"
                     key={item.day}
                   >
-
                     <div className="bar-container">
-
                       <div
                         className={`week-bar ${
                           item.day === "Thu"
@@ -544,20 +436,16 @@ function Dashboard({
                           }%`,
                         }}
                       />
-
                     </div>
 
                     <span>{item.day}</span>
-
                   </div>
                 ))}
-
               </div>
 
               <div className="weekly-divider" />
 
               <div className="completion-area">
-
                 <div
                   className="progress-ring"
                   style={{
@@ -576,20 +464,16 @@ function Dashboard({
 
                   <span>completed</span>
                 </div>
-
               </div>
 
               <div className="timer-card">
-
                 <div className="timer-header">
-
                   <div>
                     <Clock size={20} />
                     <strong>Focus Timer</strong>
                   </div>
 
                   <span>25 min focus</span>
-
                 </div>
 
                 <div className="timer-display">
@@ -597,16 +481,13 @@ function Dashboard({
                 </div>
 
                 <div className="timer-controls">
-
                   <button
                     className="timer-start"
                     onClick={toggleTimer}
                   >
                     <Play size={18} />
 
-                    {timerRunning
-                      ? "Pause"
-                      : "Start"}
+                    {timerRunning ? "Pause" : "Start"}
                   </button>
 
                   <button
@@ -615,18 +496,80 @@ function Dashboard({
                   >
                     <RotateCcw size={18} />
                   </button>
-
                 </div>
-
               </div>
-
             </section>
-
           </div>
-
         </div>
 
+        <div className="dashboard-footer">
+          <p>Stay focused and keep making progress.</p>
+
+          <button onClick={handleSignOut}>
+            Sign out
+          </button>
+        </div>
       </main>
+
+      {editingTask && (
+        <div
+          className="edit-overlay"
+          onClick={() => setEditingTask(null)}
+        >
+          <div
+            className="edit-box"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2>Edit Task</h2>
+
+            <input
+              type="text"
+              value={editTitle}
+              onChange={(e) =>
+                setEditTitle(e.target.value)
+              }
+              placeholder="Task name"
+            />
+
+            <p>Choose category</p>
+
+            <div className="edit-categories">
+              {[
+                "Study",
+                "Personal",
+                "Health",
+                "Project",
+              ].map((item) => (
+                <button
+                  key={item}
+                  className={`edit-category ${item.toLowerCase()} ${
+                    editCategory === item ? "selected" : ""
+                  }`}
+                  onClick={() => setEditCategory(item)}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+
+            <div className="edit-actions">
+              <button
+                className="cancel-edit"
+                onClick={() => setEditingTask(null)}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="save-edit"
+                onClick={saveEdit}
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
