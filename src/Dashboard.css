@@ -530,46 +530,38 @@
   gap: 25px;
   padding: 5px 20px 15px;
 }
-
 .progress-ring {
-  --progress: 0%;
-
   width: 138px;
   height: 138px;
-
-  flex-shrink: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   border-radius: 50%;
 
   background: conic-gradient(
     #ff7200 var(--progress),
     #f1e4d8 0
   );
-transition: --progress 0.8s ease-in-out;
-  transition: background 0.8s ease-in-out;
-}
-
-.progress-ring > div {
-  width: 105px;
-  height: 105px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
+  transition: background 0.8s ease;
+}
+
+.progress-ring > div {
+  width: 105px;
+  height: 105px;
   border-radius: 50%;
-  background: #ffffff;
+
+  background: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .progress-ring strong {
   font-size: 27px;
   font-weight: 600;
-
-  transition: opacity 0.3s ease;
 }
 
 .completion-text {
