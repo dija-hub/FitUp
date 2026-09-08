@@ -449,8 +449,8 @@ function Dashboard({
                 <div
                   className="progress-ring"
                   style={{
-                    "--progress": `${progress}%`,
-                  }}
+  "--progress": `${progress}%`,
+}}
                 >
                   <div>
                     <strong>{progress}%</strong>
