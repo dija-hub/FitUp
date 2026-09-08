@@ -1310,3 +1310,45 @@
     align-items: center;
   }
 }
+.edit-task-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 13px;
+  border: 1px solid #ff9b2f;
+  border-radius: 10px;
+  outline: none;
+  background: #ffffff;
+  color: #171717;
+  font-family: inherit;
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.edit-task-input:focus {
+  border-color: #ff851c;
+  box-shadow: 0 0 0 3px rgba(255, 155, 47, 0.12);
+}
+
+.save-edit {
+  color: #3b9950 !important;
+}
+
+.save-edit:hover {
+  background: #e9f5e9 !important;
+  color: #318c46 !important;
+}
+
+.cancel-edit {
+  color: #77716b !important;
+}
+
+.cancel-edit:hover {
+  background: #f2f2f2 !important;
+  color: #444 !important;
+}
+
+.dashboard-dark .edit-task-input {
+  background: #292929;
+  border-color: #ff9b2f;
+  color: #eeeeee;
+}

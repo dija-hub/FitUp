@@ -5,7 +5,6 @@ import {
   Trash2,
   Edit3,
   ListTodo,
-  TrendingUp,
   Clock,
   CalendarDays,
   Play,
@@ -54,13 +53,13 @@ function Dashboard({
 
   const [newTask, setNewTask] = useState("");
   const [category, setCategory] = useState("Study");
+  const [editingId, setEditingId] = useState(null);
+  const [editingTitle, setEditingTitle] = useState("");
 
   const [time, setTime] = useState(new Date());
 
   const [timerSeconds, setTimerSeconds] = useState(25 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
-
-  /* ---------------- DATE / CLOCK ---------------- */
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -69,8 +68,6 @@ function Dashboard({
 
     return () => clearInterval(interval);
   }, []);
-
-  /* ---------------- FOCUS TIMER ---------------- */
 
   useEffect(() => {
     if (!timerRunning) return;
@@ -89,8 +86,6 @@ function Dashboard({
     return () => clearInterval(interval);
   }, [timerRunning]);
 
-  /* ---------------- TASK DATA ---------------- */
-
   const completedTasks = tasks.filter(
     (task) => task.completed
   ).length;
@@ -103,8 +98,6 @@ function Dashboard({
     totalTasks === 0
       ? 0
       : Math.round((completedTasks / totalTasks) * 100);
-
-  /* ---------------- TASK FUNCTIONS ---------------- */
 
   const toggleTask = (id) => {
     setTasks((currentTasks) =>
@@ -123,32 +116,39 @@ function Dashboard({
     setTasks((currentTasks) =>
       currentTasks.filter((task) => task.id !== id)
     );
+
+    if (editingId === id) {
+      setEditingId(null);
+      setEditingTitle("");
+    }
   };
 
-  const editTask = (id) => {
-    const task = tasks.find((item) => item.id === id);
+  const startEditing = (task) => {
+    setEditingId(task.id);
+    setEditingTitle(task.title);
+  };
 
-    if (!task) return;
-
-    const updatedTitle = window.prompt(
-      "Edit task",
-      task.title
-    );
-
-    if (!updatedTitle || updatedTitle.trim() === "") {
-      return;
-    }
+  const saveEdit = (id) => {
+    if (!editingTitle.trim()) return;
 
     setTasks((currentTasks) =>
-      currentTasks.map((item) =>
-        item.id === id
+      currentTasks.map((task) =>
+        task.id === id
           ? {
-              ...item,
-              title: updatedTitle.trim(),
+              ...task,
+              title: editingTitle.trim(),
             }
-          : item
+          : task
       )
     );
+
+    setEditingId(null);
+    setEditingTitle("");
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditingTitle("");
   };
 
   const addTask = () => {
@@ -173,8 +173,6 @@ function Dashboard({
     );
   };
 
-  /* ---------------- TIMER ---------------- */
-
   const toggleTimer = () => {
     setTimerRunning((current) => !current);
   };
@@ -192,8 +190,6 @@ function Dashboard({
     .toString()
     .padStart(2, "0");
 
-  /* ---------------- WEEKLY DATA ---------------- */
-
   const weeklyProgress = [
     { day: "Mon", value: 3 },
     { day: "Tue", value: 4 },
@@ -205,8 +201,6 @@ function Dashboard({
   ];
 
   const maxWeeklyValue = 7;
-
-  /* ---------------- SIGN OUT ---------------- */
 
   const handleSignOut = async () => {
     setIsLoggedIn(false);
@@ -220,11 +214,7 @@ function Dashboard({
       }`}
     >
       <main className="dashboard-content">
-
-        {/* ================= TOP ================= */}
-
         <div className="top-area">
-
           <div className="date-box">
             <strong>
               {time.toLocaleDateString("en-US", {
@@ -242,9 +232,7 @@ function Dashboard({
           </div>
 
           <div className="welcome-box">
-            <h1>
-              Let's make today productive.
-            </h1>
+            <h1>Let's make today productive.</h1>
 
             <p>
               Stay consistent and keep moving forward.
@@ -257,13 +245,9 @@ function Dashboard({
               minute: "2-digit",
             })}
           </div>
-
         </div>
 
-        {/* ================= STATS ================= */}
-
         <section className="stats-grid">
-
           <div className="stat-card">
             <div className="stat-icon orange">
               <ListTodo size={25} />
@@ -306,7 +290,7 @@ function Dashboard({
                 In Progress
               </span>
 
-              <strong className="stat-number">
+              <strong className="stat-number orange-text">
                 {pendingTasks}
               </strong>
             </div>
@@ -327,25 +311,14 @@ function Dashboard({
               </strong>
             </div>
           </div>
-
         </section>
 
-        {/* ================= MAIN GRID ================= */}
-
         <div className="dashboard-grid">
-
-          {/* ================= LEFT ================= */}
-
           <div className="left-column">
-
-            {/* ADD TASK */}
-
             <section className="add-task-section">
-
               <h2>Add New Task</h2>
 
               <div className="add-task-row">
-
                 <input
                   type="text"
                   value={newTask}
@@ -379,27 +352,17 @@ function Dashboard({
                   <Plus size={21} />
                   Add Task
                 </button>
-
               </div>
-
             </section>
 
-            {/* MY TASKS */}
-
             <section className="tasks-section">
-
               <div className="tasks-heading">
-
                 <h2>My Tasks</h2>
 
-                <span>
-                  {totalTasks} tasks
-                </span>
-
+                <span>{totalTasks} tasks</span>
               </div>
 
               <div className="task-list">
-
                 {tasks.length === 0 ? (
                   <div className="empty-tasks">
                     <p>No tasks yet.</p>
@@ -414,7 +377,6 @@ function Dashboard({
                       }`}
                       key={task.id}
                     >
-
                       <button
                         className={`task-check ${
                           task.completed
@@ -431,7 +393,29 @@ function Dashboard({
                       </button>
 
                       <div className="task-title">
-                        <h3>{task.title}</h3>
+                        {editingId === task.id ? (
+                          <input
+                            className="edit-task-input"
+                            value={editingTitle}
+                            onChange={(e) =>
+                              setEditingTitle(
+                                e.target.value
+                              )
+                            }
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                saveEdit(task.id);
+                              }
+
+                              if (e.key === "Escape") {
+                                cancelEdit();
+                              }
+                            }}
+                            autoFocus
+                          />
+                        ) : (
+                          <h3>{task.title}</h3>
+                        )}
                       </div>
 
                       <span
@@ -443,14 +427,33 @@ function Dashboard({
                       </span>
 
                       <div className="task-actions">
+                        {editingId === task.id ? (
+                          <>
+                            <button
+                              className="save-edit"
+                              onClick={() =>
+                                saveEdit(task.id)
+                              }
+                            >
+                              <Check size={17} />
+                            </button>
 
-                        <button
-                          onClick={() =>
-                            editTask(task.id)
-                          }
-                        >
-                          <Edit3 size={17} />
-                        </button>
+                            <button
+                              className="cancel-edit"
+                              onClick={cancelEdit}
+                            >
+                              <RotateCcw size={17} />
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={() =>
+                              startEditing(task)
+                            }
+                          >
+                            <Edit3 size={17} />
+                          </button>
+                        )}
 
                         <button
                           onClick={() =>
@@ -459,56 +462,38 @@ function Dashboard({
                         >
                           <Trash2 size={17} />
                         </button>
-
                       </div>
-
                     </div>
                   ))
                 )}
-
               </div>
 
               <div className="tasks-footer">
-
                 <span>
                   {completedTasks} of {totalTasks} completed
                 </span>
 
                 {completedTasks > 0 && (
-                  <button
-                    onClick={clearCompleted}
-                  >
+                  <button onClick={clearCompleted}>
                     Clear completed
                     <Trash2 size={15} />
                   </button>
                 )}
-
               </div>
-
             </section>
-
           </div>
 
-          {/* ================= RIGHT ================= */}
-
           <div className="right-column">
-
-            {/* WEEKLY PROGRESS */}
-
             <section className="weekly-section">
-
               <h2>Weekly Progress</h2>
 
               <div className="weekly-chart">
-
                 {weeklyProgress.map((item) => (
                   <div
                     className="week-day"
                     key={item.day}
                   >
-
                     <div className="bar-container">
-
                       <div
                         className={`week-bar ${
                           item.day === "Thu"
@@ -523,24 +508,16 @@ function Dashboard({
                           }%`,
                         }}
                       />
-
                     </div>
 
-                    <span>
-                      {item.day}
-                    </span>
-
+                    <span>{item.day}</span>
                   </div>
                 ))}
-
               </div>
 
               <div className="weekly-divider" />
 
-              {/* PROGRESS */}
-
               <div className="completion-area">
-
                 <div
                   className="progress-ring"
                   style={{
@@ -559,26 +536,17 @@ function Dashboard({
 
                   <span>completed</span>
                 </div>
-
               </div>
 
-              {/* TIMER */}
-
               <div className="timer-card">
-
                 <div className="timer-header">
-
                   <div>
                     <Clock size={20} />
-                    <strong>
-                      Focus Timer
-                    </strong>
+
+                    <strong>Focus Timer</strong>
                   </div>
 
-                  <span>
-                    25 min focus
-                  </span>
-
+                  <span>25 min focus</span>
                 </div>
 
                 <div className="timer-display">
@@ -586,7 +554,6 @@ function Dashboard({
                 </div>
 
                 <div className="timer-controls">
-
                   <button
                     className="timer-start"
                     onClick={toggleTimer}
@@ -604,21 +571,13 @@ function Dashboard({
                   >
                     <RotateCcw size={18} />
                   </button>
-
                 </div>
-
               </div>
-
             </section>
-
           </div>
-
         </div>
 
-        {/* ================= FOOTER ================= */}
-
         <div className="dashboard-footer">
-
           <p>
             Keep showing up. Progress happens one day
             at a time.
@@ -627,9 +586,7 @@ function Dashboard({
           <button onClick={handleSignOut}>
             Sign out
           </button>
-
         </div>
-
       </main>
     </div>
   );
