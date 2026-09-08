@@ -1131,3 +1131,83 @@
     padding: 22px;
   }
 }
+.dashboard-dark .category.study {
+  background: #4a2f18;
+  color: #ffb35c;
+}
+
+.dashboard-dark .category.personal {
+  background: #1f3a28;
+  color: #7edb8b;
+}
+
+.dashboard-dark .category.health {
+  background: #463817;
+  color: #f3c95f;
+}
+
+.dashboard-dark .category.project {
+  background: #49251f;
+  color: #ff8f78;
+}
+
+.dashboard-dark .stat-icon.orange {
+  background: #4a2f18;
+  color: #ffad52;
+}
+
+.dashboard-dark .stat-icon.green {
+  background: #1f3a28;
+  color: #72d184;
+}
+
+.dashboard-dark .stat-icon.dark-icon {
+  background: #343434;
+  color: #d8d8d8;
+}
+
+.dashboard-dark .stat-icon.red-icon {
+  background: #49251f;
+  color: #ff8068;
+}
+
+.dashboard-dark .weekly-section {
+  color: #f5f5f5;
+}
+
+.dashboard-dark .weekly-section > h2 {
+  color: #f5f5f5;
+}
+
+.dashboard-dark .week-day > span {
+  color: #d0d0d0;
+}
+
+.dashboard-dark .week-bar {
+  background: #5a3a20;
+}
+
+.dashboard-dark .week-bar.active-bar {
+  background: #ff8a24;
+}
+
+.dashboard-dark .weekly-chart {
+  border-color: #3a3a3a;
+}
+
+.dashboard-dark .weekly-divider {
+  background: #3a3a3a;
+}
+
+.dashboard-dark .tasks-heading h2 {
+  color: #f5f5f5;
+}
+
+.dashboard-dark .tasks-heading span {
+  background: #4a2f18;
+  color: #ffad52;
+}
+
+.dashboard-dark .task-title h3 {
+  color: #f2f2f2;
+}
