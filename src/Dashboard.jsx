@@ -9,6 +9,8 @@ import {
   CalendarDays,
   Play,
   RotateCcw,
+  X,
+  Save,
 } from "lucide-react";
 
 import "./Dashboard.css";
@@ -53,8 +55,10 @@ function Dashboard({
 
   const [newTask, setNewTask] = useState("");
   const [category, setCategory] = useState("Study");
+
   const [editingId, setEditingId] = useState(null);
   const [editingTitle, setEditingTitle] = useState("");
+  const [editingCategory, setEditingCategory] = useState("Study");
 
   const [time, setTime] = useState(new Date());
 
@@ -119,13 +123,19 @@ function Dashboard({
 
     if (editingId === id) {
       setEditingId(null);
-      setEditingTitle("");
     }
   };
 
-  const startEditing = (task) => {
+  const startEdit = (task) => {
     setEditingId(task.id);
     setEditingTitle(task.title);
+    setEditingCategory(task.category);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditingTitle("");
+    setEditingCategory("Study");
   };
 
   const saveEdit = (id) => {
@@ -137,18 +147,13 @@ function Dashboard({
           ? {
               ...task,
               title: editingTitle.trim(),
+              category: editingCategory,
             }
           : task
       )
     );
 
-    setEditingId(null);
-    setEditingTitle("");
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditingTitle("");
+    cancelEdit();
   };
 
   const addTask = () => {
@@ -214,6 +219,7 @@ function Dashboard({
       }`}
     >
       <main className="dashboard-content">
+
         <div className="top-area">
           <div className="date-box">
             <strong>
@@ -233,13 +239,11 @@ function Dashboard({
 
           <div className="welcome-box">
             <h1>Let's make today productive.</h1>
-
-            <p>
-              Stay consistent and keep moving forward.
-            </p>
+            <p>Stay consistent and keep moving forward.</p>
           </div>
 
           <div className="clock-box">
+            <Clock size={19} />
             {time.toLocaleTimeString("en-US", {
               hour: "numeric",
               minute: "2-digit",
@@ -248,16 +252,14 @@ function Dashboard({
         </div>
 
         <section className="stats-grid">
+
           <div className="stat-card">
             <div className="stat-icon orange">
               <ListTodo size={25} />
             </div>
 
             <div>
-              <span className="stat-title">
-                All Tasks
-              </span>
-
+              <span className="stat-title">All Tasks</span>
               <strong className="stat-number orange-text">
                 {totalTasks}
               </strong>
@@ -270,10 +272,7 @@ function Dashboard({
             </div>
 
             <div>
-              <span className="stat-title">
-                Done
-              </span>
-
+              <span className="stat-title">Done</span>
               <strong className="stat-number green-text">
                 {completedTasks}
               </strong>
@@ -286,11 +285,8 @@ function Dashboard({
             </div>
 
             <div>
-              <span className="stat-title">
-                In Progress
-              </span>
-
-              <strong className="stat-number orange-text">
+              <span className="stat-title">Active</span>
+              <strong className="stat-number active-text">
                 {pendingTasks}
               </strong>
             </div>
@@ -302,23 +298,24 @@ function Dashboard({
             </div>
 
             <div>
-              <span className="stat-title">
-                Pending
-              </span>
-
+              <span className="stat-title">Pending</span>
               <strong className="stat-number red-text">
                 {pendingTasks}
               </strong>
             </div>
           </div>
+
         </section>
 
         <div className="dashboard-grid">
+
           <div className="left-column">
+
             <section className="add-task-section">
               <h2>Add New Task</h2>
 
               <div className="add-task-row">
+
                 <input
                   type="text"
                   value={newTask}
@@ -352,17 +349,23 @@ function Dashboard({
                   <Plus size={21} />
                   Add Task
                 </button>
+
               </div>
             </section>
 
             <section className="tasks-section">
+
               <div className="tasks-heading">
-                <h2>My Tasks</h2>
+                <div>
+                  <h2>My Tasks</h2>
+                  <p>Stay organized and get things done.</p>
+                </div>
 
                 <span>{totalTasks} tasks</span>
               </div>
 
               <div className="task-list">
+
                 {tasks.length === 0 ? (
                   <div className="empty-tasks">
                     <p>No tasks yet.</p>
@@ -374,98 +377,117 @@ function Dashboard({
                         task.completed
                           ? "task-completed"
                           : ""
+                      } ${
+                        editingId === task.id
+                          ? "task-editing"
+                          : ""
                       }`}
                       key={task.id}
                     >
-                      <button
-                        className={`task-check ${
-                          task.completed
-                            ? "checked"
-                            : ""
-                        }`}
-                        onClick={() =>
-                          toggleTask(task.id)
-                        }
-                      >
-                        {task.completed && (
-                          <Check size={16} />
-                        )}
-                      </button>
 
-                      <div className="task-title">
-                        {editingId === task.id ? (
+                      {editingId === task.id ? (
+                        <div className="edit-task-row">
+
                           <input
                             className="edit-task-input"
                             value={editingTitle}
                             onChange={(e) =>
-                              setEditingTitle(
-                                e.target.value
-                              )
+                              setEditingTitle(e.target.value)
                             }
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                saveEdit(task.id);
-                              }
-
-                              if (e.key === "Escape") {
-                                cancelEdit();
-                              }
-                            }}
                             autoFocus
                           />
-                        ) : (
-                          <h3>{task.title}</h3>
-                        )}
-                      </div>
 
-                      <span
-                        className={`category ${
-                          task.category.toLowerCase()
-                        }`}
-                      >
-                        {task.category}
-                      </span>
+                          <select
+                            className="edit-category-select"
+                            value={editingCategory}
+                            onChange={(e) =>
+                              setEditingCategory(e.target.value)
+                            }
+                          >
+                            <option>Study</option>
+                            <option>Personal</option>
+                            <option>Health</option>
+                            <option>Project</option>
+                          </select>
 
-                      <div className="task-actions">
-                        {editingId === task.id ? (
-                          <>
+                          <div className="edit-actions">
+
                             <button
                               className="save-edit"
                               onClick={() =>
                                 saveEdit(task.id)
                               }
                             >
-                              <Check size={17} />
+                              <Save size={16} />
                             </button>
 
                             <button
                               className="cancel-edit"
                               onClick={cancelEdit}
                             >
-                              <RotateCcw size={17} />
+                              <X size={16} />
                             </button>
-                          </>
-                        ) : (
+
+                          </div>
+
+                        </div>
+                      ) : (
+                        <>
                           <button
+                            className={`task-check ${
+                              task.completed
+                                ? "checked"
+                                : ""
+                            }`}
                             onClick={() =>
-                              startEditing(task)
+                              toggleTask(task.id)
                             }
                           >
-                            <Edit3 size={17} />
+                            {task.completed && (
+                              <Check size={16} />
+                            )}
                           </button>
-                        )}
 
-                        <button
-                          onClick={() =>
-                            deleteTask(task.id)
-                          }
-                        >
-                          <Trash2 size={17} />
-                        </button>
-                      </div>
+                          <div className="task-title">
+                            <h3>{task.title}</h3>
+                          </div>
+
+                          <span
+                            className={`category ${
+                              task.category.toLowerCase()
+                            }`}
+                          >
+                            {task.category}
+                          </span>
+
+                          <div className="task-actions">
+
+                            <button
+                              onClick={() =>
+                                startEdit(task)
+                              }
+                              title="Edit task"
+                            >
+                              <Edit3 size={17} />
+                            </button>
+
+                            <button
+                              onClick={() =>
+                                deleteTask(task.id)
+                              }
+                              title="Delete task"
+                            >
+                              <Trash2 size={17} />
+                            </button>
+
+                          </div>
+                        </>
+                      )}
+
                     </div>
                   ))
                 )}
+
               </div>
 
               <div className="tasks-footer">
@@ -480,20 +502,34 @@ function Dashboard({
                   </button>
                 )}
               </div>
+
             </section>
+
           </div>
 
           <div className="right-column">
+
             <section className="weekly-section">
-              <h2>Weekly Progress</h2>
+
+              <div className="weekly-heading">
+                <div>
+                  <h2>Weekly Progress</h2>
+                  <p>Tasks completed this week</p>
+                </div>
+
+                <strong>{completedTasks}</strong>
+              </div>
 
               <div className="weekly-chart">
+
                 {weeklyProgress.map((item) => (
                   <div
                     className="week-day"
                     key={item.day}
                   >
+
                     <div className="bar-container">
+
                       <div
                         className={`week-bar ${
                           item.day === "Thu"
@@ -508,16 +544,20 @@ function Dashboard({
                           }%`,
                         }}
                       />
+
                     </div>
 
                     <span>{item.day}</span>
+
                   </div>
                 ))}
+
               </div>
 
               <div className="weekly-divider" />
 
               <div className="completion-area">
+
                 <div
                   className="progress-ring"
                   style={{
@@ -536,17 +576,20 @@ function Dashboard({
 
                   <span>completed</span>
                 </div>
+
               </div>
 
               <div className="timer-card">
+
                 <div className="timer-header">
+
                   <div>
                     <Clock size={20} />
-
                     <strong>Focus Timer</strong>
                   </div>
 
                   <span>25 min focus</span>
+
                 </div>
 
                 <div className="timer-display">
@@ -554,6 +597,7 @@ function Dashboard({
                 </div>
 
                 <div className="timer-controls">
+
                   <button
                     className="timer-start"
                     onClick={toggleTimer}
@@ -571,22 +615,17 @@ function Dashboard({
                   >
                     <RotateCcw size={18} />
                   </button>
+
                 </div>
+
               </div>
+
             </section>
+
           </div>
+
         </div>
 
-        <div className="dashboard-footer">
-          <p>
-            Keep showing up. Progress happens one day
-            at a time.
-          </p>
-
-          <button onClick={handleSignOut}>
-            Sign out
-          </button>
-        </div>
       </main>
     </div>
   );
