@@ -3,7 +3,11 @@
 * {
   box-sizing: border-box;
 }
-
+@property --progress {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
 .dashboard {
   width: 100%;
   min-height: 100vh;
@@ -531,27 +535,28 @@
   padding: 5px 20px 15px;
 }
 .progress-ring {
+  --progress: 0deg;
+
   width: 138px;
   height: 138px;
   border-radius: 50%;
 
   background: conic-gradient(
     #ff7200 var(--progress),
-    #f1e4d8 0
+    #f1e4d8 var(--progress)
   );
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  transition: background 0.8s ease;
+  transition: --progress 0.8s ease;
 }
 
 .progress-ring > div {
   width: 105px;
   height: 105px;
   border-radius: 50%;
-
   background: white;
 
   display: flex;
@@ -563,7 +568,6 @@
   font-size: 27px;
   font-weight: 600;
 }
-
 .completion-text {
   display: flex;
   flex-direction: column;

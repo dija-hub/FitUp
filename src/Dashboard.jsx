@@ -448,8 +448,8 @@ function Dashboard({
               <div className="completion-area">
                 <div
                   className="progress-ring"
-                  style={{
-  "--progress": `${progress}%`,
+       style={{
+  "--progress": `${progress * 3.6}deg`,
 }}
                 >
                   <div>
