@@ -1,72 +1,288 @@
 .dashboard-nav {
   width: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 30px;
-  padding: 7px;
-  border: 1px solid #eadfd5;
-  border-radius: 15px;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 32px;
+  padding: 6px;
+  border-radius: 14px;
   background: #ffffff;
+  border: 1px solid #eee4da;
 }
-
 .dashboard-nav button {
-  height: 43px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 0 18px;
+  gap: 7px;
+  height: 40px;
+  padding: 0 17px;
   border: none;
-  border-radius: 11px;
+  border-radius: 10px;
   background: transparent;
-  color: #77716b;
+  color: #817a73;
   font-family: "Poppins", sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: 0.2s ease;
 }
-
 .dashboard-nav button:hover {
-  background: #fff4e9;
   color: #e97716;
+  background: #fff6ed;
 }
-
 .dashboard-nav button.active {
-  background: #ff9b2f;
-  color: #171717;
+  color: #ffffff;
+  background: #e98b27;
+}
+.dashboard-page {
+  width: 100%;
+  animation: pageChange 0.25s ease;
+}
+@keyframes pageChange {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.dashboard-page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+.dashboard-page-heading h1 {
+  margin: 5px 0;
+  color: #25211e;
+  font-size: 30px;
+  font-weight: 700;
+}
+.dashboard-page-heading p {
+  margin: 0;
+  color: #8a827b;
+  font-size: 13px;
+}
+.page-label {
+  color: #e98b27;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.page-icon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: #fff1df;
+  color: #e98b27;
+}
+.progress-page-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.progress-big-card {
+  min-height: 330px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  border: 1px solid #eee4da;
+  border-radius: 18px;
+  background: #ffffff;
+}
+.progress-ring.large {
+  width: 175px;
+  height: 175px;
+}
+.progress-big-card h2 {
+  margin: 18px 0 5px;
+  color: #25211e;
+  font-size: 20px;
+}
+.progress-big-card p {
+  margin: 0;
+  color: #8a827b;
+  font-size: 12px;
+}
+.progress-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.progress-stat {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  border: 1px solid #eee4da;
+  border-radius: 16px;
+  background: #ffffff;
+  transition: 0.2s ease;
+}
+.progress-stat:hover {
+  transform: translateY(-2px);
+}
+.progress-stat span {
+  display: block;
+  margin-bottom: 3px;
+  color: #8a827b;
+  font-size: 12px;
+}
+.progress-stat strong {
+  color: #25211e;
+  font-size: 25px;
+}
+.page-stat-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 21px 23px;
+  border: 1px solid #eee4da;
+  border-radius: 16px;
+  background: #ffffff;
+}
+.settings-item h3 {
+  margin: 0 0 5px;
+  color: #25211e;
+  font-size: 15px;
+}
+.settings-item p {
+  margin: 0;
+  color: #8a827b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.settings-status {
+  flex-shrink: 0;
+  padding: 7px 11px;
+  border-radius: 8px;
+  background: #fff1df;
+  color: #e98b27;
+  font-size: 11px;
   font-weight: 600;
 }
-
+.settings-signout {
+  flex-shrink: 0;
+  padding: 9px 15px;
+  border: none;
+  border-radius: 9px;
+  background: #e98b27;
+  color: #ffffff;
+  font-family: "Poppins", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+.settings-signout:hover {
+  background: #d97818;
+}
 .dashboard-dark .dashboard-nav {
-  background: #202020;
+  background: #1f1f1f;
   border-color: #303030;
 }
-
 .dashboard-dark .dashboard-nav button {
-  color: #aaaaaa;
+  color: #999999;
 }
-
 .dashboard-dark .dashboard-nav button:hover {
-  background: #2b2b2b;
-  color: #ffad52;
+  background: #292929;
+  color: #ffab50;
 }
-
 .dashboard-dark .dashboard-nav button.active {
-  background: #ff8f24;
-  color: #171717;
+  background: #e98b27;
+  color: #ffffff;
 }
-
-@media (max-width: 650px) {
-  .dashboard-nav {
-    overflow-x: auto;
-    justify-content: flex-start;
+.dashboard-dark .dashboard-page-heading h1 {
+  color: #f1f1f1;
+}
+.dashboard-dark .dashboard-page-heading p {
+  color: #999999;
+}
+.dashboard-dark .page-label {
+  color: #ffab50;
+}
+.dashboard-dark .page-icon {
+  background: #2b241e;
+  color: #ffab50;
+}
+.dashboard-dark .progress-big-card,
+.dashboard-dark .progress-stat,
+.dashboard-dark .settings-item {
+  background: #1f1f1f;
+  border-color: #303030;
+}
+.dashboard-dark .progress-big-card h2,
+.dashboard-dark .progress-stat strong,
+.dashboard-dark .settings-item h3 {
+  color: #f1f1f1;
+}
+.dashboard-dark .progress-big-card p,
+.dashboard-dark .progress-stat span,
+.dashboard-dark .settings-item p {
+  color: #999999;
+}
+.dashboard-dark .settings-status {
+  background: #2b241e;
+  color: #ffab50;
+}
+.dashboard-dark .settings-signout {
+  background: #e98b27;
+  color: #ffffff;
+}
+@media (max-width: 800px) {
+  .progress-page-grid {
+    grid-template-columns: 1fr;
   }
-
+  .progress-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .dashboard-nav {
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
   .dashboard-nav button {
     flex-shrink: 0;
-    padding: 0 14px;
+    padding: 0 13px;
+  }
+  .dashboard-page-heading h1 {
+    font-size: 25px;
+  }
+  .page-icon {
+    width: 45px;
+    height: 45px;
+  }
+  .progress-stats {
+    grid-template-columns: 1fr;
+  }
+  .settings-item {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
