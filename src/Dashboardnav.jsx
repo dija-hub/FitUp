@@ -1,10 +1,7 @@
 
 import {
   LayoutDashboard,
-  CalendarDays,
   Timer,
-  BarChart3,
-  Target,
   Settings,
 } from "lucide-react";
 import "./Dashboardnav.css";
@@ -21,35 +18,11 @@ function DashboardNav({ activePage, setActivePage }) {
       </button>
 
       <button
-        className={activePage === "calendar" ? "active" : ""}
-        onClick={() => setActivePage("calendar")}
-      >
-        <CalendarDays size={18} />
-        Calendar
-      </button>
-
-      <button
         className={activePage === "focus" ? "active" : ""}
         onClick={() => setActivePage("focus")}
       >
         <Timer size={18} />
         Focus
-      </button>
-
-      <button
-        className={activePage === "analytics" ? "active" : ""}
-        onClick={() => setActivePage("analytics")}
-      >
-        <BarChart3 size={18} />
-        Analytics
-      </button>
-
-      <button
-        className={activePage === "goals" ? "active" : ""}
-        onClick={() => setActivePage("goals")}
-      >
-        <Target size={18} />
-        Goals
       </button>
 
       <button
