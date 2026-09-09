@@ -1264,7 +1264,37 @@
   font-weight: 600;
   color: #222222;
 }
+.dashboard-home-button {
+  margin-bottom: 25px;
+}
 
+.dashboard-home-button button {
+  border: 1px solid #eadfd5;
+  background: #ffffff;
+  color: #e97716;
+  padding: 10px 17px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.dashboard-home-button button:hover {
+  background: #fff0df;
+  transform: translateX(-3px);
+}
+
+.dashboard-dark .dashboard-home-button button {
+  background: #202020;
+  border-color: #363636;
+  color: #ffad52;
+}
+
+.dashboard-dark .dashboard-home-button button:hover {
+  background: #2a2a2a;
+}
 .streak-info span {
   max-width: 230px;
   font-size: 14px;
