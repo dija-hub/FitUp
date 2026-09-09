@@ -184,7 +184,7 @@ function Web({
                   <h2>Progress Analytics</h2>
 
                   <p>
-                    View your progress with simple graphs and track how your
+                    View your progress  and track how your
                     habits improve over time.
                   </p>
                 </div>
