@@ -1,0 +1,72 @@
+.dashboard-nav {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 30px;
+  padding: 7px;
+  border: 1px solid #eadfd5;
+  border-radius: 15px;
+  background: #ffffff;
+}
+
+.dashboard-nav button {
+  height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 11px;
+  background: transparent;
+  color: #77716b;
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.dashboard-nav button:hover {
+  background: #fff4e9;
+  color: #e97716;
+}
+
+.dashboard-nav button.active {
+  background: #ff9b2f;
+  color: #171717;
+  font-weight: 600;
+}
+
+.dashboard-dark .dashboard-nav {
+  background: #202020;
+  border-color: #303030;
+}
+
+.dashboard-dark .dashboard-nav button {
+  color: #aaaaaa;
+}
+
+.dashboard-dark .dashboard-nav button:hover {
+  background: #2b2b2b;
+  color: #ffad52;
+}
+
+.dashboard-dark .dashboard-nav button.active {
+  background: #ff8f24;
+  color: #171717;
+}
+
+@media (max-width: 650px) {
+  .dashboard-nav {
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  .dashboard-nav button {
+    flex-shrink: 0;
+    padding: 0 14px;
+  }
+}

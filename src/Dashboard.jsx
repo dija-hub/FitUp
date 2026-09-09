@@ -9,9 +9,14 @@ import {
   CalendarDays,
   Play,
   RotateCcw,
+  BarChart3,
+  Target,
+  Settings,
+  LayoutDashboard,
 } from "lucide-react";
 
 import { supabase } from "./utils/supabase";
+import DashboardNav from "./Dashboardnav";
 import "./Dashboard.css";
 
 function Dashboard({
@@ -19,7 +24,7 @@ function Dashboard({
   setShowDashboard,
   setIsLoggedIn,
 }) {
-const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState([]);
 
   const [newTask, setNewTask] = useState("");
   const [category, setCategory] = useState("Study");
@@ -33,13 +38,7 @@ const [tasks, setTasks] = useState([]);
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState("Study");
 
-  const [completionDates, setCompletionDates] = useState(() => {
-    const savedDates = localStorage.getItem(
-      "fitup-completion-dates"
-    );
-
-    return savedDates ? JSON.parse(savedDates) : [];
-  });
+  const [activePage, setActivePage] = useState("overview");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -66,13 +65,6 @@ const [tasks, setTasks] = useState([]);
     return () => clearInterval(interval);
   }, [timerRunning]);
 
-  useEffect(() => {
-    localStorage.setItem(
-      "fitup-completion-dates",
-      JSON.stringify(completionDates)
-    );
-  }, [completionDates]);
-
   const completedTasks = tasks.filter(
     (task) => task.completed
   ).length;
@@ -86,53 +78,6 @@ const [tasks, setTasks] = useState([]);
       ? 0
       : Math.round((completedTasks / totalTasks) * 100);
 
-  const getToday = () => {
-    const today = new Date();
-
-    return `${today.getFullYear()}-${String(
-      today.getMonth() + 1
-    ).padStart(2, "0")}-${String(
-      today.getDate()
-    ).padStart(2, "0")}`;
-  };
-
-  const updateStreak = () => {
-    const today = getToday();
-
-    setCompletionDates((dates) => {
-      if (dates.includes(today)) {
-        return dates;
-      }
-
-      return [...dates, today];
-    });
-  };
-
-  const calculateStreak = () => {
-    let streak = 0;
-    const currentDate = new Date();
-
-    while (true) {
-      const dateString = `${currentDate.getFullYear()}-${String(
-        currentDate.getMonth() + 1
-      ).padStart(2, "0")}-${String(
-        currentDate.getDate()
-      ).padStart(2, "0")}`;
-
-      if (!completionDates.includes(dateString)) {
-        break;
-      }
-
-      streak++;
-
-      currentDate.setDate(currentDate.getDate() - 1);
-    }
-
-    return streak;
-  };
-
-  const dailyStreak = calculateStreak();
-
   const toggleTask = (id) => {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
@@ -144,12 +89,6 @@ const [tasks, setTasks] = useState([]);
           : task
       )
     );
-
-    const task = tasks.find((task) => task.id === id);
-
-    if (task && !task.completed) {
-      updateStreak();
-    }
   };
 
   const deleteTask = (id) => {
@@ -242,104 +181,392 @@ const [tasks, setTasks] = useState([]);
       }`}
     >
       <main className="dashboard-content">
-        <div className="top-area">
-          <div className="date-box">
-            <strong>
-              {time.toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </strong>
 
-            <span>
-              {time.toLocaleDateString("en-US", {
-                weekday: "long",
-              })}
-            </span>
-          </div>
+        {/* DASHBOARD NAVIGATION */}
+        <DashboardNav
+          activePage={activePage}
+          setActivePage={setActivePage}
+        />
 
-          <div className="welcome-box">
-            <h1>Let's make today productive.</h1>
-            <p>Stay consistent and keep moving forward.</p>
-          </div>
+        {/* ================= OVERVIEW ================= */}
 
-          <div className="clock-box">
-            {time.toLocaleTimeString("en-US", {
-              hour: "numeric",
-              minute: "2-digit",
-            })}
-          </div>
-        </div>
+        {activePage === "overview" && (
+          <>
+            <div className="top-area">
+              <div className="date-box">
+                <strong>
+                  {time.toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </strong>
 
-        <section className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-icon orange">
-              <ListTodo size={25} />
+                <span>
+                  {time.toLocaleDateString("en-US", {
+                    weekday: "long",
+                  })}
+                </span>
+              </div>
+
+              <div className="welcome-box">
+                <h1>Let's make today productive.</h1>
+                <p>
+                  Stay consistent and keep moving forward.
+                </p>
+              </div>
+
+              <div className="clock-box">
+                {time.toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit",
+                })}
+              </div>
             </div>
 
-            <div>
-              <span className="stat-title">All Tasks</span>
+            <section className="stats-grid">
 
-              <strong className="stat-number orange-text">
-                {totalTasks}
-              </strong>
+              <div className="stat-card">
+                <div className="stat-icon orange">
+                  <ListTodo size={25} />
+                </div>
+
+                <div>
+                  <span className="stat-title">
+                    All Tasks
+                  </span>
+
+                  <strong className="stat-number orange-text">
+                    {totalTasks}
+                  </strong>
+                </div>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-icon green">
+                  <Check size={25} />
+                </div>
+
+                <div>
+                  <span className="stat-title">
+                    Done
+                  </span>
+
+                  <strong className="stat-number green-text">
+                    {completedTasks}
+                  </strong>
+                </div>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-icon dark-icon">
+                  <Clock size={25} />
+                </div>
+
+                <div>
+                  <span className="stat-title">
+                    In Progress
+                  </span>
+
+                  <strong className="stat-number dark-text">
+                    {pendingTasks}
+                  </strong>
+                </div>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-icon red-icon">
+                  <CalendarDays size={25} />
+                </div>
+
+                <div>
+                  <span className="stat-title">
+                    Pending
+                  </span>
+
+                  <strong className="stat-number red-text">
+                    {pendingTasks}
+                  </strong>
+                </div>
+              </div>
+
+            </section>
+
+            <div className="dashboard-grid">
+
+              <div className="left-column">
+
+                <section className="add-task-section">
+                  <h2>Add New Task</h2>
+
+                  <div className="add-task-row">
+
+                    <input
+                      type="text"
+                      value={newTask}
+                      onChange={(e) =>
+                        setNewTask(e.target.value)
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          addTask();
+                        }
+                      }}
+                      placeholder="What do you want to do?"
+                    />
+
+                    <div className="category-select-wrapper">
+                      <select
+                        value={category}
+                        onChange={(e) =>
+                          setCategory(e.target.value)
+                        }
+                      >
+                        <option value="Study">
+                          Study
+                        </option>
+
+                        <option value="Personal">
+                          Personal
+                        </option>
+
+                        <option value="Health">
+                          Health
+                        </option>
+
+                        <option value="Project">
+                          Project
+                        </option>
+                      </select>
+                    </div>
+
+                    <button
+                      className="add-button"
+                      onClick={addTask}
+                    >
+                      <Plus size={21} />
+                      Add Task
+                    </button>
+
+                  </div>
+                </section>
+
+                <section className="tasks-section">
+
+                  <div className="tasks-heading">
+                    <h2>My Tasks</h2>
+                    <span>{totalTasks} tasks</span>
+                  </div>
+
+                  <div className="task-list">
+
+                    {tasks.length === 0 ? (
+                      <div className="empty-tasks">
+                        <p>No tasks yet.</p>
+                      </div>
+                    ) : (
+                      tasks.map((task) => (
+                        <div
+                          className={`task-item ${
+                            task.completed
+                              ? "task-completed"
+                              : ""
+                          }`}
+                          key={task.id}
+                        >
+
+                          <button
+                            className={`task-check ${
+                              task.completed
+                                ? "checked"
+                                : ""
+                            }`}
+                            onClick={() =>
+                              toggleTask(task.id)
+                            }
+                          >
+                            {task.completed && (
+                              <Check size={16} />
+                            )}
+                          </button>
+
+                          <div className="task-title">
+                            <h3>{task.title}</h3>
+                          </div>
+
+                          <span
+                            className={`category ${task.category.toLowerCase()}`}
+                          >
+                            {task.category}
+                          </span>
+
+                          <div className="task-actions">
+
+                            <button
+                              onClick={() =>
+                                editTask(task)
+                              }
+                            >
+                              <Edit3 size={17} />
+                            </button>
+
+                            <button
+                              onClick={() =>
+                                deleteTask(task.id)
+                              }
+                            >
+                              <Trash2 size={17} />
+                            </button>
+
+                          </div>
+
+                        </div>
+                      ))
+                    )}
+
+                  </div>
+
+                  <div className="tasks-footer">
+
+                    <span>
+                      {completedTasks} of {totalTasks}{" "}
+                      completed
+                    </span>
+
+                    {completedTasks > 0 && (
+                      <button
+                        onClick={clearCompleted}
+                      >
+                        Clear completed
+                        <Trash2 size={15} />
+                      </button>
+                    )}
+
+                  </div>
+
+                </section>
+
+              </div>
+
+              <div className="right-column">
+
+                <section className="weekly-section">
+
+                  <h2>Today's Progress</h2>
+
+                  <div className="completion-area">
+
+                    <div
+                      className="progress-ring"
+                      style={{
+                        "--progress": `${progress * 3.6}deg`,
+                      }}
+                    >
+                      <div>
+                        <strong>{progress}%</strong>
+                      </div>
+                    </div>
+
+                    <div className="completion-text">
+
+                      <strong>
+                        {completedTasks} of {totalTasks}{" "}
+                        tasks
+                      </strong>
+
+                      <span>completed</span>
+
+                    </div>
+
+                  </div>
+
+                  <div className="weekly-divider" />
+
+                  <div className="timer-card">
+
+                    <div className="timer-header">
+
+                      <div>
+                        <Clock size={20} />
+                        <strong>Focus Timer</strong>
+                      </div>
+
+                      <span>25 min focus</span>
+
+                    </div>
+
+                    <div className="timer-display">
+                      {minutes}:{seconds}
+                    </div>
+
+                    <div className="timer-controls">
+
+                      <button
+                        className="timer-start"
+                        onClick={toggleTimer}
+                      >
+                        <Play size={18} />
+
+                        {timerRunning
+                          ? "Pause"
+                          : "Start"}
+                      </button>
+
+                      <button
+                        className="timer-reset"
+                        onClick={resetTimer}
+                      >
+                        <RotateCcw size={18} />
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                </section>
+
+              </div>
+
             </div>
-          </div>
+          </>
+        )}
 
-          <div className="stat-card">
-            <div className="stat-icon green">
-              <Check size={25} />
+        {/* ================= TASKS ================= */}
+
+        {activePage === "tasks" && (
+          <section className="dashboard-page">
+
+            <div className="dashboard-page-heading">
+              <div>
+                <span className="page-label">
+                  TASK MANAGEMENT
+                </span>
+
+                <h1>My Tasks</h1>
+
+                <p>
+                  Create, edit, complete, and manage your
+                  tasks.
+                </p>
+              </div>
+
+              <div className="page-icon">
+                <ListTodo size={28} />
+              </div>
             </div>
 
-            <div>
-              <span className="stat-title">Done</span>
-
-              <strong className="stat-number green-text">
-                {completedTasks}
-              </strong>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon dark-icon">
-              <Clock size={25} />
-            </div>
-
-            <div>
-              <span className="stat-title">In Progress</span>
-
-              <strong className="stat-number dark-text">
-                {pendingTasks}
-              </strong>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon red-icon">
-              <CalendarDays size={25} />
-            </div>
-
-            <div>
-              <span className="stat-title">Pending</span>
-
-              <strong className="stat-number red-text">
-                {pendingTasks}
-              </strong>
-            </div>
-          </div>
-        </section>
-
-        <div className="dashboard-grid">
-          <div className="left-column">
             <section className="add-task-section">
+
               <h2>Add New Task</h2>
 
               <div className="add-task-row">
+
                 <input
                   type="text"
                   value={newTask}
-                  onChange={(e) => setNewTask(e.target.value)}
+                  onChange={(e) =>
+                    setNewTask(e.target.value)
+                  }
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       addTask();
@@ -355,10 +582,21 @@ const [tasks, setTasks] = useState([]);
                       setCategory(e.target.value)
                     }
                   >
-                    <option value="Study">Study</option>
-                    <option value="Personal">Personal</option>
-                    <option value="Health">Health</option>
-                    <option value="Project">Project</option>
+                    <option value="Study">
+                      Study
+                    </option>
+
+                    <option value="Personal">
+                      Personal
+                    </option>
+
+                    <option value="Health">
+                      Health
+                    </option>
+
+                    <option value="Project">
+                      Project
+                    </option>
                   </select>
                 </div>
 
@@ -369,17 +607,20 @@ const [tasks, setTasks] = useState([]);
                   <Plus size={21} />
                   Add Task
                 </button>
+
               </div>
+
             </section>
 
             <section className="tasks-section">
-              <div className="tasks-heading">
-                <h2>My Tasks</h2>
 
+              <div className="tasks-heading">
+                <h2>All Tasks</h2>
                 <span>{totalTasks} tasks</span>
               </div>
 
               <div className="task-list">
+
                 {tasks.length === 0 ? (
                   <div className="empty-tasks">
                     <p>No tasks yet.</p>
@@ -394,11 +635,16 @@ const [tasks, setTasks] = useState([]);
                       }`}
                       key={task.id}
                     >
+
                       <button
                         className={`task-check ${
-                          task.completed ? "checked" : ""
+                          task.completed
+                            ? "checked"
+                            : ""
                         }`}
-                        onClick={() => toggleTask(task.id)}
+                        onClick={() =>
+                          toggleTask(task.id)
+                        }
                       >
                         {task.completed && (
                           <Check size={16} />
@@ -416,26 +662,36 @@ const [tasks, setTasks] = useState([]);
                       </span>
 
                       <div className="task-actions">
+
                         <button
-                          onClick={() => editTask(task)}
+                          onClick={() =>
+                            editTask(task)
+                          }
                         >
                           <Edit3 size={17} />
                         </button>
 
                         <button
-                          onClick={() => deleteTask(task.id)}
+                          onClick={() =>
+                            deleteTask(task.id)
+                          }
                         >
                           <Trash2 size={17} />
                         </button>
+
                       </div>
+
                     </div>
                   ))
                 )}
+
               </div>
 
               <div className="tasks-footer">
+
                 <span>
-                  {completedTasks} of {totalTasks} completed
+                  {completedTasks} of {totalTasks}{" "}
+                  completed
                 </span>
 
                 {completedTasks > 0 && (
@@ -444,42 +700,44 @@ const [tasks, setTasks] = useState([]);
                     <Trash2 size={15} />
                   </button>
                 )}
+
               </div>
+
             </section>
-          </div>
 
-          <div className="right-column">
-            <section className="weekly-section">
-              <h2>Daily Streak</h2>
+          </section>
+        )}
 
-              <div className="streak-content">
-                <div className="streak-circle">
-                  <strong>{dailyStreak}</strong>
-                  <span>days</span>
-                </div>
+        {/* ================= PROGRESS ================= */}
 
-                <div className="streak-info">
-                  <strong>
-                    {dailyStreak === 0
-                      ? "Start your streak"
-                      : dailyStreak === 1
-                      ? "1 day streak"
-                      : `${dailyStreak} day streak`}
-                  </strong>
+        {activePage === "progress" && (
+          <section className="dashboard-page">
 
-                  <span>
-                    {dailyStreak === 0
-                      ? "Complete a task today to start your streak."
-                      : "Keep completing tasks every day to keep it going."}
-                  </span>
-                </div>
+            <div className="dashboard-page-heading">
+              <div>
+                <span className="page-label">
+                  PRODUCTIVITY
+                </span>
+
+                <h1>Progress</h1>
+
+                <p>
+                  See how much you've completed and keep
+                  improving.
+                </p>
               </div>
 
-              <div className="weekly-divider" />
+              <div className="page-icon">
+                <BarChart3 size={28} />
+              </div>
+            </div>
 
-              <div className="completion-area">
+            <div className="progress-page-grid">
+
+              <div className="progress-big-card">
+
                 <div
-                  className="progress-ring"
+                  className="progress-ring large"
                   style={{
                     "--progress": `${progress * 3.6}deg`,
                   }}
@@ -489,59 +747,156 @@ const [tasks, setTasks] = useState([]);
                   </div>
                 </div>
 
-                <div className="completion-text">
-                  <strong>
-                    {completedTasks} of {totalTasks} tasks
-                  </strong>
+                <h2>Overall Completion</h2>
 
-                  <span>completed</span>
-                </div>
+                <p>
+                  {completedTasks} of {totalTasks} tasks
+                  completed
+                </p>
+
               </div>
 
-              <div className="timer-card">
-                <div className="timer-header">
-                  <div>
-                    <Clock size={20} />
-                    <strong>Focus Timer</strong>
+              <div className="progress-stats">
+
+                <div className="progress-stat">
+                  <div className="page-stat-icon orange">
+                    <ListTodo size={22} />
                   </div>
 
-                  <span>25 min focus</span>
+                  <div>
+                    <span>Total Tasks</span>
+                    <strong>{totalTasks}</strong>
+                  </div>
                 </div>
 
-                <div className="timer-display">
-                  {minutes}:{seconds}
+                <div className="progress-stat">
+                  <div className="page-stat-icon green">
+                    <Check size={22} />
+                  </div>
+
+                  <div>
+                    <span>Completed</span>
+                    <strong>{completedTasks}</strong>
+                  </div>
                 </div>
 
-                <div className="timer-controls">
-                  <button
-                    className="timer-start"
-                    onClick={toggleTimer}
-                  >
-                    <Play size={18} />
+                <div className="progress-stat">
+                  <div className="page-stat-icon dark-icon">
+                    <Target size={22} />
+                  </div>
 
-                    {timerRunning ? "Pause" : "Start"}
-                  </button>
-
-                  <button
-                    className="timer-reset"
-                    onClick={resetTimer}
-                  >
-                    <RotateCcw size={18} />
-                  </button>
+                  <div>
+                    <span>Remaining</span>
+                    <strong>{pendingTasks}</strong>
+                  </div>
                 </div>
+
               </div>
-            </section>
-          </div>
-        </div>
+
+            </div>
+
+          </section>
+        )}
+
+        {/* ================= SETTINGS ================= */}
+
+        {activePage === "settings" && (
+          <section className="dashboard-page">
+
+            <div className="dashboard-page-heading">
+              <div>
+                <span className="page-label">
+                  PREFERENCES
+                </span>
+
+                <h1>Settings</h1>
+
+                <p>
+                  Manage your FitUp dashboard preferences.
+                </p>
+              </div>
+
+              <div className="page-icon">
+                <Settings size={28} />
+              </div>
+            </div>
+
+            <div className="settings-list">
+
+              <div className="settings-item">
+
+                <div>
+                  <h3>Appearance</h3>
+
+                  <p>
+                    Change the appearance of your dashboard
+                    using the theme button in the main
+                    navigation.
+                  </p>
+                </div>
+
+                <span className="settings-status">
+                  {darkMode ? "Dark Mode" : "Light Mode"}
+                </span>
+
+              </div>
+
+              <div className="settings-item">
+
+                <div>
+                  <h3>Tasks</h3>
+
+                  <p>
+                    You currently have {totalTasks} tasks
+                    in your dashboard.
+                  </p>
+                </div>
+
+                <span className="settings-status">
+                  {totalTasks} tasks
+                </span>
+
+              </div>
+
+              <div className="settings-item">
+
+                <div>
+                  <h3>Account</h3>
+
+                  <p>
+                    Sign out of your FitUp account.
+                  </p>
+                </div>
+
+                <button
+                  className="settings-signout"
+                  onClick={handleSignOut}
+                >
+                  Sign Out
+                </button>
+
+              </div>
+
+            </div>
+
+          </section>
+        )}
 
         <div className="dashboard-footer">
-          <p>Stay focused and keep making progress.</p>
+
+          <p>
+            Stay focused and keep making progress.
+          </p>
 
           <button onClick={handleSignOut}>
             Sign out
           </button>
+
         </div>
+
       </main>
+
+      {/* ================= EDIT TASK ================= */}
 
       {editingTask && (
         <div
@@ -552,6 +907,7 @@ const [tasks, setTasks] = useState([]);
             className="edit-box"
             onClick={(e) => e.stopPropagation()}
           >
+
             <h2>Edit Task</h2>
 
             <input
@@ -566,6 +922,7 @@ const [tasks, setTasks] = useState([]);
             <p>Choose category</p>
 
             <div className="edit-categories">
+
               {[
                 "Study",
                 "Personal",
@@ -575,19 +932,27 @@ const [tasks, setTasks] = useState([]);
                 <button
                   key={item}
                   className={`edit-category ${item.toLowerCase()} ${
-                    editCategory === item ? "selected" : ""
+                    editCategory === item
+                      ? "selected"
+                      : ""
                   }`}
-                  onClick={() => setEditCategory(item)}
+                  onClick={() =>
+                    setEditCategory(item)
+                  }
                 >
                   {item}
                 </button>
               ))}
+
             </div>
 
             <div className="edit-actions">
+
               <button
                 className="cancel-edit"
-                onClick={() => setEditingTask(null)}
+                onClick={() =>
+                  setEditingTask(null)
+                }
               >
                 Cancel
               </button>
@@ -598,10 +963,13 @@ const [tasks, setTasks] = useState([]);
               >
                 Save Changes
               </button>
+
             </div>
+
           </div>
         </div>
       )}
+
     </div>
   );
 }
