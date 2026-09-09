@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 import { supabase } from "./utils/supabase";
-import DashboardNav from "./DashboardNav";
+import DashboardNav from "./Dashboardnav";
 import "./Dashboard.css";
 
 function Dashboard({
