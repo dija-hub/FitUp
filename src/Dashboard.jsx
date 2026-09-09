@@ -19,38 +19,7 @@ function Dashboard({
   setShowDashboard,
   setIsLoggedIn,
 }) {
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      title: "Study React",
-      category: "Study",
-      completed: false,
-    },
-    {
-      id: 2,
-      title: "Read a book",
-      category: "Personal",
-      completed: true,
-    },
-    {
-      id: 3,
-      title: "Practice basketball",
-      category: "Health",
-      completed: false,
-    },
-    {
-      id: 4,
-      title: "Build ToDo App",
-      category: "Project",
-      completed: false,
-    },
-    {
-      id: 5,
-      title: "Morning Workout",
-      category: "Health",
-      completed: true,
-    },
-  ]);
+const [tasks, setTasks] = useState([]);
 
   const [newTask, setNewTask] = useState("");
   const [category, setCategory] = useState("Study");
