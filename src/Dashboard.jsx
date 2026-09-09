@@ -76,10 +76,6 @@ function Dashboard({
       ? 0
       : Math.round((completedTasks / totalTasks) * 100);
 
-  const nextTask = tasks.find(
-    (task) => !task.completed
-  );
-
   const toggleTask = (id) => {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
@@ -464,32 +460,6 @@ function Dashboard({
                       </span>
                     </div>
                   </div>
-
-                  <div className="weekly-divider" />
-
-                  <div className="next-task">
-                    <span className="next-task-label">
-                      NEXT TASK
-                    </span>
-
-                    {nextTask ? (
-                      <>
-                        <h3>
-                          {nextTask.title}
-                        </h3>
-
-                        <span
-                          className={`category ${nextTask.category.toLowerCase()}`}
-                        >
-                          {nextTask.category}
-                        </span>
-                      </>
-                    ) : (
-                      <h3>
-                        All tasks completed 🎉
-                      </h3>
-                    )}
-                  </div>
                 </section>
 
               </div>
@@ -519,9 +489,7 @@ function Dashboard({
               <div className="timer-header">
                 <div>
                   <Clock size={20} />
-                  <strong>
-                    Pomodoro Timer
-                  </strong>
+                  <strong>Pomodoro Timer</strong>
                 </div>
 
                 <span>
@@ -539,9 +507,7 @@ function Dashboard({
                   onClick={toggleTimer}
                 >
                   <Play size={18} />
-                  {timerRunning
-                    ? "Pause"
-                    : "Start"}
+                  {timerRunning ? "Pause" : "Start"}
                 </button>
 
                 <button
