@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import {
   Check,
@@ -9,15 +10,14 @@ import {
   CalendarDays,
   Play,
   RotateCcw,
+  Timer,
   BarChart3,
   Target,
   Settings,
-  LayoutDashboard,
 } from "lucide-react";
 
-
 import { supabase } from "./utils/supabase";
-import DashboardNav from "./Dashboardnav";
+import DashboardNav from "./DashboardNav";
 import "./Dashboard.css";
 
 function Dashboard({
@@ -41,6 +41,9 @@ function Dashboard({
 
   const [activePage, setActivePage] = useState("overview");
 
+  const [goal, setGoal] = useState("");
+  const [goalTarget, setGoalTarget] = useState(5);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTime(new Date());
@@ -50,7 +53,7 @@ function Dashboard({
   }, []);
 
   useEffect(() => {
-    if (!timerRunning) return;
+    if (activePage !== "focus" || !timerRunning) return;
 
     const interval = setInterval(() => {
       setTimerSeconds((seconds) => {
@@ -64,7 +67,7 @@ function Dashboard({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timerRunning]);
+  }, [activePage, timerRunning]);
 
   const completedTasks = tasks.filter(
     (task) => task.completed
@@ -163,6 +166,14 @@ function Dashboard({
     .toString()
     .padStart(2, "0");
 
+  const goalProgress =
+    goalTarget === 0
+      ? 0
+      : Math.min(
+          Math.round((completedTasks / goalTarget) * 100),
+          100
+        );
+
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
 
@@ -182,14 +193,10 @@ function Dashboard({
       }`}
     >
       <main className="dashboard-content">
-
-        {/* DASHBOARD NAVIGATION */}
         <DashboardNav
           activePage={activePage}
           setActivePage={setActivePage}
         />
-
-        {/* ================= OVERVIEW ================= */}
 
         {activePage === "overview" && (
           <>
@@ -226,16 +233,13 @@ function Dashboard({
             </div>
 
             <section className="stats-grid">
-
               <div className="stat-card">
                 <div className="stat-icon orange">
                   <ListTodo size={25} />
                 </div>
 
                 <div>
-                  <span className="stat-title">
-                    All Tasks
-                  </span>
+                  <span className="stat-title">All Tasks</span>
 
                   <strong className="stat-number orange-text">
                     {totalTasks}
@@ -249,9 +253,7 @@ function Dashboard({
                 </div>
 
                 <div>
-                  <span className="stat-title">
-                    Done
-                  </span>
+                  <span className="stat-title">Done</span>
 
                   <strong className="stat-number green-text">
                     {completedTasks}
@@ -265,9 +267,7 @@ function Dashboard({
                 </div>
 
                 <div>
-                  <span className="stat-title">
-                    In Progress
-                  </span>
+                  <span className="stat-title">In Progress</span>
 
                   <strong className="stat-number dark-text">
                     {pendingTasks}
@@ -281,27 +281,21 @@ function Dashboard({
                 </div>
 
                 <div>
-                  <span className="stat-title">
-                    Pending
-                  </span>
+                  <span className="stat-title">Pending</span>
 
                   <strong className="stat-number red-text">
                     {pendingTasks}
                   </strong>
                 </div>
               </div>
-
             </section>
 
             <div className="dashboard-grid">
-
               <div className="left-column">
-
                 <section className="add-task-section">
                   <h2>Add New Task</h2>
 
                   <div className="add-task-row">
-
                     <input
                       type="text"
                       value={newTask}
@@ -323,18 +317,11 @@ function Dashboard({
                           setCategory(e.target.value)
                         }
                       >
-                        <option value="Study">
-                          Study
-                        </option>
-
+                        <option value="Study">Study</option>
                         <option value="Personal">
                           Personal
                         </option>
-
-                        <option value="Health">
-                          Health
-                        </option>
-
+                        <option value="Health">Health</option>
                         <option value="Project">
                           Project
                         </option>
@@ -348,19 +335,16 @@ function Dashboard({
                       <Plus size={21} />
                       Add Task
                     </button>
-
                   </div>
                 </section>
 
                 <section className="tasks-section">
-
                   <div className="tasks-heading">
                     <h2>My Tasks</h2>
                     <span>{totalTasks} tasks</span>
                   </div>
 
                   <div className="task-list">
-
                     {tasks.length === 0 ? (
                       <div className="empty-tasks">
                         <p>No tasks yet.</p>
@@ -375,7 +359,6 @@ function Dashboard({
                           }`}
                           key={task.id}
                         >
-
                           <button
                             className={`task-check ${
                               task.completed
@@ -402,7 +385,6 @@ function Dashboard({
                           </span>
 
                           <div className="task-actions">
-
                             <button
                               onClick={() =>
                                 editTask(task)
@@ -418,20 +400,15 @@ function Dashboard({
                             >
                               <Trash2 size={17} />
                             </button>
-
                           </div>
-
                         </div>
                       ))
                     )}
-
                   </div>
 
                   <div className="tasks-footer">
-
                     <span>
-                      {completedTasks} of {totalTasks}{" "}
-                      completed
+                      {completedTasks} of {totalTasks} completed
                     </span>
 
                     {completedTasks > 0 && (
@@ -442,21 +419,15 @@ function Dashboard({
                         <Trash2 size={15} />
                       </button>
                     )}
-
                   </div>
-
                 </section>
-
               </div>
 
               <div className="right-column">
-
                 <section className="weekly-section">
-
                   <h2>Today's Progress</h2>
 
                   <div className="completion-area">
-
                     <div
                       className="progress-ring"
                       style={{
@@ -469,274 +440,123 @@ function Dashboard({
                     </div>
 
                     <div className="completion-text">
-
                       <strong>
-                        {completedTasks} of {totalTasks}{" "}
-                        tasks
+                        {completedTasks} of {totalTasks} tasks
                       </strong>
 
                       <span>completed</span>
-
                     </div>
-
                   </div>
-
-                  <div className="weekly-divider" />
-
-                  <div className="timer-card">
-
-                    <div className="timer-header">
-
-                      <div>
-                        <Clock size={20} />
-                        <strong>Focus Timer</strong>
-                      </div>
-
-                      <span>25 min focus</span>
-
-                    </div>
-
-                    <div className="timer-display">
-                      {minutes}:{seconds}
-                    </div>
-
-                    <div className="timer-controls">
-
-                      <button
-                        className="timer-start"
-                        onClick={toggleTimer}
-                      >
-                        <Play size={18} />
-
-                        {timerRunning
-                          ? "Pause"
-                          : "Start"}
-                      </button>
-
-                      <button
-                        className="timer-reset"
-                        onClick={resetTimer}
-                      >
-                        <RotateCcw size={18} />
-                      </button>
-
-                    </div>
-
-                  </div>
-
                 </section>
-
               </div>
-
             </div>
           </>
         )}
 
-        {/* ================= TASKS ================= */}
-
-        {activePage === "tasks" && (
+        {activePage === "calendar" && (
           <section className="dashboard-page">
-
             <div className="dashboard-page-heading">
-              <div>
-                <span className="page-label">
-                  TASK MANAGEMENT
-                </span>
-
-                <h1>My Tasks</h1>
-
-                <p>
-                  Create, edit, complete, and manage your
-                  tasks.
-                </p>
-              </div>
-
               <div className="page-icon">
-                <ListTodo size={28} />
+                <CalendarDays size={28} />
               </div>
+
+              <span className="page-label">PLANNING</span>
+
+              <h1>Calendar</h1>
+
+              <p>
+                Plan your tasks and stay organized.
+              </p>
             </div>
 
-            <section className="add-task-section">
+            <div className="progress-big-card">
+              <CalendarDays size={45} />
 
-              <h2>Add New Task</h2>
+              <h2>
+                {time.toLocaleDateString("en-US", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </h2>
 
-              <div className="add-task-row">
-
-                <input
-                  type="text"
-                  value={newTask}
-                  onChange={(e) =>
-                    setNewTask(e.target.value)
-                  }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      addTask();
-                    }
-                  }}
-                  placeholder="What do you want to do?"
-                />
-
-                <div className="category-select-wrapper">
-                  <select
-                    value={category}
-                    onChange={(e) =>
-                      setCategory(e.target.value)
-                    }
-                  >
-                    <option value="Study">
-                      Study
-                    </option>
-
-                    <option value="Personal">
-                      Personal
-                    </option>
-
-                    <option value="Health">
-                      Health
-                    </option>
-
-                    <option value="Project">
-                      Project
-                    </option>
-                  </select>
-                </div>
-
-                <button
-                  className="add-button"
-                  onClick={addTask}
-                >
-                  <Plus size={21} />
-                  Add Task
-                </button>
-
-              </div>
-
-            </section>
-
-            <section className="tasks-section">
-
-              <div className="tasks-heading">
-                <h2>All Tasks</h2>
-                <span>{totalTasks} tasks</span>
-              </div>
-
-              <div className="task-list">
-
-                {tasks.length === 0 ? (
-                  <div className="empty-tasks">
-                    <p>No tasks yet.</p>
-                  </div>
-                ) : (
-                  tasks.map((task) => (
-                    <div
-                      className={`task-item ${
-                        task.completed
-                          ? "task-completed"
-                          : ""
-                      }`}
-                      key={task.id}
-                    >
-
-                      <button
-                        className={`task-check ${
-                          task.completed
-                            ? "checked"
-                            : ""
-                        }`}
-                        onClick={() =>
-                          toggleTask(task.id)
-                        }
-                      >
-                        {task.completed && (
-                          <Check size={16} />
-                        )}
-                      </button>
-
-                      <div className="task-title">
-                        <h3>{task.title}</h3>
-                      </div>
-
-                      <span
-                        className={`category ${task.category.toLowerCase()}`}
-                      >
-                        {task.category}
-                      </span>
-
-                      <div className="task-actions">
-
-                        <button
-                          onClick={() =>
-                            editTask(task)
-                          }
-                        >
-                          <Edit3 size={17} />
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            deleteTask(task.id)
-                          }
-                        >
-                          <Trash2 size={17} />
-                        </button>
-
-                      </div>
-
-                    </div>
-                  ))
-                )}
-
-              </div>
-
-              <div className="tasks-footer">
-
-                <span>
-                  {completedTasks} of {totalTasks}{" "}
-                  completed
-                </span>
-
-                {completedTasks > 0 && (
-                  <button onClick={clearCompleted}>
-                    Clear completed
-                    <Trash2 size={15} />
-                  </button>
-                )}
-
-              </div>
-
-            </section>
-
+              <p>
+                Today is{" "}
+                {time.toLocaleDateString("en-US", {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </p>
+            </div>
           </section>
         )}
 
-        {/* ================= PROGRESS ================= */}
-
-        {activePage === "progress" && (
+        {activePage === "focus" && (
           <section className="dashboard-page">
-
             <div className="dashboard-page-heading">
-              <div>
-                <span className="page-label">
-                  PRODUCTIVITY
-                </span>
-
-                <h1>Progress</h1>
-
-                <p>
-                  See how much you've completed and keep
-                  improving.
-                </p>
+              <div className="page-icon">
+                <Timer size={28} />
               </div>
 
+              <span className="page-label">FOCUS</span>
+
+              <h1>Focus Session</h1>
+
+              <p>
+                Stay focused with a simple Pomodoro timer.
+              </p>
+            </div>
+
+            <div className="progress-big-card">
+              <Timer size={35} />
+
+              <div className="timer-display">
+                {minutes}:{seconds}
+              </div>
+
+              <p>25 min focus session</p>
+
+              <div className="timer-controls">
+                <button
+                  className="timer-start"
+                  onClick={toggleTimer}
+                >
+                  <Play size={18} />
+
+                  {timerRunning ? "Pause" : "Start"}
+                </button>
+
+                <button
+                  className="timer-reset"
+                  onClick={resetTimer}
+                >
+                  <RotateCcw size={18} />
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activePage === "analytics" && (
+          <section className="dashboard-page">
+            <div className="dashboard-page-heading">
               <div className="page-icon">
                 <BarChart3 size={28} />
               </div>
+
+              <span className="page-label">
+                PRODUCTIVITY
+              </span>
+
+              <h1>Analytics</h1>
+
+              <p>
+                See how you're doing with your tasks.
+              </p>
             </div>
 
             <div className="progress-page-grid">
-
               <div className="progress-big-card">
-
                 <div
                   className="progress-ring large"
                   style={{
@@ -748,17 +568,14 @@ function Dashboard({
                   </div>
                 </div>
 
-                <h2>Overall Completion</h2>
+                <h2>Task Completion</h2>
 
                 <p>
-                  {completedTasks} of {totalTasks} tasks
-                  completed
+                  {completedTasks} of {totalTasks} tasks completed
                 </p>
-
               </div>
 
               <div className="progress-stats">
-
                 <div className="progress-stat">
                   <div className="page-stat-icon orange">
                     <ListTodo size={22} />
@@ -791,41 +608,137 @@ function Dashboard({
                     <strong>{pendingTasks}</strong>
                   </div>
                 </div>
-
               </div>
-
             </div>
-
           </section>
         )}
 
-        {/* ================= SETTINGS ================= */}
-
-        {activePage === "settings" && (
+        {activePage === "goals" && (
           <section className="dashboard-page">
-
             <div className="dashboard-page-heading">
-              <div>
-                <span className="page-label">
-                  PREFERENCES
-                </span>
-
-                <h1>Settings</h1>
-
-                <p>
-                  Manage your FitUp dashboard preferences.
-                </p>
-              </div>
-
               <div className="page-icon">
-                <Settings size={28} />
+                <Target size={28} />
               </div>
+
+              <span className="page-label">PERSONAL GOALS</span>
+
+              <h1>My Goals</h1>
+
+              <p>
+                Set a goal and track your progress.
+              </p>
             </div>
 
             <div className="settings-list">
-
               <div className="settings-item">
+                <div>
+                  <h3>Daily Goal</h3>
 
+                  <p>
+                    Complete tasks to reach your daily goal.
+                  </p>
+                </div>
+
+                <span className="settings-status">
+                  {completedTasks}/{goalTarget}
+                </span>
+              </div>
+
+              <div className="progress-big-card">
+                <Target size={35} />
+
+                <h2>
+                  {goal || "Set your personal goal"}
+                </h2>
+
+                <p>
+                  {goalProgress}% completed
+                </p>
+
+                <div
+                  style={{
+                    width: "80%",
+                    height: "10px",
+                    borderRadius: "20px",
+                    background: "#eee4da",
+                    overflow: "hidden",
+                    marginTop: "18px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${goalProgress}%`,
+                      height: "100%",
+                      borderRadius: "20px",
+                      background: "#e98b27",
+                      transition: "width 0.4s ease",
+                    }}
+                  />
+                </div>
+
+                <input
+                  type="text"
+                  value={goal}
+                  onChange={(e) =>
+                    setGoal(e.target.value)
+                  }
+                  placeholder="Enter your goal"
+                  style={{
+                    width: "80%",
+                    marginTop: "20px",
+                    padding: "12px 15px",
+                    borderRadius: "10px",
+                    border: "1px solid #eee4da",
+                    outline: "none",
+                    fontFamily: "Poppins, sans-serif",
+                  }}
+                />
+
+                <select
+                  value={goalTarget}
+                  onChange={(e) =>
+                    setGoalTarget(Number(e.target.value))
+                  }
+                  style={{
+                    width: "80%",
+                    marginTop: "10px",
+                    padding: "12px 15px",
+                    borderRadius: "10px",
+                    border: "1px solid #eee4da",
+                    outline: "none",
+                    fontFamily: "Poppins, sans-serif",
+                  }}
+                >
+                  <option value={3}>3 tasks</option>
+                  <option value={5}>5 tasks</option>
+                  <option value={7}>7 tasks</option>
+                  <option value={10}>10 tasks</option>
+                </select>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activePage === "settings" && (
+          <section className="dashboard-page">
+            <div className="dashboard-page-heading">
+              <div className="page-icon">
+                <Settings size={28} />
+              </div>
+
+              <span className="page-label">
+                PREFERENCES
+              </span>
+
+              <h1>Settings</h1>
+
+              <p>
+                Manage your FitUp dashboard preferences.
+              </p>
+            </div>
+
+            <div className="settings-list">
+              <div className="settings-item">
                 <div>
                   <h3>Appearance</h3>
 
@@ -839,11 +752,9 @@ function Dashboard({
                 <span className="settings-status">
                   {darkMode ? "Dark Mode" : "Light Mode"}
                 </span>
-
               </div>
 
               <div className="settings-item">
-
                 <div>
                   <h3>Tasks</h3>
 
@@ -856,11 +767,9 @@ function Dashboard({
                 <span className="settings-status">
                   {totalTasks} tasks
                 </span>
-
               </div>
 
               <div className="settings-item">
-
                 <div>
                   <h3>Account</h3>
 
@@ -875,16 +784,12 @@ function Dashboard({
                 >
                   Sign Out
                 </button>
-
               </div>
-
             </div>
-
           </section>
         )}
 
         <div className="dashboard-footer">
-
           <p>
             Stay focused and keep making progress.
           </p>
@@ -892,12 +797,8 @@ function Dashboard({
           <button onClick={handleSignOut}>
             Sign out
           </button>
-
         </div>
-
       </main>
-
-      {/* ================= EDIT TASK ================= */}
 
       {editingTask && (
         <div
@@ -908,7 +809,6 @@ function Dashboard({
             className="edit-box"
             onClick={(e) => e.stopPropagation()}
           >
-
             <h2>Edit Task</h2>
 
             <input
@@ -923,7 +823,6 @@ function Dashboard({
             <p>Choose category</p>
 
             <div className="edit-categories">
-
               {[
                 "Study",
                 "Personal",
@@ -944,11 +843,9 @@ function Dashboard({
                   {item}
                 </button>
               ))}
-
             </div>
 
             <div className="edit-actions">
-
               <button
                 className="cancel-edit"
                 onClick={() =>
@@ -964,15 +861,13 @@ function Dashboard({
               >
                 Save Changes
               </button>
-
             </div>
-
           </div>
         </div>
       )}
-
     </div>
   );
 }
 
 export default Dashboard;
+
