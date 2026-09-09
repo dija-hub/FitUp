@@ -7,7 +7,7 @@ import {
   Target,
   Settings,
 } from "lucide-react";
-import "./DashboardNav.css";
+import "./Dashboardnav.css";
 
 function DashboardNav({ activePage, setActivePage }) {
   return (
