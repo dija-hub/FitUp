@@ -1,4 +1,4 @@
-import { Sun, Moon, LayoutDashboard, Timer } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 import "./Navbar.css";
 
 function Navbar({
@@ -57,33 +57,29 @@ function Navbar({
       <ul className="nav-links">
 
         {showDashboard ? (
-          <>
-            <li>
-              <button
-                type="button"
-                className={`nav-link ${
-                  activePage === "overview" ? "active" : ""
-                }`}
-                onClick={() => setActivePage("overview")}
-              >
-                <LayoutDashboard size={16} />
-                Overview
-              </button>
-            </li>
+          <li className="page-toggle-group">
 
-            <li>
-              <button
-                type="button"
-                className={`nav-link ${
-                  activePage === "focus" ? "active" : ""
-                }`}
-                onClick={() => setActivePage("focus")}
-              >
-                <Timer size={16} />
-                Focus
-              </button>
-            </li>
-          </>
+            <button
+              type="button"
+              className={`page-toggle-btn ${
+                activePage === "overview" ? "active" : ""
+              }`}
+              onClick={() => setActivePage("overview")}
+            >
+              Overview
+            </button>
+
+            <button
+              type="button"
+              className={`page-toggle-btn ${
+                activePage === "focus" ? "active" : ""
+              }`}
+              onClick={() => setActivePage("focus")}
+            >
+              Focus
+            </button>
+
+          </li>
         ) : (
           <>
             <li>
