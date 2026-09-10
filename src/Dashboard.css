@@ -32,22 +32,9 @@
   margin-bottom: 42px;
 }
 
-.date-box {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
 
-.date-box strong {
-  font-size: 17px;
-  font-weight: 600;
-  color: #252525;
-}
 
-.date-box span {
-  font-size: 17px;
-  color: #f07818;
-}
+
 
 .welcome-box {
   text-align: center;
@@ -68,18 +55,7 @@
   color: #77716b;
 }
 
-.clock-box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 57px;
-  border: 1px solid #eadfd5;
-  border-radius: 15px;
-  background: #ffffff;
-  font-size: 20px;
-  font-weight: 600;
-  color: #202020;
-}
+
 
 .stats-grid {
   display: grid;

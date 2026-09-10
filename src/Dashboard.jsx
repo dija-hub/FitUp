@@ -9,8 +9,6 @@ import {
   CalendarDays,
   Play,
   RotateCcw,
-  Timer,
-  Settings,
 } from "lucide-react";
 
 import { supabase } from "./utils/supabase";
@@ -27,8 +25,6 @@ function Dashboard({
   const [newTask, setNewTask] = useState("");
   const [category, setCategory] = useState("Study");
 
-  const [time, setTime] = useState(new Date());
-
   const [timerSeconds, setTimerSeconds] = useState(25 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
 
@@ -38,13 +34,22 @@ function Dashboard({
 
   const [activePage, setActivePage] = useState("overview");
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(new Date());
-    }, 1000);
+  const completedTasks = tasks.filter(
+    (task) => task.completed
+  ).length;
 
-    return () => clearInterval(interval);
-  }, []);
+  const totalTasks = tasks.length;
+
+  const pendingTasks = totalTasks - completedTasks;
+
+  const progress =
+    totalTasks === 0
+      ? 0
+      : Math.round((completedTasks / totalTasks) * 100);
+
+  const nextTask = tasks.find(
+    (task) => !task.completed
+  );
 
   useEffect(() => {
     if (!timerRunning) return;
@@ -62,19 +67,6 @@ function Dashboard({
 
     return () => clearInterval(interval);
   }, [timerRunning]);
-
-  const completedTasks = tasks.filter(
-    (task) => task.completed
-  ).length;
-
-  const totalTasks = tasks.length;
-
-  const pendingTasks = totalTasks - completedTasks;
-
-  const progress =
-    totalTasks === 0
-      ? 0
-      : Math.round((completedTasks / totalTasks) * 100);
 
   const toggleTask = (id) => {
     setTasks((currentTasks) =>
@@ -187,37 +179,12 @@ function Dashboard({
 
         {activePage === "overview" && (
           <>
-            <div className="top-area">
-              <div className="date-box">
-                <strong>
-                  {time.toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </strong>
+            <div className="welcome-box">
+              <h1>Let's make today productive.</h1>
 
-                <span>
-                  {time.toLocaleDateString("en-US", {
-                    weekday: "long",
-                  })}
-                </span>
-              </div>
-
-              <div className="welcome-box">
-                <h1>Let's make today productive.</h1>
-
-                <p>
-                  Stay consistent and keep moving forward.
-                </p>
-              </div>
-
-              <div className="clock-box">
-                {time.toLocaleTimeString("en-US", {
-                  hour: "numeric",
-                  minute: "2-digit",
-                })}
-              </div>
+              <p>
+                Stay consistent and keep moving forward.
+              </p>
             </div>
 
             <section className="stats-grid">
@@ -287,12 +254,14 @@ function Dashboard({
             </section>
 
             <div className="dashboard-grid">
+
               <div className="left-column">
 
                 <section className="add-task-section">
                   <h2>Add New Task</h2>
 
                   <div className="add-task-row">
+
                     <input
                       type="text"
                       value={newTask}
@@ -339,10 +308,12 @@ function Dashboard({
                       <Plus size={21} />
                       Add Task
                     </button>
+
                   </div>
                 </section>
 
                 <section className="tasks-section">
+
                   <div className="tasks-heading">
                     <h2>My Tasks</h2>
 
@@ -352,6 +323,7 @@ function Dashboard({
                   </div>
 
                   <div className="task-list">
+
                     {tasks.length === 0 ? (
                       <div className="empty-tasks">
                         <p>No tasks yet.</p>
@@ -366,6 +338,7 @@ function Dashboard({
                           }`}
                           key={task.id}
                         >
+
                           <button
                             className={`task-check ${
                               task.completed
@@ -392,6 +365,7 @@ function Dashboard({
                           </span>
 
                           <div className="task-actions">
+
                             <button
                               onClick={() =>
                                 editTask(task)
@@ -407,13 +381,17 @@ function Dashboard({
                             >
                               <Trash2 size={17} />
                             </button>
+
                           </div>
+
                         </div>
                       ))
                     )}
+
                   </div>
 
                   <div className="tasks-footer">
+
                     <span>
                       {completedTasks} of {totalTasks} completed
                     </span>
@@ -426,7 +404,9 @@ function Dashboard({
                         <Trash2 size={15} />
                       </button>
                     )}
+
                   </div>
+
                 </section>
 
               </div>
@@ -434,9 +414,11 @@ function Dashboard({
               <div className="right-column">
 
                 <section className="weekly-section">
+
                   <h2>Today's Progress</h2>
 
                   <div className="completion-area">
+
                     <div
                       className="progress-ring"
                       style={{
@@ -451,6 +433,7 @@ function Dashboard({
                     </div>
 
                     <div className="completion-text">
+
                       <strong>
                         {completedTasks} of {totalTasks} tasks
                       </strong>
@@ -458,43 +441,75 @@ function Dashboard({
                       <span>
                         completed
                       </span>
+
                     </div>
+
                   </div>
+
+                  <div className="weekly-divider" />
+
+                  <div className="next-task">
+
+                    <span className="next-task-label">
+                      NEXT TASK
+                    </span>
+
+                    {nextTask ? (
+                      <>
+                        <h3>
+                          {nextTask.title}
+                        </h3>
+
+                        <span
+                          className={`category ${nextTask.category.toLowerCase()}`}
+                        >
+                          {nextTask.category}
+                        </span>
+                      </>
+                    ) : (
+                      <h3>
+                        All tasks completed 🎉
+                      </h3>
+                    )}
+
+                  </div>
+
                 </section>
 
               </div>
+
             </div>
           </>
         )}
 
         {activePage === "focus" && (
           <section className="dashboard-page">
-            <div className="dashboard-page-heading">
-              <div className="page-icon">
-                <Timer size={28} />
-              </div>
 
-              <span className="page-label">
-                FOCUS
-              </span>
+            <div className="dashboard-page-heading">
 
               <h1>Focus Timer</h1>
 
               <p>
                 Stay focused and work without distractions.
               </p>
+
             </div>
 
             <div className="progress-big-card">
+
               <div className="timer-header">
+
                 <div>
                   <Clock size={20} />
-                  <strong>Pomodoro Timer</strong>
+                  <strong>
+                    Pomodoro Timer
+                  </strong>
                 </div>
 
                 <span>
                   25 min focus
                 </span>
+
               </div>
 
               <div className="timer-display">
@@ -502,12 +517,16 @@ function Dashboard({
               </div>
 
               <div className="timer-controls">
+
                 <button
                   className="timer-start"
                   onClick={toggleTimer}
                 >
                   <Play size={18} />
-                  {timerRunning ? "Pause" : "Start"}
+
+                  {timerRunning
+                    ? "Pause"
+                    : "Start"}
                 </button>
 
                 <button
@@ -516,86 +535,16 @@ function Dashboard({
                 >
                   <RotateCcw size={18} />
                 </button>
-              </div>
-            </div>
-          </section>
-        )}
 
-        {activePage === "settings" && (
-          <section className="dashboard-page">
-            <div className="dashboard-page-heading">
-              <div className="page-icon">
-                <Settings size={28} />
-              </div>
-
-              <span className="page-label">
-                PREFERENCES
-              </span>
-
-              <h1>Settings</h1>
-
-              <p>
-                Manage your FitUp dashboard preferences.
-              </p>
-            </div>
-
-            <div className="settings-list">
-
-              <div className="settings-item">
-                <div>
-                  <h3>Appearance</h3>
-
-                  <p>
-                    Change the appearance of your
-                    dashboard using the theme button
-                    in the main navigation.
-                  </p>
-                </div>
-
-                <span className="settings-status">
-                  {darkMode
-                    ? "Dark Mode"
-                    : "Light Mode"}
-                </span>
-              </div>
-
-              <div className="settings-item">
-                <div>
-                  <h3>Tasks</h3>
-
-                  <p>
-                    You currently have {totalTasks}
-                    {" "}tasks in your dashboard.
-                  </p>
-                </div>
-
-                <span className="settings-status">
-                  {totalTasks} tasks
-                </span>
-              </div>
-
-              <div className="settings-item">
-                <div>
-                  <h3>Account</h3>
-
-                  <p>
-                    Sign out of your FitUp account.
-                  </p>
-                </div>
-
-                <button
-                  className="settings-signout"
-                  onClick={handleSignOut}
-                >
-                  Sign Out
-                </button>
               </div>
 
             </div>
+
           </section>
         )}
 
         <div className="dashboard-footer">
+
           <p>
             Stay focused and keep making progress.
           </p>
@@ -603,6 +552,7 @@ function Dashboard({
           <button onClick={handleSignOut}>
             Sign out
           </button>
+
         </div>
 
       </main>
@@ -616,6 +566,7 @@ function Dashboard({
             className="edit-box"
             onClick={(e) => e.stopPropagation()}
           >
+
             <h2>Edit Task</h2>
 
             <input
@@ -632,6 +583,7 @@ function Dashboard({
             </p>
 
             <div className="edit-categories">
+
               {[
                 "Study",
                 "Personal",
@@ -652,9 +604,11 @@ function Dashboard({
                   {item}
                 </button>
               ))}
+
             </div>
 
             <div className="edit-actions">
+
               <button
                 className="cancel-edit"
                 onClick={() =>
@@ -670,7 +624,9 @@ function Dashboard({
               >
                 Save Changes
               </button>
+
             </div>
+
           </div>
         </div>
       )}
