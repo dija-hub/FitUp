@@ -12,13 +12,14 @@ import {
 } from "lucide-react";
 
 import { supabase } from "./utils/supabase";
-import DashboardNav from "./Dashboardnav";
 import "./Dashboard.css";
 
 function Dashboard({
   darkMode,
   setShowDashboard,
   setIsLoggedIn,
+  activePage,
+  setActivePage,
 }) {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
@@ -30,8 +31,6 @@ function Dashboard({
   const [editingTask, setEditingTask] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState("Study");
-
-  const [activePage, setActivePage] = useState("overview");
 
   const completedTasks = tasks.filter(
     (task) => task.completed
@@ -170,12 +169,6 @@ function Dashboard({
       }`}
     >
       <main className="dashboard-content">
-
-        {/* DASHBOARD NAV */}
-        <DashboardNav
-          activePage={activePage}
-          setActivePage={setActivePage}
-        />
 
         {/* ================= OVERVIEW ================= */}
         {activePage === "overview" && (

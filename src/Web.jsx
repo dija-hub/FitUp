@@ -20,6 +20,7 @@ function Web({
   const [showSignUp, setShowSignUp] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [darkMode, setDarkMode] = useState(false);
+  const [activePage, setActivePage] = useState("overview");
 
   useEffect(() => {
     const checkUser = async () => {
@@ -86,6 +87,7 @@ function Web({
     setShowDashboard(false);
     setShowSignUp(false);
     setActiveSection("home");
+    setActivePage("overview");
   };
 
   return (
@@ -100,6 +102,8 @@ function Web({
         setShowDashboard={setShowDashboard}
         isLoggedIn={isLoggedIn}
         showDashboard={showDashboard}
+        activePage={activePage}
+        setActivePage={setActivePage}
         onSignOut={handleSignOut}
       />
 
@@ -332,6 +336,8 @@ function Web({
           setShowDashboard={setShowDashboard}
           setIsLoggedIn={setIsLoggedIn}
           openDashboard={openDashboard}
+          activePage={activePage}
+          setActivePage={setActivePage}
         />
       )}
 
