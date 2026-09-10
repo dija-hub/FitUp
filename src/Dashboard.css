@@ -86,6 +86,8 @@
   color: #ffffff;
 }
 
+/* DARK MODE */
+
 .dashboard-dark .dashboard-tabs button {
   color: #999999;
 }
@@ -99,7 +101,6 @@
   background: #e98b27;
   color: #ffffff;
 }
-
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

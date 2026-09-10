@@ -45,6 +45,7 @@ function Dashboard({
       ? 0
       : Math.round((completedTasks / totalTasks) * 100);
 
+  // TIMER
   useEffect(() => {
     if (!timerRunning) return;
 
@@ -62,6 +63,7 @@ function Dashboard({
     return () => clearInterval(interval);
   }, [timerRunning]);
 
+  // TASK FUNCTIONS
   const toggleTask = (id) => {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
@@ -129,6 +131,7 @@ function Dashboard({
     );
   };
 
+  // TIMER FUNCTIONS
   const toggleTimer = () => {
     setTimerRunning((current) => !current);
   };
@@ -146,6 +149,7 @@ function Dashboard({
     .toString()
     .padStart(2, "0");
 
+  // SIGN OUT
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
 
@@ -166,46 +170,39 @@ function Dashboard({
     >
       <main className="dashboard-content">
 
+        {/* DASHBOARD NAV */}
         <div className="dashboard-tabs">
           <button
             className={
-              activePage === "overview"
-                ? "active"
-                : ""
+              activePage === "overview" ? "active" : ""
             }
-            onClick={() =>
-              setActivePage("overview")
-            }
+            onClick={() => setActivePage("overview")}
           >
             Overview
           </button>
 
           <button
             className={
-              activePage === "focus"
-                ? "active"
-                : ""
+              activePage === "focus" ? "active" : ""
             }
-            onClick={() =>
-              setActivePage("focus")
-            }
+            onClick={() => setActivePage("focus")}
           >
             Focus
           </button>
         </div>
 
+        {/* ================= OVERVIEW ================= */}
         {activePage === "overview" && (
           <>
             <div className="welcome-box">
-              <h1>
-                Let's make today productive.
-              </h1>
+              <h1>Let's make today productive.</h1>
 
               <p>
                 Stay consistent and keep moving forward.
               </p>
             </div>
 
+            {/* STATS */}
             <section className="stats-grid">
 
               <div className="stat-card">
@@ -274,12 +271,14 @@ function Dashboard({
 
             </section>
 
+            {/* MAIN GRID */}
             <div className="dashboard-grid">
 
+              {/* LEFT */}
               <div className="left-column">
 
+                {/* ADD TASK */}
                 <section className="add-task-section">
-
                   <h2>Add New Task</h2>
 
                   <div className="add-task-row">
@@ -332,9 +331,9 @@ function Dashboard({
                     </button>
 
                   </div>
-
                 </section>
 
+                {/* TASKS */}
                 <section className="tasks-section">
 
                   <div className="tasks-heading">
@@ -420,9 +419,7 @@ function Dashboard({
                     </span>
 
                     {completedTasks > 0 && (
-                      <button
-                        onClick={clearCompleted}
-                      >
+                      <button onClick={clearCompleted}>
                         Clear completed
                         <Trash2 size={15} />
                       </button>
@@ -434,6 +431,7 @@ function Dashboard({
 
               </div>
 
+              {/* RIGHT */}
               <div className="right-column">
 
                 <section className="weekly-section">
@@ -477,6 +475,7 @@ function Dashboard({
           </>
         )}
 
+        {/* ================= FOCUS ================= */}
         {activePage === "focus" && (
           <section className="dashboard-page">
 
@@ -539,6 +538,7 @@ function Dashboard({
           </section>
         )}
 
+        {/* FOOTER */}
         <div className="dashboard-footer">
 
           <p>
@@ -553,6 +553,7 @@ function Dashboard({
 
       </main>
 
+      {/* EDIT MODAL */}
       {editingTask && (
         <div
           className="edit-overlay"
