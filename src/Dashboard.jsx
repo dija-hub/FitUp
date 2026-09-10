@@ -446,34 +446,6 @@ function Dashboard({
 
                   </div>
 
-                  <div className="weekly-divider" />
-
-                  <div className="next-task">
-
-                    <span className="next-task-label">
-                      NEXT TASK
-                    </span>
-
-                    {nextTask ? (
-                      <>
-                        <h3>
-                          {nextTask.title}
-                        </h3>
-
-                        <span
-                          className={`category ${nextTask.category.toLowerCase()}`}
-                        >
-                          {nextTask.category}
-                        </span>
-                      </>
-                    ) : (
-                      <h3>
-                        All tasks completed 🎉
-                      </h3>
-                    )}
-
-                  </div>
-
                 </section>
 
               </div>
