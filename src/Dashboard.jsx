@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { supabase } from "./utils/supabase";
+import DashboardNav from "./Dashboardnav";
 import "./Dashboard.css";
 
 function Dashboard({
@@ -171,25 +172,10 @@ function Dashboard({
       <main className="dashboard-content">
 
         {/* DASHBOARD NAV */}
-        <div className="dashboard-tabs">
-          <button
-            className={
-              activePage === "overview" ? "active" : ""
-            }
-            onClick={() => setActivePage("overview")}
-          >
-            Overview
-          </button>
-
-          <button
-            className={
-              activePage === "focus" ? "active" : ""
-            }
-            onClick={() => setActivePage("focus")}
-          >
-            Focus
-          </button>
-        </div>
+        <DashboardNav
+          activePage={activePage}
+          setActivePage={setActivePage}
+        />
 
         {/* ================= OVERVIEW ================= */}
         {activePage === "overview" && (
