@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 
 import { supabase } from "./utils/supabase";
-import DashboardNav from "./Dashboardnav";
 import "./Dashboard.css";
 
 function Dashboard({
@@ -21,7 +20,6 @@ function Dashboard({
   setIsLoggedIn,
 }) {
   const [tasks, setTasks] = useState([]);
-
   const [newTask, setNewTask] = useState("");
   const [category, setCategory] = useState("Study");
 
@@ -46,10 +44,6 @@ function Dashboard({
     totalTasks === 0
       ? 0
       : Math.round((completedTasks / totalTasks) * 100);
-
-  const nextTask = tasks.find(
-    (task) => !task.completed
-  );
 
   useEffect(() => {
     if (!timerRunning) return;
@@ -172,15 +166,40 @@ function Dashboard({
     >
       <main className="dashboard-content">
 
-        <DashboardNav
-          activePage={activePage}
-          setActivePage={setActivePage}
-        />
+        <div className="dashboard-tabs">
+          <button
+            className={
+              activePage === "overview"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setActivePage("overview")
+            }
+          >
+            Overview
+          </button>
+
+          <button
+            className={
+              activePage === "focus"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setActivePage("focus")
+            }
+          >
+            Focus
+          </button>
+        </div>
 
         {activePage === "overview" && (
           <>
             <div className="welcome-box">
-              <h1>Let's make today productive.</h1>
+              <h1>
+                Let's make today productive.
+              </h1>
 
               <p>
                 Stay consistent and keep moving forward.
@@ -188,6 +207,7 @@ function Dashboard({
             </div>
 
             <section className="stats-grid">
+
               <div className="stat-card">
                 <div className="stat-icon orange">
                   <ListTodo size={25} />
@@ -251,6 +271,7 @@ function Dashboard({
                   </strong>
                 </div>
               </div>
+
             </section>
 
             <div className="dashboard-grid">
@@ -258,6 +279,7 @@ function Dashboard({
               <div className="left-column">
 
                 <section className="add-task-section">
+
                   <h2>Add New Task</h2>
 
                   <div className="add-task-row">
@@ -310,6 +332,7 @@ function Dashboard({
                     </button>
 
                   </div>
+
                 </section>
 
                 <section className="tasks-section">
@@ -473,6 +496,7 @@ function Dashboard({
 
                 <div>
                   <Clock size={20} />
+
                   <strong>
                     Pomodoro Timer
                   </strong>
@@ -532,11 +556,15 @@ function Dashboard({
       {editingTask && (
         <div
           className="edit-overlay"
-          onClick={() => setEditingTask(null)}
+          onClick={() =>
+            setEditingTask(null)
+          }
         >
           <div
             className="edit-box"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) =>
+              e.stopPropagation()
+            }
           >
 
             <h2>Edit Task</h2>
@@ -564,7 +592,9 @@ function Dashboard({
               ].map((item) => (
                 <button
                   key={item}
-                  className={`edit-category ${item.toLowerCase()} ${
+                  className={`edit-category ${
+                    item.toLowerCase()
+                  } ${
                     editCategory === item
                       ? "selected"
                       : ""
