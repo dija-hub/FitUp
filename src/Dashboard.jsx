@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { supabase } from "./utils/supabase";
+import DashboardNav from "./Dashboardnav";
 import "./Dashboard.css";
 
 function Dashboard({
@@ -169,8 +170,11 @@ function Dashboard({
       }`}
     >
       <main className="dashboard-content">
-
-        {/* ================= OVERVIEW ================= */}
+<DashboardNav
+  activePage={activePage}
+  setActivePage={setActivePage}
+/>
+       
         {activePage === "overview" && (
           <>
             <div className="welcome-box">

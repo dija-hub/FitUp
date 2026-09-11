@@ -3,14 +3,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 35px;
-  margin-bottom: 32px;
+  gap: 50px;
+  padding: 20px 0;
+  background: transparent;
 }
 
 .dashboard-nav span {
-  color: #817a73;
+  color: #77736c;
   font-family: "Poppins", sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   transition: 0.2s ease;
@@ -26,7 +27,7 @@
 }
 
 .dashboard-dark .dashboard-nav span {
-  color: #999999;
+  color: #aaa;
 }
 
 .dashboard-dark .dashboard-nav span:hover,
