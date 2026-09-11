@@ -1,27 +1,21 @@
-import {
-  LayoutDashboard,
-  Timer,
-} from "lucide-react";
 import "./Dashboardnav.css";
 
 function DashboardNav({ activePage, setActivePage }) {
   return (
     <div className="dashboard-nav">
-      <button
+      <span
         className={activePage === "overview" ? "active" : ""}
         onClick={() => setActivePage("overview")}
       >
-        <LayoutDashboard size={18} />
         Overview
-      </button>
+      </span>
 
-      <button
+      <span
         className={activePage === "focus" ? "active" : ""}
         onClick={() => setActivePage("focus")}
       >
-        <Timer size={18} />
         Focus
-      </button>
+      </span>
     </div>
   );
 }
