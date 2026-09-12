@@ -12,6 +12,7 @@ import {
   Dumbbell,
   Tag,
   X,
+  ChevronDown,
 } from "lucide-react";
 
 import { supabase } from "./utils/supabase";
@@ -19,6 +20,13 @@ import "./Dashboard.css";
 
 const FOCUS_DURATIONS = [15, 25, 45, 60]; // minutes
 const BREAK_MINUTES = 5;
+
+const EMOJI_OPTIONS = [
+  "📚", "💪", "🎨", "💻", "🧘", "🎵",
+  "🍳", "🌱", "✈️", "💰", "🏠", "📝",
+  "🎯", "❤️", "🧠", "⚽", "📷", "🛠️",
+  "🎮", "🛒", "🐾", "🌟", "☕", "📖",
+];
 
 function Dashboard({
   darkMode,
@@ -49,8 +57,9 @@ function Dashboard({
 
   const [categories, setCategories] = useState([]);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
-  const [categoryEmoji, setCategoryEmoji] = useState("");
+  const [categoryEmoji, setCategoryEmoji] = useState("🏷️");
   const [categoryName, setCategoryName] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const completedTasks = tasks.filter(
     (task) => task.completed
@@ -223,24 +232,31 @@ function Dashboard({
       ...current,
       {
         id: Date.now(),
-        emoji: categoryEmoji.trim() || "🏷️",
+        emoji: categoryEmoji,
         name: categoryName.trim(),
       },
     ]);
 
-    setCategoryEmoji("");
+    setCategoryEmoji("🏷️");
     setCategoryName("");
     setShowCategoryForm(false);
+    setShowEmojiPicker(false);
   };
 
   const cancelCategoryForm = () => {
-    setCategoryEmoji("");
+    setCategoryEmoji("🏷️");
     setCategoryName("");
     setShowCategoryForm(false);
+    setShowEmojiPicker(false);
   };
 
   const deleteCategory = (id) => {
     setCategories((current) => current.filter((c) => c.id !== id));
+  };
+
+  const selectEmoji = (emoji) => {
+    setCategoryEmoji(emoji);
+    setShowEmojiPicker(false);
   };
 
   return (
@@ -780,15 +796,40 @@ function Dashboard({
                   <div className="inline-form">
 
                     <div className="inline-form-row">
-                      <input
-                        type="text"
-                        className="inline-form-input emoji-input"
-                        placeholder="🏷️"
-                        value={categoryEmoji}
-                        onChange={(e) => setCategoryEmoji(e.target.value)}
-                        maxLength={2}
-                        autoFocus
-                      />
+
+                      <div className="emoji-picker-wrapper">
+
+                        <button
+                          type="button"
+                          className="emoji-picker-trigger"
+                          onClick={() =>
+                            setShowEmojiPicker((current) => !current)
+                          }
+                        >
+                          <span className="emoji-picker-selected">
+                            {categoryEmoji}
+                          </span>
+                          <ChevronDown size={16} />
+                        </button>
+
+                        {showEmojiPicker && (
+                          <div className="emoji-picker-dropdown">
+                            {EMOJI_OPTIONS.map((emoji) => (
+                              <button
+                                type="button"
+                                key={emoji}
+                                className={`emoji-picker-option ${
+                                  categoryEmoji === emoji ? "selected" : ""
+                                }`}
+                                onClick={() => selectEmoji(emoji)}
+                              >
+                                {emoji}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                      </div>
 
                       <input
                         type="text"
@@ -796,6 +837,7 @@ function Dashboard({
                         placeholder="Category name"
                         value={categoryName}
                         onChange={(e) => setCategoryName(e.target.value)}
+                        autoFocus
                       />
                     </div>
 
