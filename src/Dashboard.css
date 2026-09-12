@@ -1191,7 +1191,7 @@
   color: #f2f2f2;
 }
 
-/* ===== FOCUS PAGE ===== */
+
 .dashboard-page {
   padding: 20px 0 60px;
 }
@@ -1239,7 +1239,6 @@
   box-shadow: none;
 }
 
-/* Duration picker */
 .duration-select {
   display: flex;
   justify-content: center;
@@ -1289,7 +1288,7 @@
   color: #171717;
 }
 
-/* Break mode styling */
+
 .break-badge {
   background: #e6f4ea !important;
   color: #3b9950 !important;
@@ -1317,7 +1316,7 @@
   color: #7edb8b;
 }
 
-/* ===== GOALS PAGE ===== */
+
 .goals-grid {
   display: flex;
   flex-direction: column;
@@ -1489,7 +1488,6 @@
   transform: translateY(-2px);
 }
 
-/* Inline form */
 .inline-form {
   display: flex;
   flex-direction: column;
@@ -1566,7 +1564,7 @@
   background: #ff8c17;
 }
 
-/* Dark mode */
+
 .dashboard-dark .feature-card {
   background: #202020;
   border-color: #303030;
@@ -1621,7 +1619,7 @@
 .dashboard-dark .feature-empty {
   color: #888888;
 }
-/* ===== EMOJI PICKER ===== */
+
 
 .emoji-picker-wrapper {
   position: relative;
@@ -1664,7 +1662,7 @@
 
   z-index: 9999;
 
-  /* IMPORTANT */
+
   margin: 0;
   transform: none;
 }
@@ -1693,7 +1691,7 @@
   background: #ff9b2f;
 }
 
-/* Dark mode */
+
 
 .dashboard-dark .emoji-picker-trigger {
   background: #292929;
@@ -1714,7 +1712,7 @@
 .dashboard-dark .emoji-picker-option.selected {
   background: #ff9b2f;
 }
-/* ===== CUSTOM SELECT (task category dropdown) ===== */
+
 .custom-select {
   position: relative;
   height: 58px;
@@ -1810,7 +1808,7 @@
   font-weight: 600;
 }
 
-/* Dark mode */
+
 .dashboard-dark .custom-select-trigger {
   background: #292929;
   border-color: #3a3a3a;
@@ -1841,7 +1839,7 @@
   color: #171717;
 }
 
-/* ===== CATEGORIES SECTION (below Today's Progress) ===== */
+
 .categories-section {
   margin-top: 21px;
   padding: 27px;
@@ -1892,7 +1890,7 @@
   color: #aaaaaa;
 }
 
-/* Custom category badge fallback color (for task list items) */
+
 .category.custom {
   background: #eef1ff;
   color: #5865e0;
@@ -1912,7 +1910,7 @@
   background: #262a4a;
   color: #93a1ff;
 }
-/* Fix: emoji dropdown no longer overlaps Save button awkwardly */
+
 .emoji-picker-dropdown {
   position: absolute;
   top: calc(100% + 8px);
@@ -1933,7 +1931,7 @@
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
 }
 
-/* ===== Goal Tracker card ===== */
+
 .feature-icon.purple {
   background: #eef1ff;
   color: #5865e0;
@@ -2058,7 +2056,7 @@
   color: #e87515;
 }
 
-/* ===== Notes card ===== */
+
 .notes-list {
   display: flex;
   flex-direction: column;
@@ -2078,7 +2076,7 @@
   color: #333333;
 }
 
-/* Dark mode additions */
+
 .dashboard-dark .feature-icon.purple {
   background: #262a4a;
   color: #93a1ff;

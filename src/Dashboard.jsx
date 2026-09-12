@@ -960,7 +960,7 @@ function Dashboard({
 
               </div>
 
-              {/* PROGRESS NOTES */}
+              
               <div className="feature-card">
 
                 <div className="feature-card-header">
@@ -1023,7 +1023,7 @@ function Dashboard({
 
       </main>
 
-      {/* EDIT MODAL */}
+      
       {editingTask && (
         <div className="edit-overlay" onClick={() => setEditingTask(null)}>
           <div className="edit-box" onClick={(e) => e.stopPropagation()}>
