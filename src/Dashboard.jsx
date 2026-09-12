@@ -15,7 +15,12 @@ import {
   Star,
 } from "lucide-react";
 
+import { supabase } from "./utils/supabase";
 import "./Dashboard.css";
+
+const FOCUS_DURATIONS = [15, 25, 45, 60]; // minutes
+const BREAK_MINUTES = 5;
+const TOTAL_STARS = 6;
 
 function Dashboard({
   darkMode,
@@ -28,16 +33,28 @@ function Dashboard({
   const [newTask, setNewTask] = useState("");
   const [category, setCategory] = useState("Study");
 
-  /* TIMER */
-  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [focusMinutes, setFocusMinutes] = useState(25);
+  const [timerMode, setTimerMode] = useState("focus"); // "focus" | "break"
+  const [timerSeconds, setTimerSeconds] = useState(25 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
 
-  /* EDIT TASK */
   const [editingTask, setEditingTask] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState("Study");
 
-  /* TASK STATS */
+  // GOALS PAGE STATE
+  const [exercises, setExercises] = useState([
+    { id: 1, name: "Squats", sets: 3, reps: "12" },
+    { id: 2, name: "Push Ups", sets: 3, reps: "10" },
+    { id: 3, name: "Plank", sets: 3, reps: "30s" },
+  ]);
+
+  const [categories, setCategories] = useState([
+    { id: 1, emoji: "📚", name: "Study" },
+    { id: 2, emoji: "💪", name: "Fitness" },
+    { id: 3, emoji: "🎨", name: "Creative" },
+  ]);
+
   const completedTasks = tasks.filter(
     (task) => task.completed
   ).length;
@@ -49,23 +66,37 @@ function Dashboard({
   const progress =
     totalTasks === 0
       ? 0
-      : Math.round(
-          (completedTasks / totalTasks) * 100
-        );
+      : Math.round((completedTasks / totalTasks) * 100);
 
-  /* TIMER */
+  const earnedStars = Math.min(completedTasks, TOTAL_STARS);
+
+  // TIMER
   useEffect(() => {
     if (!timerRunning) return;
 
     const interval = setInterval(() => {
-      setTimerSeconds((seconds) => seconds + 1);
+      setTimerSeconds((seconds) => {
+        if (seconds <= 1) {
+          if (timerMode === "focus") {
+            // focus session done → auto-switch to break
+            setTimerMode("break");
+            return BREAK_MINUTES * 60;
+          } else {
+            // break done → back to focus, wait for user to start
+            setTimerMode("focus");
+            setTimerRunning(false);
+            return focusMinutes * 60;
+          }
+        }
+
+        return seconds - 1;
+      });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timerRunning]);
+  }, [timerRunning, timerMode, focusMinutes]);
 
-  /* TASK FUNCTIONS */
-
+  // TASK FUNCTIONS
   const toggleTask = (id) => {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
@@ -81,9 +112,7 @@ function Dashboard({
 
   const deleteTask = (id) => {
     setTasks((currentTasks) =>
-      currentTasks.filter(
-        (task) => task.id !== id
-      )
+      currentTasks.filter((task) => task.id !== id)
     );
   };
 
@@ -131,24 +160,27 @@ function Dashboard({
 
   const clearCompleted = () => {
     setTasks((currentTasks) =>
-      currentTasks.filter(
-        (task) => !task.completed
-      )
+      currentTasks.filter((task) => !task.completed)
     );
   };
 
-  /* TIMER FUNCTIONS */
-
+  // TIMER FUNCTIONS
   const toggleTimer = () => {
     setTimerRunning((current) => !current);
   };
 
   const resetTimer = () => {
     setTimerRunning(false);
-    setTimerSeconds(0);
+    setTimerMode("focus");
+    setTimerSeconds(focusMinutes * 60);
   };
 
-  /* FORMAT TIMER */
+  const selectFocusDuration = (minutes) => {
+    if (timerRunning) return; // don't allow changing mid-session
+    setFocusMinutes(minutes);
+    setTimerMode("focus");
+    setTimerSeconds(minutes * 60);
+  };
 
   const minutes = Math.floor(timerSeconds / 60)
     .toString()
@@ -158,6 +190,45 @@ function Dashboard({
     .toString()
     .padStart(2, "0");
 
+  // GOALS PAGE FUNCTIONS
+  const addExercise = () => {
+    const name = window.prompt("Exercise name:");
+    if (!name || !name.trim()) return;
+
+    const sets = window.prompt("Sets:", "3");
+    const reps = window.prompt("Reps (e.g. 12 or 30s):", "12");
+
+    setExercises((current) => [
+      ...current,
+      {
+        id: Date.now(),
+        name: name.trim(),
+        sets: sets || "3",
+        reps: reps || "12",
+      },
+    ]);
+  };
+
+  const deleteExercise = (id) => {
+    setExercises((current) => current.filter((e) => e.id !== id));
+  };
+
+  const addCategory = () => {
+    const name = window.prompt("Category name:");
+    if (!name || !name.trim()) return;
+
+    const emoji = window.prompt("Emoji (optional):", "🏷️");
+
+    setCategories((current) => [
+      ...current,
+      {
+        id: Date.now(),
+        emoji: emoji || "🏷️",
+        name: name.trim(),
+      },
+    ]);
+  };
+
   return (
     <div
       className={`dashboard ${
@@ -166,16 +237,10 @@ function Dashboard({
     >
       <main className="dashboard-content">
 
-        {/* ================= OVERVIEW ================= */}
-
         {activePage === "overview" && (
           <>
-            {/* WELCOME */}
-
             <div className="welcome-box">
-              <h1>
-                Let's make today productive.
-              </h1>
+              <h1>Let's make today productive.</h1>
 
               <p>
                 Stay consistent and keep moving forward.
@@ -183,7 +248,6 @@ function Dashboard({
             </div>
 
             {/* STATS */}
-
             <section className="stats-grid">
 
               <div className="stat-card">
@@ -252,18 +316,14 @@ function Dashboard({
 
             </section>
 
-            {/* DASHBOARD GRID */}
-
+            {/* MAIN GRID */}
             <div className="dashboard-grid">
 
               {/* LEFT */}
-
               <div className="left-column">
 
                 {/* ADD TASK */}
-
                 <section className="add-task-section">
-
                   <h2>Add New Task</h2>
 
                   <div className="add-task-row">
@@ -283,7 +343,6 @@ function Dashboard({
                     />
 
                     <div className="category-select-wrapper">
-
                       <select
                         value={category}
                         onChange={(e) =>
@@ -306,7 +365,6 @@ function Dashboard({
                           Project
                         </option>
                       </select>
-
                     </div>
 
                     <button
@@ -318,21 +376,17 @@ function Dashboard({
                     </button>
 
                   </div>
-
                 </section>
 
                 {/* TASKS */}
-
                 <section className="tasks-section">
 
                   <div className="tasks-heading">
-
                     <h2>My Tasks</h2>
 
                     <span>
                       {totalTasks} tasks
                     </span>
-
                   </div>
 
                   <div className="task-list">
@@ -406,14 +460,11 @@ function Dashboard({
                   <div className="tasks-footer">
 
                     <span>
-                      {completedTasks} of{" "}
-                      {totalTasks} completed
+                      {completedTasks} of {totalTasks} completed
                     </span>
 
                     {completedTasks > 0 && (
-                      <button
-                        onClick={clearCompleted}
-                      >
+                      <button onClick={clearCompleted}>
                         Clear completed
                         <Trash2 size={15} />
                       </button>
@@ -425,7 +476,7 @@ function Dashboard({
 
               </div>
 
-
+              {/* RIGHT */}
               <div className="right-column">
 
                 <section className="weekly-section">
@@ -450,8 +501,7 @@ function Dashboard({
                     <div className="completion-text">
 
                       <strong>
-                        {completedTasks} of{" "}
-                        {totalTasks} tasks
+                        {completedTasks} of {totalTasks} tasks
                       </strong>
 
                       <span>
@@ -463,88 +513,6 @@ function Dashboard({
                   </div>
 
                 </section>
-                {/* WORKOUT TRACKER */}
-
-<section className="overview-card workout-card">
-  <div className="overview-card-header">
-    <div className="overview-icon">
-      🏋️
-    </div>
-
-    <div>
-      <h2>Workout Tracker</h2>
-      <p>Track exercises, sets and reps</p>
-    </div>
-  </div>
-
-  <div className="workout-list">
-    <div className="workout-item">
-      <span>Squats</span>
-      <strong>3 × 12</strong>
-    </div>
-
-    <div className="workout-item">
-      <span>Push Ups</span>
-      <strong>3 × 10</strong>
-    </div>
-
-    <div className="workout-item">
-      <span>Plank</span>
-      <strong>3 × 30s</strong>
-    </div>
-  </div>
-
-  <button className="overview-button">
-    + Add Exercise
-  </button>
-</section>
-
-
-{/* CUSTOM CATEGORIES */}
-
-<section className="overview-card category-card">
-  <div className="overview-card-header">
-    <div className="overview-icon">
-      🏷️
-    </div>
-
-    <div>
-      <h2>Custom Categories</h2>
-      <p>User creates their own categories</p>
-    </div>
-  </div>
-
-  <div className="custom-category-list">
-    <span>📚 Study</span>
-    <span>💪 Fitness</span>
-    <span>🎨 Creative</span>
-  </div>
-
-  <button className="overview-button">
-    + Create Category
-  </button>
-</section>
-
-
-{/* ACHIEVEMENTS */}
-
-<section className="overview-card achievement-card">
-  <div className="overview-card-header">
-    <div className="overview-icon">
-      🏆
-    </div>
-
-    <div>
-      <h2>Achievements</h2>
-      <p>Keep completing goals to earn stars</p>
-    </div>
-  </div>
-
-  <div className="stars">
-    <span>⭐⭐</span>
-    <span>⭐⭐⭐</span>
-  </div>
-</section>
 
               </div>
 
@@ -552,7 +520,7 @@ function Dashboard({
           </>
         )}
 
-
+        {/* ================= FOCUS ================= */}
         {activePage === "focus" && (
           <section className="dashboard-page">
 
@@ -561,28 +529,64 @@ function Dashboard({
               <h1>Focus Timer</h1>
 
               <p>
-                Stay focused and track your time.
+                {timerMode === "focus"
+                  ? "Stay focused and work without distractions."
+                  : "Take a short break — you've earned it."}
               </p>
 
             </div>
 
             <div className="progress-big-card">
 
-          
+              <div className="timer-header">
 
-              
-             
+                <div>
+                  <Clock size={20} />
 
-              <div className="timer-display">
-                {minutes}:{seconds}
+                  <strong>
+                    {timerMode === "focus" ? "Pomodoro Timer" : "Break Time"}
+                  </strong>
+                </div>
+
+                <span className={timerMode === "break" ? "break-badge" : ""}>
+                  {timerMode === "focus"
+                    ? `${focusMinutes} min focus`
+                    : `${BREAK_MINUTES} min break`}
+                </span>
+
               </div>
 
-           
+              {timerMode === "focus" && (
+                <div className="duration-select">
+                  {FOCUS_DURATIONS.map((min) => (
+                    <button
+                      key={min}
+                      className={`duration-btn ${
+                        focusMinutes === min ? "active" : ""
+                      }`}
+                      disabled={timerRunning}
+                      onClick={() => selectFocusDuration(min)}
+                    >
+                      {min}m
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <div
+                className={`timer-display ${
+                  timerMode === "break" ? "break-mode" : ""
+                }`}
+              >
+                {minutes}:{seconds}
+              </div>
 
               <div className="timer-controls">
 
                 <button
-                  className="timer-start"
+                  className={`timer-start ${
+                    timerMode === "break" ? "break-start" : ""
+                  }`}
                   onClick={toggleTimer}
                 >
                   <Play size={18} />
@@ -606,10 +610,123 @@ function Dashboard({
           </section>
         )}
 
+        {/* ================= GOALS ================= */}
+        {activePage === "goals" && (
+          <section className="dashboard-page">
+
+            <div className="dashboard-page-heading">
+              <h1>Goals</h1>
+              <p>Track workouts, organize categories, and celebrate wins.</p>
+            </div>
+
+            <div className="goals-grid">
+
+              {/* WORKOUT TRACKER */}
+              <div className="feature-card">
+
+                <div className="feature-card-header">
+                  <div className="feature-icon orange">
+                    <Dumbbell size={24} />
+                  </div>
+
+                  <div>
+                    <h2>Workout Tracker</h2>
+                    <p>Track exercises, sets and reps</p>
+                  </div>
+                </div>
+
+                <div className="exercise-list">
+                  {exercises.map((exercise) => (
+                    <div className="exercise-item" key={exercise.id}>
+                      <span className="exercise-name">{exercise.name}</span>
+
+                      <div className="exercise-right">
+                        <span className="exercise-sets">
+                          {exercise.sets} × {exercise.reps}
+                        </span>
+
+                        <button
+                          className="exercise-delete"
+                          onClick={() => deleteExercise(exercise.id)}
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button className="feature-add-btn" onClick={addExercise}>
+                  <Plus size={18} />
+                  Add Exercise
+                </button>
+
+              </div>
+
+              {/* CUSTOM CATEGORIES */}
+              <div className="feature-card">
+
+                <div className="feature-card-header">
+                  <div className="feature-icon yellow">
+                    <Tag size={24} />
+                  </div>
+
+                  <div>
+                    <h2>Custom Categories</h2>
+                    <p>User creates their own categories</p>
+                  </div>
+                </div>
+
+                <div className="category-chips">
+                  {categories.map((cat) => (
+                    <span className="category-chip" key={cat.id}>
+                      {cat.emoji} {cat.name}
+                    </span>
+                  ))}
+                </div>
+
+                <button className="feature-add-btn" onClick={addCategory}>
+                  <Plus size={18} />
+                  Create Category
+                </button>
+
+              </div>
+
+              {/* ACHIEVEMENTS */}
+              <div className="feature-card">
+
+                <div className="feature-card-header">
+                  <div className="feature-icon gold">
+                    <Trophy size={24} />
+                  </div>
+
+                  <div>
+                    <h2>Achievements</h2>
+                    <p>Keep completing goals to earn stars</p>
+                  </div>
+                </div>
+
+                <div className="stars-row">
+                  {Array.from({ length: TOTAL_STARS }).map((_, index) => (
+                    <Star
+                      key={index}
+                      size={28}
+                      className={index < earnedStars ? "star filled" : "star"}
+                      fill={index < earnedStars ? "#ffb020" : "none"}
+                    />
+                  ))}
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+        )}
+
       </main>
 
-      {/* ================= EDIT MODAL ================= */}
-
+      {/* EDIT MODAL */}
       {editingTask && (
         <div
           className="edit-overlay"
@@ -617,7 +734,6 @@ function Dashboard({
             setEditingTask(null)
           }
         >
-
           <div
             className="edit-box"
             onClick={(e) =>
@@ -636,7 +752,9 @@ function Dashboard({
               placeholder="Task name"
             />
 
-            <p>Choose category</p>
+            <p>
+              Choose category
+            </p>
 
             <div className="edit-categories">
 
@@ -648,7 +766,9 @@ function Dashboard({
               ].map((item) => (
                 <button
                   key={item}
-                  className={`edit-category ${item.toLowerCase()} ${
+                  className={`edit-category ${
+                    item.toLowerCase()
+                  } ${
                     editCategory === item
                       ? "selected"
                       : ""
@@ -684,7 +804,6 @@ function Dashboard({
             </div>
 
           </div>
-
         </div>
       )}
 
