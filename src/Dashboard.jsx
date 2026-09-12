@@ -20,7 +20,7 @@ import {
 import { supabase } from "./utils/supabase";
 import "./Dashboard.css";
 
-const FOCUS_DURATIONS = [15, 25, 45, 60]; // minutes
+const FOCUS_DURATIONS = [15, 25, 45, 60]; 
 const BREAK_MINUTES = 5;
 
 const EMOJI_OPTIONS = [
@@ -371,7 +371,7 @@ function Dashboard({
               <p>Stay consistent and keep moving forward.</p>
             </div>
 
-            {/* STATS */}
+            
             <section className="stats-grid">
 
               <div className="stat-card">
@@ -416,10 +416,10 @@ function Dashboard({
 
             </section>
 
-            {/* MAIN GRID */}
+           
             <div className="dashboard-grid">
 
-              {/* LEFT */}
+              
               <div className="left-column">
 
                 <section className="add-task-section">
@@ -561,7 +561,7 @@ function Dashboard({
 
               </div>
 
-              {/* RIGHT */}
+              
               <div className="right-column">
 
                 <section className="weekly-section">
@@ -586,7 +586,7 @@ function Dashboard({
                   </div>
                 </section>
 
-                {/* CUSTOM CATEGORIES */}
+                
                 <section className="categories-section">
 
                   <div className="categories-header">
@@ -709,7 +709,7 @@ function Dashboard({
           </>
         )}
 
-        {/* ================= FOCUS ================= */}
+     
         {activePage === "focus" && (
           <section className="dashboard-page">
 
@@ -785,7 +785,7 @@ function Dashboard({
           </section>
         )}
 
-        {/* ================= GOALS ================= */}
+    
         {activePage === "goals" && (
           <section className="dashboard-page">
 
@@ -796,7 +796,7 @@ function Dashboard({
 
             <div className="goals-grid">
 
-              {/* WORKOUT TRACKER */}
+              
               <div className="feature-card">
 
                 <div className="feature-card-header">
@@ -896,7 +896,7 @@ function Dashboard({
 
               </div>
 
-              {/* WEEKLY GOAL TRACKER */}
+              
               <div className="feature-card">
 
                 <div className="feature-card-header">
