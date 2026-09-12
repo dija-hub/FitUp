@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Check,
   Plus,
@@ -13,6 +13,8 @@ import {
   Tag,
   X,
   ChevronDown,
+  Target,
+  StickyNote,
 } from "lucide-react";
 
 import { supabase } from "./utils/supabase";
@@ -28,6 +30,13 @@ const EMOJI_OPTIONS = [
   "🎮", "🛒", "🐾", "🌟", "☕", "📖",
 ];
 
+const DEFAULT_CATEGORIES = [
+  { name: "Study", emoji: "📚" },
+  { name: "Personal", emoji: "👤" },
+  { name: "Health", emoji: "❤️" },
+  { name: "Project", emoji: "📁" },
+];
+
 function Dashboard({
   darkMode,
   setShowDashboard,
@@ -38,6 +47,8 @@ function Dashboard({
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [category, setCategory] = useState("Study");
+  const [taskCategoryOpen, setTaskCategoryOpen] = useState(false);
+  const taskCategoryRef = useRef(null);
 
   const [focusMinutes, setFocusMinutes] = useState(25);
   const [timerMode, setTimerMode] = useState("focus"); // "focus" | "break"
@@ -48,18 +59,33 @@ function Dashboard({
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState("Study");
 
-  // GOALS PAGE STATE
+  // WORKOUT TRACKER STATE
   const [exercises, setExercises] = useState([]);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
   const [exerciseName, setExerciseName] = useState("");
   const [exerciseSets, setExerciseSets] = useState("");
   const [exerciseReps, setExerciseReps] = useState("");
 
+  // WEEKLY GOAL STATE
+  const [weeklyGoal, setWeeklyGoal] = useState(4);
+  const [sessionsCompleted, setSessionsCompleted] = useState(0);
+
+  // NOTES STATE
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState("");
+
+  // CUSTOM CATEGORIES STATE
   const [categories, setCategories] = useState([]);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [categoryEmoji, setCategoryEmoji] = useState("🏷️");
   const [categoryName, setCategoryName] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const emojiPickerRef = useRef(null);
+
+  const allCategories = [
+    ...DEFAULT_CATEGORIES,
+    ...categories.map((c) => ({ name: c.name, emoji: c.emoji })),
+  ];
 
   const completedTasks = tasks.filter(
     (task) => task.completed
@@ -74,6 +100,43 @@ function Dashboard({
       ? 0
       : Math.round((completedTasks / totalTasks) * 100);
 
+  const goalProgress =
+    weeklyGoal === 0
+      ? 0
+      : Math.min(100, Math.round((sessionsCompleted / weeklyGoal) * 100));
+
+  // CLOSE TASK CATEGORY DROPDOWN ON OUTSIDE CLICK
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        taskCategoryRef.current &&
+        !taskCategoryRef.current.contains(e.target)
+      ) {
+        setTaskCategoryOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // CLOSE EMOJI PICKER ON OUTSIDE CLICK
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(e.target)
+      ) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   // TIMER
   useEffect(() => {
     if (!timerRunning) return;
@@ -82,11 +145,9 @@ function Dashboard({
       setTimerSeconds((seconds) => {
         if (seconds <= 1) {
           if (timerMode === "focus") {
-            // focus session done → auto-switch to break
             setTimerMode("break");
             return BREAK_MINUTES * 60;
           } else {
-            // break done → back to focus, wait for user to start
             setTimerMode("focus");
             setTimerRunning(false);
             return focusMinutes * 60;
@@ -105,10 +166,7 @@ function Dashboard({
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
         task.id === id
-          ? {
-              ...task,
-              completed: !task.completed,
-            }
+          ? { ...task, completed: !task.completed }
           : task
       )
     );
@@ -132,11 +190,7 @@ function Dashboard({
     setTasks((currentTasks) =>
       currentTasks.map((item) =>
         item.id === editingTask.id
-          ? {
-              ...item,
-              title: editTitle.trim(),
-              category: editCategory,
-            }
+          ? { ...item, title: editTitle.trim(), category: editCategory }
           : item
       )
     );
@@ -168,6 +222,23 @@ function Dashboard({
     );
   };
 
+  const selectTaskCategory = (name) => {
+    setCategory(name);
+    setTaskCategoryOpen(false);
+  };
+
+  const getCategoryEmoji = (name) => {
+    const found = allCategories.find((c) => c.name === name);
+    return found ? found.emoji : "🏷️";
+  };
+
+  const getCategoryClass = (name) => {
+    const known = ["study", "personal", "health", "project"];
+    return known.includes(name.toLowerCase())
+      ? name.toLowerCase()
+      : "custom";
+  };
+
   // TIMER FUNCTIONS
   const toggleTimer = () => {
     setTimerRunning((current) => !current);
@@ -180,7 +251,7 @@ function Dashboard({
   };
 
   const selectFocusDuration = (minutes) => {
-    if (timerRunning) return; // don't allow changing mid-session
+    if (timerRunning) return;
     setFocusMinutes(minutes);
     setTimerMode("focus");
     setTimerSeconds(minutes * 60);
@@ -194,7 +265,7 @@ function Dashboard({
     .toString()
     .padStart(2, "0");
 
-  // GOALS PAGE FUNCTIONS
+  // WORKOUT TRACKER FUNCTIONS
   const addExercise = () => {
     if (!exerciseName.trim()) return;
 
@@ -225,6 +296,36 @@ function Dashboard({
     setExercises((current) => current.filter((e) => e.id !== id));
   };
 
+  // WEEKLY GOAL FUNCTIONS
+  const incrementSession = () => {
+    setSessionsCompleted((current) => current + 1);
+  };
+
+  const resetSessions = () => {
+    setSessionsCompleted(0);
+  };
+
+  const changeWeeklyGoal = (delta) => {
+    setWeeklyGoal((current) => Math.max(1, current + delta));
+  };
+
+  // NOTES FUNCTIONS
+  const addNote = () => {
+    if (!newNote.trim()) return;
+
+    setNotes((current) => [
+      ...current,
+      { id: Date.now(), text: newNote.trim() },
+    ]);
+
+    setNewNote("");
+  };
+
+  const deleteNote = (id) => {
+    setNotes((current) => current.filter((n) => n.id !== id));
+  };
+
+  // CUSTOM CATEGORIES FUNCTIONS
   const addCategory = () => {
     if (!categoryName.trim()) return;
 
@@ -260,21 +361,14 @@ function Dashboard({
   };
 
   return (
-    <div
-      className={`dashboard ${
-        darkMode ? "dashboard-dark" : ""
-      }`}
-    >
+    <div className={`dashboard ${darkMode ? "dashboard-dark" : ""}`}>
       <main className="dashboard-content">
 
         {activePage === "overview" && (
           <>
             <div className="welcome-box">
               <h1>Let's make today productive.</h1>
-
-              <p>
-                Stay consistent and keep moving forward.
-              </p>
+              <p>Stay consistent and keep moving forward.</p>
             </div>
 
             {/* STATS */}
@@ -284,15 +378,9 @@ function Dashboard({
                 <div className="stat-icon orange">
                   <ListTodo size={25} />
                 </div>
-
                 <div>
-                  <span className="stat-title">
-                    All Tasks
-                  </span>
-
-                  <strong className="stat-number orange-text">
-                    {totalTasks}
-                  </strong>
+                  <span className="stat-title">All Tasks</span>
+                  <strong className="stat-number orange-text">{totalTasks}</strong>
                 </div>
               </div>
 
@@ -300,15 +388,9 @@ function Dashboard({
                 <div className="stat-icon green">
                   <Check size={25} />
                 </div>
-
                 <div>
-                  <span className="stat-title">
-                    Done
-                  </span>
-
-                  <strong className="stat-number green-text">
-                    {completedTasks}
-                  </strong>
+                  <span className="stat-title">Done</span>
+                  <strong className="stat-number green-text">{completedTasks}</strong>
                 </div>
               </div>
 
@@ -316,15 +398,9 @@ function Dashboard({
                 <div className="stat-icon dark-icon">
                   <Clock size={25} />
                 </div>
-
                 <div>
-                  <span className="stat-title">
-                    In Progress
-                  </span>
-
-                  <strong className="stat-number dark-text">
-                    {pendingTasks}
-                  </strong>
+                  <span className="stat-title">In Progress</span>
+                  <strong className="stat-number dark-text">{pendingTasks}</strong>
                 </div>
               </div>
 
@@ -332,15 +408,9 @@ function Dashboard({
                 <div className="stat-icon red-icon">
                   <CalendarDays size={25} />
                 </div>
-
                 <div>
-                  <span className="stat-title">
-                    Pending
-                  </span>
-
-                  <strong className="stat-number red-text">
-                    {pendingTasks}
-                  </strong>
+                  <span className="stat-title">Pending</span>
+                  <strong className="stat-number red-text">{pendingTasks}</strong>
                 </div>
               </div>
 
@@ -352,7 +422,6 @@ function Dashboard({
               {/* LEFT */}
               <div className="left-column">
 
-                {/* ADD TASK */}
                 <section className="add-task-section">
                   <h2>Add New Task</h2>
 
@@ -361,46 +430,56 @@ function Dashboard({
                     <input
                       type="text"
                       value={newTask}
-                      onChange={(e) =>
-                        setNewTask(e.target.value)
-                      }
+                      onChange={(e) => setNewTask(e.target.value)}
                       onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          addTask();
-                        }
+                        if (e.key === "Enter") addTask();
                       }}
                       placeholder="What do you want to do?"
                     />
 
-                    <div className="category-select-wrapper">
-                      <select
-                        value={category}
-                        onChange={(e) =>
-                          setCategory(e.target.value)
-                        }
+                    <div className="custom-select" ref={taskCategoryRef}>
+                      <button
+                        type="button"
+                        className="custom-select-trigger"
+                        onClick={() => setTaskCategoryOpen((c) => !c)}
                       >
-                        <option value="Study">
-                          Study
-                        </option>
+                        <span className="custom-select-label">
+                          <span className="custom-select-emoji">
+                            {getCategoryEmoji(category)}
+                          </span>
+                          {category}
+                        </span>
 
-                        <option value="Personal">
-                          Personal
-                        </option>
+                        <ChevronDown
+                          size={17}
+                          className={`custom-select-chevron ${
+                            taskCategoryOpen ? "open" : ""
+                          }`}
+                        />
+                      </button>
 
-                        <option value="Health">
-                          Health
-                        </option>
-
-                        <option value="Project">
-                          Project
-                        </option>
-                      </select>
+                      {taskCategoryOpen && (
+                        <div className="custom-select-dropdown">
+                          {allCategories.map((cat) => (
+                            <button
+                              type="button"
+                              key={cat.name}
+                              className={`custom-select-option ${
+                                category === cat.name ? "active" : ""
+                              }`}
+                              onClick={() => selectTaskCategory(cat.name)}
+                            >
+                              <span className="custom-select-emoji">
+                                {cat.emoji}
+                              </span>
+                              {cat.name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
-                    <button
-                      className="add-button"
-                      onClick={addTask}
-                    >
+                    <button className="add-button" onClick={addTask}>
                       <Plus size={21} />
                       Add Task
                     </button>
@@ -408,15 +487,11 @@ function Dashboard({
                   </div>
                 </section>
 
-                {/* TASKS */}
                 <section className="tasks-section">
 
                   <div className="tasks-heading">
                     <h2>My Tasks</h2>
-
-                    <span>
-                      {totalTasks} tasks
-                    </span>
+                    <span>{totalTasks} tasks</span>
                   </div>
 
                   <div className="task-list">
@@ -429,26 +504,17 @@ function Dashboard({
                       tasks.map((task) => (
                         <div
                           className={`task-item ${
-                            task.completed
-                              ? "task-completed"
-                              : ""
+                            task.completed ? "task-completed" : ""
                           }`}
                           key={task.id}
                         >
-
                           <button
                             className={`task-check ${
-                              task.completed
-                                ? "checked"
-                                : ""
+                              task.completed ? "checked" : ""
                             }`}
-                            onClick={() =>
-                              toggleTask(task.id)
-                            }
+                            onClick={() => toggleTask(task.id)}
                           >
-                            {task.completed && (
-                              <Check size={16} />
-                            )}
+                            {task.completed && <Check size={16} />}
                           </button>
 
                           <div className="task-title">
@@ -456,31 +522,22 @@ function Dashboard({
                           </div>
 
                           <span
-                            className={`category ${task.category.toLowerCase()}`}
+                            className={`category ${getCategoryClass(
+                              task.category
+                            )}`}
                           >
-                            {task.category}
+                            {getCategoryEmoji(task.category)} {task.category}
                           </span>
 
                           <div className="task-actions">
-
-                            <button
-                              onClick={() =>
-                                editTask(task)
-                              }
-                            >
+                            <button onClick={() => editTask(task)}>
                               <Edit3 size={17} />
                             </button>
 
-                            <button
-                              onClick={() =>
-                                deleteTask(task.id)
-                              }
-                            >
+                            <button onClick={() => deleteTask(task.id)}>
                               <Trash2 size={17} />
                             </button>
-
                           </div>
-
                         </div>
                       ))
                     )}
@@ -488,7 +545,6 @@ function Dashboard({
                   </div>
 
                   <div className="tasks-footer">
-
                     <span>
                       {completedTasks} of {totalTasks} completed
                     </span>
@@ -499,7 +555,6 @@ function Dashboard({
                         <Trash2 size={15} />
                       </button>
                     )}
-
                   </div>
 
                 </section>
@@ -510,37 +565,141 @@ function Dashboard({
               <div className="right-column">
 
                 <section className="weekly-section">
-
                   <h2>Today's Progress</h2>
 
                   <div className="completion-area">
-
                     <div
                       className="progress-ring"
-                      style={{
-                        "--progress": `${progress * 3.6}deg`,
-                      }}
+                      style={{ "--progress": `${progress * 3.6}deg` }}
                     >
                       <div>
-                        <strong>
-                          {progress}%
-                        </strong>
+                        <strong>{progress}%</strong>
                       </div>
                     </div>
 
                     <div className="completion-text">
-
                       <strong>
                         {completedTasks} of {totalTasks} tasks
                       </strong>
+                      <span>completed</span>
+                    </div>
+                  </div>
+                </section>
 
-                      <span>
-                        completed
-                      </span>
+                {/* CUSTOM CATEGORIES */}
+                <section className="categories-section">
 
+                  <div className="categories-header">
+                    <div className="feature-icon yellow small">
+                      <Tag size={20} />
                     </div>
 
+                    <div>
+                      <h2>Custom Categories</h2>
+                      <p>Create your own categories</p>
+                    </div>
                   </div>
+
+                  {categories.length === 0 && !showCategoryForm && (
+                    <div className="feature-empty">
+                      <p>No categories yet.</p>
+                    </div>
+                  )}
+
+                  {categories.length > 0 && (
+                    <div className="category-chips">
+                      {categories.map((cat) => (
+                        <span className="category-chip" key={cat.id}>
+                          {cat.emoji} {cat.name}
+                          <button
+                            className="category-chip-delete"
+                            onClick={() => deleteCategory(cat.id)}
+                          >
+                            <X size={13} />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {showCategoryForm ? (
+                    <div className="inline-form">
+
+                      <div className="inline-form-row">
+
+                        <div
+                          className="emoji-picker-wrapper"
+                          ref={emojiPickerRef}
+                        >
+                          <button
+                            type="button"
+                            className="emoji-picker-trigger"
+                            onClick={() =>
+                              setShowEmojiPicker((c) => !c)
+                            }
+                          >
+                            <span className="emoji-picker-selected">
+                              {categoryEmoji}
+                            </span>
+                            <ChevronDown size={16} />
+                          </button>
+
+                          {showEmojiPicker && (
+                            <div className="emoji-picker-dropdown">
+                              {EMOJI_OPTIONS.map((emoji) => (
+                                <button
+                                  type="button"
+                                  key={emoji}
+                                  className={`emoji-picker-option ${
+                                    categoryEmoji === emoji ? "selected" : ""
+                                  }`}
+                                  onClick={() => selectEmoji(emoji)}
+                                >
+                                  {emoji}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        <input
+                          type="text"
+                          className="inline-form-input"
+                          placeholder="Category name"
+                          value={categoryName}
+                          onChange={(e) => setCategoryName(e.target.value)}
+                          autoFocus
+                        />
+                      </div>
+
+                      <div className="inline-form-actions">
+                        <button
+                          className="inline-form-cancel"
+                          onClick={cancelCategoryForm}
+                        >
+                          <X size={16} />
+                          Cancel
+                        </button>
+
+                        <button
+                          className="inline-form-save"
+                          onClick={addCategory}
+                        >
+                          <Check size={16} />
+                          Save
+                        </button>
+                      </div>
+
+                    </div>
+                  ) : (
+                    <button
+                      className="feature-add-btn"
+                      onClick={() => setShowCategoryForm(true)}
+                    >
+                      <Plus size={18} />
+                      Create Category
+                    </button>
+                  )}
 
                 </section>
 
@@ -555,24 +714,19 @@ function Dashboard({
           <section className="dashboard-page">
 
             <div className="dashboard-page-heading">
-
               <h1>Focus Timer</h1>
-
               <p>
                 {timerMode === "focus"
                   ? "Stay focused and work without distractions."
                   : "Take a short break — you've earned it."}
               </p>
-
             </div>
 
             <div className="progress-big-card">
 
               <div className="timer-header">
-
                 <div>
                   <Clock size={20} />
-
                   <strong>
                     {timerMode === "focus" ? "Pomodoro Timer" : "Break Time"}
                   </strong>
@@ -583,7 +737,6 @@ function Dashboard({
                     ? `${focusMinutes} min focus`
                     : `${BREAK_MINUTES} min break`}
                 </span>
-
               </div>
 
               {timerMode === "focus" && (
@@ -612,7 +765,6 @@ function Dashboard({
               </div>
 
               <div className="timer-controls">
-
                 <button
                   className={`timer-start ${
                     timerMode === "break" ? "break-start" : ""
@@ -620,19 +772,12 @@ function Dashboard({
                   onClick={toggleTimer}
                 >
                   <Play size={18} />
-
-                  {timerRunning
-                    ? "Pause"
-                    : "Start"}
+                  {timerRunning ? "Pause" : "Start"}
                 </button>
 
-                <button
-                  className="timer-reset"
-                  onClick={resetTimer}
-                >
+                <button className="timer-reset" onClick={resetTimer}>
                   <RotateCcw size={18} />
                 </button>
-
               </div>
 
             </div>
@@ -646,7 +791,7 @@ function Dashboard({
 
             <div className="dashboard-page-heading">
               <h1>Goals</h1>
-              <p>Track workouts and organize your own categories.</p>
+              <p>Track workouts, set weekly targets, and jot down notes.</p>
             </div>
 
             <div className="goals-grid">
@@ -658,7 +803,6 @@ function Dashboard({
                   <div className="feature-icon orange">
                     <Dumbbell size={24} />
                   </div>
-
                   <div>
                     <h2>Workout Tracker</h2>
                     <p>Track exercises, sets and reps</p>
@@ -733,10 +877,7 @@ function Dashboard({
                         Cancel
                       </button>
 
-                      <button
-                        className="inline-form-save"
-                        onClick={addExercise}
-                      >
+                      <button className="inline-form-save" onClick={addExercise}>
                         <Check size={16} />
                         Save
                       </button>
@@ -755,120 +896,123 @@ function Dashboard({
 
               </div>
 
-              {/* CUSTOM CATEGORIES */}
+              {/* WEEKLY GOAL TRACKER */}
               <div className="feature-card">
 
                 <div className="feature-card-header">
-                  <div className="feature-icon yellow">
-                    <Tag size={24} />
+                  <div className="feature-icon purple">
+                    <Target size={24} />
                   </div>
-
                   <div>
-                    <h2>Custom Categories</h2>
-                    <p>User creates their own categories</p>
+                    <h2>Weekly Goal</h2>
+                    <p>Set a target and track your sessions</p>
                   </div>
                 </div>
 
-                {categories.length === 0 && !showCategoryForm && (
+                <div className="goal-tracker">
+
+                  <div className="goal-bar-track">
+                    <div
+                      className="goal-bar-fill"
+                      style={{ width: `${goalProgress}%` }}
+                    />
+                  </div>
+
+                  <div className="goal-tracker-stats">
+                    <strong>
+                      {sessionsCompleted} / {weeklyGoal} sessions
+                    </strong>
+                    <span>{goalProgress}% complete</span>
+                  </div>
+
+                  <div className="goal-tracker-controls">
+
+                    <div className="goal-target-adjust">
+                      <span>Target</span>
+
+                      <div className="goal-target-buttons">
+                        <button onClick={() => changeWeeklyGoal(-1)}>−</button>
+                        <strong>{weeklyGoal}</strong>
+                        <button onClick={() => changeWeeklyGoal(1)}>+</button>
+                      </div>
+                    </div>
+
+                    <div className="goal-session-buttons">
+                      <button
+                        className="feature-add-btn small"
+                        onClick={incrementSession}
+                      >
+                        <Plus size={16} />
+                        Log Session
+                      </button>
+
+                      <button
+                        className="goal-reset-btn"
+                        onClick={resetSessions}
+                      >
+                        <RotateCcw size={15} />
+                      </button>
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* PROGRESS NOTES */}
+              <div className="feature-card">
+
+                <div className="feature-card-header">
+                  <div className="feature-icon blue">
+                    <StickyNote size={24} />
+                  </div>
+                  <div>
+                    <h2>Progress Notes</h2>
+                    <p>Jot down thoughts on your journey</p>
+                  </div>
+                </div>
+
+                {notes.length === 0 && (
                   <div className="feature-empty">
-                    <p>No categories yet.</p>
+                    <p>No notes yet.</p>
                   </div>
                 )}
 
-                {categories.length > 0 && (
-                  <div className="category-chips">
-                    {categories.map((cat) => (
-                      <span className="category-chip" key={cat.id}>
-                        {cat.emoji} {cat.name}
+                {notes.length > 0 && (
+                  <div className="notes-list">
+                    {notes.map((note) => (
+                      <div className="note-item" key={note.id}>
+                        <span>{note.text}</span>
 
                         <button
-                          className="category-chip-delete"
-                          onClick={() => deleteCategory(cat.id)}
+                          className="exercise-delete"
+                          onClick={() => deleteNote(note.id)}
                         >
-                          <X size={13} />
+                          <Trash2 size={15} />
                         </button>
-                      </span>
+                      </div>
                     ))}
                   </div>
                 )}
 
-                {showCategoryForm ? (
-                  <div className="inline-form">
+                <div className="inline-form">
+                  <input
+                    type="text"
+                    className="inline-form-input"
+                    placeholder="Write a quick note..."
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") addNote();
+                    }}
+                  />
 
-                    <div className="inline-form-row">
-
-                      <div className="emoji-picker-wrapper">
-
-                        <button
-                          type="button"
-                          className="emoji-picker-trigger"
-                          onClick={() =>
-                            setShowEmojiPicker((current) => !current)
-                          }
-                        >
-                          <span className="emoji-picker-selected">
-                            {categoryEmoji}
-                          </span>
-                          <ChevronDown size={16} />
-                        </button>
-
-                        {showEmojiPicker && (
-                          <div className="emoji-picker-dropdown">
-                            {EMOJI_OPTIONS.map((emoji) => (
-                              <button
-                                type="button"
-                                key={emoji}
-                                className={`emoji-picker-option ${
-                                  categoryEmoji === emoji ? "selected" : ""
-                                }`}
-                                onClick={() => selectEmoji(emoji)}
-                              >
-                                {emoji}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-
-                      </div>
-
-                      <input
-                        type="text"
-                        className="inline-form-input"
-                        placeholder="Category name"
-                        value={categoryName}
-                        onChange={(e) => setCategoryName(e.target.value)}
-                        autoFocus
-                      />
-                    </div>
-
-                    <div className="inline-form-actions">
-                      <button
-                        className="inline-form-cancel"
-                        onClick={cancelCategoryForm}
-                      >
-                        <X size={16} />
-                        Cancel
-                      </button>
-
-                      <button
-                        className="inline-form-save"
-                        onClick={addCategory}
-                      >
-                        <Check size={16} />
-                        Save
-                      </button>
-                    </div>
-
-                  </div>
-                ) : (
-                  <button
-                    className="feature-add-btn"
-                    onClick={() => setShowCategoryForm(true)}
-                  >
+                  <button className="feature-add-btn" onClick={addNote}>
                     <Plus size={18} />
-                    Create Category
+                    Add Note
                   </button>
-                )}
+                </div>
 
               </div>
 
@@ -881,79 +1025,45 @@ function Dashboard({
 
       {/* EDIT MODAL */}
       {editingTask && (
-        <div
-          className="edit-overlay"
-          onClick={() =>
-            setEditingTask(null)
-          }
-        >
-          <div
-            className="edit-box"
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-          >
+        <div className="edit-overlay" onClick={() => setEditingTask(null)}>
+          <div className="edit-box" onClick={(e) => e.stopPropagation()}>
 
             <h2>Edit Task</h2>
 
             <input
               type="text"
               value={editTitle}
-              onChange={(e) =>
-                setEditTitle(e.target.value)
-              }
+              onChange={(e) => setEditTitle(e.target.value)}
               placeholder="Task name"
             />
 
-            <p>
-              Choose category
-            </p>
+            <p>Choose category</p>
 
             <div className="edit-categories">
-
-              {[
-                "Study",
-                "Personal",
-                "Health",
-                "Project",
-              ].map((item) => (
+              {allCategories.map((item) => (
                 <button
-                  key={item}
-                  className={`edit-category ${
-                    item.toLowerCase()
-                  } ${
-                    editCategory === item
-                      ? "selected"
-                      : ""
+                  key={item.name}
+                  className={`edit-category ${getCategoryClass(item.name)} ${
+                    editCategory === item.name ? "selected" : ""
                   }`}
-                  onClick={() =>
-                    setEditCategory(item)
-                  }
+                  onClick={() => setEditCategory(item.name)}
                 >
-                  {item}
+                  {item.emoji} {item.name}
                 </button>
               ))}
-
             </div>
 
             <div className="edit-actions">
-
               <button
                 className="cancel-edit"
-                onClick={() =>
-                  setEditingTask(null)
-                }
+                onClick={() => setEditingTask(null)}
               >
                 Cancel
               </button>
 
-              <button
-                className="save-edit"
-                onClick={saveEdit}
-              >
+              <button className="save-edit" onClick={saveEdit}>
                 Save Changes
               </button>
-
             </div>
 
           </div>

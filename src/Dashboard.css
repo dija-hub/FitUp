@@ -1621,9 +1621,11 @@
 .dashboard-dark .feature-empty {
   color: #888888;
 }
-/* Emoji picker */
+/* ===== EMOJI PICKER ===== */
+
 .emoji-picker-wrapper {
   position: relative;
+  display: inline-flex;
   flex-shrink: 0;
 }
 
@@ -1640,46 +1642,47 @@
   background: #fffaf5;
   cursor: pointer;
   color: #77716b;
-  transition: border-color 0.2s ease;
-}
-
-.emoji-picker-trigger:hover {
-  border-color: #ff9b2f;
-}
-
-.emoji-picker-selected {
-  font-size: 20px;
-  line-height: 1;
 }
 
 .emoji-picker-dropdown {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-  z-index: 50;
+
   width: 220px;
+  padding: 12px;
+
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 6px;
-  padding: 12px;
+
   background: #ffffff;
   border: 1px solid #eadfd5;
   border-radius: 14px;
-  box-shadow: 0 12px 30px rgba(40, 25, 10, 0.15);
+
+  box-shadow: 0 16px 40px rgba(40, 25, 10, 0.25);
+
+  z-index: 9999;
+
+  /* IMPORTANT */
+  margin: 0;
+  transform: none;
 }
 
 .emoji-picker-option {
   width: 32px;
   height: 32px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   border: none;
   border-radius: 8px;
   background: transparent;
+
   font-size: 18px;
   cursor: pointer;
-  transition: background 0.15s ease;
 }
 
 .emoji-picker-option:hover {
@@ -1691,6 +1694,7 @@
 }
 
 /* Dark mode */
+
 .dashboard-dark .emoji-picker-trigger {
   background: #292929;
   border-color: #3a3a3a;
@@ -1700,7 +1704,7 @@
 .dashboard-dark .emoji-picker-dropdown {
   background: #202020;
   border-color: #363636;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
 }
 
 .dashboard-dark .emoji-picker-option:hover {
@@ -1709,4 +1713,414 @@
 
 .dashboard-dark .emoji-picker-option.selected {
   background: #ff9b2f;
+}
+/* ===== CUSTOM SELECT (task category dropdown) ===== */
+.custom-select {
+  position: relative;
+  height: 58px;
+}
+
+.custom-select-trigger {
+  width: 100%;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  border: 1px solid #e6ddd5;
+  border-radius: 15px;
+  background: #ffffff;
+  color: #242424;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.custom-select-trigger:hover {
+  border-color: #ff9b2f;
+  background: #fffaf5;
+}
+
+.custom-select-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-select-emoji {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.custom-select-chevron {
+  color: #e97716;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.custom-select-chevron.open {
+  transform: rotate(180deg);
+}
+
+.custom-select-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  max-height: 260px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px;
+  background: #ffffff;
+  border: 1px solid #eadfd5;
+  border-radius: 15px;
+  box-shadow: 0 14px 34px rgba(40, 25, 10, 0.15);
+}
+
+.custom-select-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #333333;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.custom-select-option:hover {
+  background: #fff0df;
+}
+
+.custom-select-option.active {
+  background: #ff9b2f;
+  color: #171717;
+  font-weight: 600;
+}
+
+/* Dark mode */
+.dashboard-dark .custom-select-trigger {
+  background: #292929;
+  border-color: #3a3a3a;
+  color: #eeeeee;
+}
+
+.dashboard-dark .custom-select-trigger:hover {
+  background: #303030;
+  border-color: #ff9b2f;
+}
+
+.dashboard-dark .custom-select-dropdown {
+  background: #202020;
+  border-color: #363636;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+}
+
+.dashboard-dark .custom-select-option {
+  color: #dddddd;
+}
+
+.dashboard-dark .custom-select-option:hover {
+  background: #333333;
+}
+
+.dashboard-dark .custom-select-option.active {
+  background: #ff9b2f;
+  color: #171717;
+}
+
+/* ===== CATEGORIES SECTION (below Today's Progress) ===== */
+.categories-section {
+  margin-top: 21px;
+  padding: 27px;
+  background: #ffffff;
+  border: 1px solid #eadfd5;
+  border-radius: 18px;
+  box-shadow: 0 5px 18px rgba(60, 40, 20, 0.025);
+}
+
+.categories-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.categories-header h2 {
+  margin: 0 0 3px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #171717;
+}
+
+.categories-header p {
+  margin: 0;
+  font-size: 13px;
+  color: #77716b;
+}
+
+.feature-icon.small {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.dashboard-dark .categories-section {
+  background: #202020;
+  border-color: #303030;
+  box-shadow: none;
+}
+
+.dashboard-dark .categories-header h2 {
+  color: #f4f4f4;
+}
+
+.dashboard-dark .categories-header p {
+  color: #aaaaaa;
+}
+
+/* Custom category badge fallback color (for task list items) */
+.category.custom {
+  background: #eef1ff;
+  color: #5865e0;
+}
+
+.dashboard-dark .category.custom {
+  background: #262a4a;
+  color: #93a1ff;
+}
+
+.edit-category.custom {
+  background: #eef1ff;
+  color: #5865e0;
+}
+
+.dashboard-dark .edit-category.custom {
+  background: #262a4a;
+  color: #93a1ff;
+}
+/* Fix: emoji dropdown no longer overlaps Save button awkwardly */
+.emoji-picker-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 100;
+  width: 220px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid #eadfd5;
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(40, 25, 10, 0.25);
+}
+
+.dashboard-dark .emoji-picker-dropdown {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+
+/* ===== Goal Tracker card ===== */
+.feature-icon.purple {
+  background: #eef1ff;
+  color: #5865e0;
+}
+
+.feature-icon.blue {
+  background: #e3f2fd;
+  color: #1e88c7;
+}
+
+.goal-tracker {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.goal-bar-track {
+  height: 14px;
+  width: 100%;
+  border-radius: 20px;
+  background: #f1e4d8;
+  overflow: hidden;
+}
+
+.goal-bar-fill {
+  height: 100%;
+  border-radius: 20px;
+  background: linear-gradient(90deg, #ff9b2f, #ff7200);
+  transition: width 0.4s ease;
+}
+
+.goal-tracker-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.goal-tracker-stats strong {
+  font-size: 16px;
+  color: #171717;
+}
+
+.goal-tracker-stats span {
+  font-size: 13px;
+  color: #77716b;
+}
+
+.goal-tracker-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.goal-target-adjust {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.goal-target-adjust > span {
+  font-size: 13px;
+  color: #77716b;
+}
+
+.goal-target-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+  border: 1px solid #eadfd5;
+  border-radius: 10px;
+}
+
+.goal-target-buttons button {
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 7px;
+  background: #fff0df;
+  color: #e87716;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.goal-target-buttons strong {
+  min-width: 18px;
+  text-align: center;
+}
+
+.goal-session-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.feature-add-btn.small {
+  width: auto;
+  height: 44px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+
+.goal-reset-btn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #eadfd5;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #77716b;
+  cursor: pointer;
+}
+
+.goal-reset-btn:hover {
+  border-color: #ff9b2f;
+  color: #e87515;
+}
+
+/* ===== Notes card ===== */
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.note-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #fffaf5;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #333333;
+}
+
+/* Dark mode additions */
+.dashboard-dark .feature-icon.purple {
+  background: #262a4a;
+  color: #93a1ff;
+}
+
+.dashboard-dark .feature-icon.blue {
+  background: #1c3548;
+  color: #6ec6ff;
+}
+
+.dashboard-dark .goal-bar-track {
+  background: #333333;
+}
+
+.dashboard-dark .goal-tracker-stats strong {
+  color: #f0f0f0;
+}
+
+.dashboard-dark .goal-tracker-stats span {
+  color: #999999;
+}
+
+.dashboard-dark .goal-target-adjust > span {
+  color: #999999;
+}
+
+.dashboard-dark .goal-target-buttons {
+  border-color: #3a3a3a;
+}
+
+.dashboard-dark .goal-target-buttons button {
+  background: #4a2f18;
+  color: #ffad52;
+}
+
+.dashboard-dark .goal-reset-btn {
+  background: #292929;
+  border-color: #3a3a3a;
+  color: #aaaaaa;
+}
+
+.dashboard-dark .note-item {
+  background: #292929;
+  color: #eeeeee;
 }
