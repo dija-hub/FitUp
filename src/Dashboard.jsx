@@ -11,8 +11,7 @@ import {
   RotateCcw,
   Dumbbell,
   Tag,
-  Trophy,
-  Star,
+  X,
 } from "lucide-react";
 
 import { supabase } from "./utils/supabase";
@@ -20,7 +19,6 @@ import "./Dashboard.css";
 
 const FOCUS_DURATIONS = [15, 25, 45, 60]; // minutes
 const BREAK_MINUTES = 5;
-const TOTAL_STARS = 6;
 
 function Dashboard({
   darkMode,
@@ -43,17 +41,16 @@ function Dashboard({
   const [editCategory, setEditCategory] = useState("Study");
 
   // GOALS PAGE STATE
-  const [exercises, setExercises] = useState([
-    { id: 1, name: "Squats", sets: 3, reps: "12" },
-    { id: 2, name: "Push Ups", sets: 3, reps: "10" },
-    { id: 3, name: "Plank", sets: 3, reps: "30s" },
-  ]);
+  const [exercises, setExercises] = useState([]);
+  const [showExerciseForm, setShowExerciseForm] = useState(false);
+  const [exerciseName, setExerciseName] = useState("");
+  const [exerciseSets, setExerciseSets] = useState("");
+  const [exerciseReps, setExerciseReps] = useState("");
 
-  const [categories, setCategories] = useState([
-    { id: 1, emoji: "📚", name: "Study" },
-    { id: 2, emoji: "💪", name: "Fitness" },
-    { id: 3, emoji: "🎨", name: "Creative" },
-  ]);
+  const [categories, setCategories] = useState([]);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [categoryEmoji, setCategoryEmoji] = useState("");
+  const [categoryName, setCategoryName] = useState("");
 
   const completedTasks = tasks.filter(
     (task) => task.completed
@@ -67,8 +64,6 @@ function Dashboard({
     totalTasks === 0
       ? 0
       : Math.round((completedTasks / totalTasks) * 100);
-
-  const earnedStars = Math.min(completedTasks, TOTAL_STARS);
 
   // TIMER
   useEffect(() => {
@@ -192,21 +187,29 @@ function Dashboard({
 
   // GOALS PAGE FUNCTIONS
   const addExercise = () => {
-    const name = window.prompt("Exercise name:");
-    if (!name || !name.trim()) return;
-
-    const sets = window.prompt("Sets:", "3");
-    const reps = window.prompt("Reps (e.g. 12 or 30s):", "12");
+    if (!exerciseName.trim()) return;
 
     setExercises((current) => [
       ...current,
       {
         id: Date.now(),
-        name: name.trim(),
-        sets: sets || "3",
-        reps: reps || "12",
+        name: exerciseName.trim(),
+        sets: exerciseSets.trim() || "3",
+        reps: exerciseReps.trim() || "12",
       },
     ]);
+
+    setExerciseName("");
+    setExerciseSets("");
+    setExerciseReps("");
+    setShowExerciseForm(false);
+  };
+
+  const cancelExerciseForm = () => {
+    setExerciseName("");
+    setExerciseSets("");
+    setExerciseReps("");
+    setShowExerciseForm(false);
   };
 
   const deleteExercise = (id) => {
@@ -214,19 +217,30 @@ function Dashboard({
   };
 
   const addCategory = () => {
-    const name = window.prompt("Category name:");
-    if (!name || !name.trim()) return;
-
-    const emoji = window.prompt("Emoji (optional):", "🏷️");
+    if (!categoryName.trim()) return;
 
     setCategories((current) => [
       ...current,
       {
         id: Date.now(),
-        emoji: emoji || "🏷️",
-        name: name.trim(),
+        emoji: categoryEmoji.trim() || "🏷️",
+        name: categoryName.trim(),
       },
     ]);
+
+    setCategoryEmoji("");
+    setCategoryName("");
+    setShowCategoryForm(false);
+  };
+
+  const cancelCategoryForm = () => {
+    setCategoryEmoji("");
+    setCategoryName("");
+    setShowCategoryForm(false);
+  };
+
+  const deleteCategory = (id) => {
+    setCategories((current) => current.filter((c) => c.id !== id));
   };
 
   return (
@@ -616,7 +630,7 @@ function Dashboard({
 
             <div className="dashboard-page-heading">
               <h1>Goals</h1>
-              <p>Track workouts, organize categories, and celebrate wins.</p>
+              <p>Track workouts and organize your own categories.</p>
             </div>
 
             <div className="goals-grid">
@@ -635,31 +649,93 @@ function Dashboard({
                   </div>
                 </div>
 
-                <div className="exercise-list">
-                  {exercises.map((exercise) => (
-                    <div className="exercise-item" key={exercise.id}>
-                      <span className="exercise-name">{exercise.name}</span>
+                {exercises.length === 0 && !showExerciseForm && (
+                  <div className="feature-empty">
+                    <p>No exercises yet.</p>
+                  </div>
+                )}
 
-                      <div className="exercise-right">
-                        <span className="exercise-sets">
-                          {exercise.sets} × {exercise.reps}
-                        </span>
+                {exercises.length > 0 && (
+                  <div className="exercise-list">
+                    {exercises.map((exercise) => (
+                      <div className="exercise-item" key={exercise.id}>
+                        <span className="exercise-name">{exercise.name}</span>
 
-                        <button
-                          className="exercise-delete"
-                          onClick={() => deleteExercise(exercise.id)}
-                        >
-                          <Trash2 size={15} />
-                        </button>
+                        <div className="exercise-right">
+                          <span className="exercise-sets">
+                            {exercise.sets} × {exercise.reps}
+                          </span>
+
+                          <button
+                            className="exercise-delete"
+                            onClick={() => deleteExercise(exercise.id)}
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
 
-                <button className="feature-add-btn" onClick={addExercise}>
-                  <Plus size={18} />
-                  Add Exercise
-                </button>
+                {showExerciseForm ? (
+                  <div className="inline-form">
+
+                    <input
+                      type="text"
+                      className="inline-form-input"
+                      placeholder="Exercise name"
+                      value={exerciseName}
+                      onChange={(e) => setExerciseName(e.target.value)}
+                      autoFocus
+                    />
+
+                    <div className="inline-form-row">
+                      <input
+                        type="text"
+                        className="inline-form-input"
+                        placeholder="Sets (e.g. 3)"
+                        value={exerciseSets}
+                        onChange={(e) => setExerciseSets(e.target.value)}
+                      />
+
+                      <input
+                        type="text"
+                        className="inline-form-input"
+                        placeholder="Reps (e.g. 12 or 30s)"
+                        value={exerciseReps}
+                        onChange={(e) => setExerciseReps(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="inline-form-actions">
+                      <button
+                        className="inline-form-cancel"
+                        onClick={cancelExerciseForm}
+                      >
+                        <X size={16} />
+                        Cancel
+                      </button>
+
+                      <button
+                        className="inline-form-save"
+                        onClick={addExercise}
+                      >
+                        <Check size={16} />
+                        Save
+                      </button>
+                    </div>
+
+                  </div>
+                ) : (
+                  <button
+                    className="feature-add-btn"
+                    onClick={() => setShowExerciseForm(true)}
+                  >
+                    <Plus size={18} />
+                    Add Exercise
+                  </button>
+                )}
 
               </div>
 
@@ -677,45 +753,80 @@ function Dashboard({
                   </div>
                 </div>
 
-                <div className="category-chips">
-                  {categories.map((cat) => (
-                    <span className="category-chip" key={cat.id}>
-                      {cat.emoji} {cat.name}
-                    </span>
-                  ))}
-                </div>
-
-                <button className="feature-add-btn" onClick={addCategory}>
-                  <Plus size={18} />
-                  Create Category
-                </button>
-
-              </div>
-
-              {/* ACHIEVEMENTS */}
-              <div className="feature-card">
-
-                <div className="feature-card-header">
-                  <div className="feature-icon gold">
-                    <Trophy size={24} />
+                {categories.length === 0 && !showCategoryForm && (
+                  <div className="feature-empty">
+                    <p>No categories yet.</p>
                   </div>
+                )}
 
-                  <div>
-                    <h2>Achievements</h2>
-                    <p>Keep completing goals to earn stars</p>
+                {categories.length > 0 && (
+                  <div className="category-chips">
+                    {categories.map((cat) => (
+                      <span className="category-chip" key={cat.id}>
+                        {cat.emoji} {cat.name}
+
+                        <button
+                          className="category-chip-delete"
+                          onClick={() => deleteCategory(cat.id)}
+                        >
+                          <X size={13} />
+                        </button>
+                      </span>
+                    ))}
                   </div>
-                </div>
+                )}
 
-                <div className="stars-row">
-                  {Array.from({ length: TOTAL_STARS }).map((_, index) => (
-                    <Star
-                      key={index}
-                      size={28}
-                      className={index < earnedStars ? "star filled" : "star"}
-                      fill={index < earnedStars ? "#ffb020" : "none"}
-                    />
-                  ))}
-                </div>
+                {showCategoryForm ? (
+                  <div className="inline-form">
+
+                    <div className="inline-form-row">
+                      <input
+                        type="text"
+                        className="inline-form-input emoji-input"
+                        placeholder="🏷️"
+                        value={categoryEmoji}
+                        onChange={(e) => setCategoryEmoji(e.target.value)}
+                        maxLength={2}
+                        autoFocus
+                      />
+
+                      <input
+                        type="text"
+                        className="inline-form-input"
+                        placeholder="Category name"
+                        value={categoryName}
+                        onChange={(e) => setCategoryName(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="inline-form-actions">
+                      <button
+                        className="inline-form-cancel"
+                        onClick={cancelCategoryForm}
+                      >
+                        <X size={16} />
+                        Cancel
+                      </button>
+
+                      <button
+                        className="inline-form-save"
+                        onClick={addCategory}
+                      >
+                        <Check size={16} />
+                        Save
+                      </button>
+                    </div>
+
+                  </div>
+                ) : (
+                  <button
+                    className="feature-add-btn"
+                    onClick={() => setShowCategoryForm(true)}
+                  >
+                    <Plus size={18} />
+                    Create Category
+                  </button>
+                )}
 
               </div>
 
