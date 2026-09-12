@@ -121,7 +121,7 @@ function Dashboard({
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // CLOSE EMOJI PICKER ON OUTSIDE CLICK
+  
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -137,7 +137,7 @@ function Dashboard({
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // TIMER
+
   useEffect(() => {
     if (!timerRunning) return;
 
@@ -161,7 +161,7 @@ function Dashboard({
     return () => clearInterval(interval);
   }, [timerRunning, timerMode, focusMinutes]);
 
-  // TASK FUNCTIONS
+ 
   const toggleTask = (id) => {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
@@ -239,7 +239,7 @@ function Dashboard({
       : "custom";
   };
 
-  // TIMER FUNCTIONS
+  
   const toggleTimer = () => {
     setTimerRunning((current) => !current);
   };
@@ -265,7 +265,7 @@ function Dashboard({
     .toString()
     .padStart(2, "0");
 
-  // WORKOUT TRACKER FUNCTIONS
+  
   const addExercise = () => {
     if (!exerciseName.trim()) return;
 
@@ -296,7 +296,7 @@ function Dashboard({
     setExercises((current) => current.filter((e) => e.id !== id));
   };
 
-  // WEEKLY GOAL FUNCTIONS
+ 
   const incrementSession = () => {
     setSessionsCompleted((current) => current + 1);
   };
@@ -309,7 +309,7 @@ function Dashboard({
     setWeeklyGoal((current) => Math.max(1, current + delta));
   };
 
-  // NOTES FUNCTIONS
+  
   const addNote = () => {
     if (!newNote.trim()) return;
 
@@ -325,7 +325,7 @@ function Dashboard({
     setNotes((current) => current.filter((n) => n.id !== id));
   };
 
-  // CUSTOM CATEGORIES FUNCTIONS
+ 
   const addCategory = () => {
     if (!categoryName.trim()) return;
 
