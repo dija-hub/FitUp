@@ -9,10 +9,12 @@ import {
   CalendarDays,
   Play,
   RotateCcw,
+  Dumbbell,
+  Tag,
+  Trophy,
+  Star,
 } from "lucide-react";
 
-import { supabase } from "./utils/supabase";
-import DashboardNav from "./Dashboardnav";
 import "./Dashboard.css";
 
 function Dashboard({
@@ -26,13 +28,16 @@ function Dashboard({
   const [newTask, setNewTask] = useState("");
   const [category, setCategory] = useState("Study");
 
-  const [timerSeconds, setTimerSeconds] = useState(25 * 60);
+  /* TIMER */
+  const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
 
+  /* EDIT TASK */
   const [editingTask, setEditingTask] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState("Study");
 
+  /* TASK STATS */
   const completedTasks = tasks.filter(
     (task) => task.completed
   ).length;
@@ -44,27 +49,23 @@ function Dashboard({
   const progress =
     totalTasks === 0
       ? 0
-      : Math.round((completedTasks / totalTasks) * 100);
+      : Math.round(
+          (completedTasks / totalTasks) * 100
+        );
 
-  // TIMER
+  /* TIMER */
   useEffect(() => {
     if (!timerRunning) return;
 
     const interval = setInterval(() => {
-      setTimerSeconds((seconds) => {
-        if (seconds <= 1) {
-          setTimerRunning(false);
-          return 25 * 60;
-        }
-
-        return seconds - 1;
-      });
+      setTimerSeconds((seconds) => seconds + 1);
     }, 1000);
 
     return () => clearInterval(interval);
   }, [timerRunning]);
 
-  // TASK FUNCTIONS
+  /* TASK FUNCTIONS */
+
   const toggleTask = (id) => {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
@@ -80,7 +81,9 @@ function Dashboard({
 
   const deleteTask = (id) => {
     setTasks((currentTasks) =>
-      currentTasks.filter((task) => task.id !== id)
+      currentTasks.filter(
+        (task) => task.id !== id
+      )
     );
   };
 
@@ -128,19 +131,24 @@ function Dashboard({
 
   const clearCompleted = () => {
     setTasks((currentTasks) =>
-      currentTasks.filter((task) => !task.completed)
+      currentTasks.filter(
+        (task) => !task.completed
+      )
     );
   };
 
-  // TIMER FUNCTIONS
+  /* TIMER FUNCTIONS */
+
   const toggleTimer = () => {
     setTimerRunning((current) => !current);
   };
 
   const resetTimer = () => {
     setTimerRunning(false);
-    setTimerSeconds(25 * 60);
+    setTimerSeconds(0);
   };
+
+  /* FORMAT TIMER */
 
   const minutes = Math.floor(timerSeconds / 60)
     .toString()
@@ -150,19 +158,6 @@ function Dashboard({
     .toString()
     .padStart(2, "0");
 
-  // SIGN OUT
-  const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      console.error("Sign out error:", error);
-      return;
-    }
-
-    setIsLoggedIn(false);
-    setShowDashboard(false);
-  };
-
   return (
     <div
       className={`dashboard ${
@@ -170,15 +165,17 @@ function Dashboard({
       }`}
     >
       <main className="dashboard-content">
-<DashboardNav
-  activePage={activePage}
-  setActivePage={setActivePage}
-/>
-       
+
+        {/* ================= OVERVIEW ================= */}
+
         {activePage === "overview" && (
           <>
+            {/* WELCOME */}
+
             <div className="welcome-box">
-              <h1>Let's make today productive.</h1>
+              <h1>
+                Let's make today productive.
+              </h1>
 
               <p>
                 Stay consistent and keep moving forward.
@@ -186,6 +183,7 @@ function Dashboard({
             </div>
 
             {/* STATS */}
+
             <section className="stats-grid">
 
               <div className="stat-card">
@@ -254,14 +252,18 @@ function Dashboard({
 
             </section>
 
-            {/* MAIN GRID */}
+            {/* DASHBOARD GRID */}
+
             <div className="dashboard-grid">
 
               {/* LEFT */}
+
               <div className="left-column">
 
                 {/* ADD TASK */}
+
                 <section className="add-task-section">
+
                   <h2>Add New Task</h2>
 
                   <div className="add-task-row">
@@ -281,6 +283,7 @@ function Dashboard({
                     />
 
                     <div className="category-select-wrapper">
+
                       <select
                         value={category}
                         onChange={(e) =>
@@ -303,6 +306,7 @@ function Dashboard({
                           Project
                         </option>
                       </select>
+
                     </div>
 
                     <button
@@ -314,17 +318,21 @@ function Dashboard({
                     </button>
 
                   </div>
+
                 </section>
 
                 {/* TASKS */}
+
                 <section className="tasks-section">
 
                   <div className="tasks-heading">
+
                     <h2>My Tasks</h2>
 
                     <span>
                       {totalTasks} tasks
                     </span>
+
                   </div>
 
                   <div className="task-list">
@@ -398,11 +406,14 @@ function Dashboard({
                   <div className="tasks-footer">
 
                     <span>
-                      {completedTasks} of {totalTasks} completed
+                      {completedTasks} of{" "}
+                      {totalTasks} completed
                     </span>
 
                     {completedTasks > 0 && (
-                      <button onClick={clearCompleted}>
+                      <button
+                        onClick={clearCompleted}
+                      >
                         Clear completed
                         <Trash2 size={15} />
                       </button>
@@ -414,7 +425,7 @@ function Dashboard({
 
               </div>
 
-              {/* RIGHT */}
+
               <div className="right-column">
 
                 <section className="weekly-section">
@@ -439,7 +450,8 @@ function Dashboard({
                     <div className="completion-text">
 
                       <strong>
-                        {completedTasks} of {totalTasks} tasks
+                        {completedTasks} of{" "}
+                        {totalTasks} tasks
                       </strong>
 
                       <span>
@@ -451,6 +463,88 @@ function Dashboard({
                   </div>
 
                 </section>
+                {/* WORKOUT TRACKER */}
+
+<section className="overview-card workout-card">
+  <div className="overview-card-header">
+    <div className="overview-icon">
+      🏋️
+    </div>
+
+    <div>
+      <h2>Workout Tracker</h2>
+      <p>Track exercises, sets and reps</p>
+    </div>
+  </div>
+
+  <div className="workout-list">
+    <div className="workout-item">
+      <span>Squats</span>
+      <strong>3 × 12</strong>
+    </div>
+
+    <div className="workout-item">
+      <span>Push Ups</span>
+      <strong>3 × 10</strong>
+    </div>
+
+    <div className="workout-item">
+      <span>Plank</span>
+      <strong>3 × 30s</strong>
+    </div>
+  </div>
+
+  <button className="overview-button">
+    + Add Exercise
+  </button>
+</section>
+
+
+{/* CUSTOM CATEGORIES */}
+
+<section className="overview-card category-card">
+  <div className="overview-card-header">
+    <div className="overview-icon">
+      🏷️
+    </div>
+
+    <div>
+      <h2>Custom Categories</h2>
+      <p>User creates their own categories</p>
+    </div>
+  </div>
+
+  <div className="custom-category-list">
+    <span>📚 Study</span>
+    <span>💪 Fitness</span>
+    <span>🎨 Creative</span>
+  </div>
+
+  <button className="overview-button">
+    + Create Category
+  </button>
+</section>
+
+
+{/* ACHIEVEMENTS */}
+
+<section className="overview-card achievement-card">
+  <div className="overview-card-header">
+    <div className="overview-icon">
+      🏆
+    </div>
+
+    <div>
+      <h2>Achievements</h2>
+      <p>Keep completing goals to earn stars</p>
+    </div>
+  </div>
+
+  <div className="stars">
+    <span>⭐⭐</span>
+    <span>⭐⭐⭐</span>
+  </div>
+</section>
 
               </div>
 
@@ -458,7 +552,7 @@ function Dashboard({
           </>
         )}
 
-        {/* ================= FOCUS ================= */}
+
         {activePage === "focus" && (
           <section className="dashboard-page">
 
@@ -467,32 +561,23 @@ function Dashboard({
               <h1>Focus Timer</h1>
 
               <p>
-                Stay focused and work without distractions.
+                Stay focused and track your time.
               </p>
 
             </div>
 
             <div className="progress-big-card">
 
-              <div className="timer-header">
+          
 
-                <div>
-                  <Clock size={20} />
-
-                  <strong>
-                    Pomodoro Timer
-                  </strong>
-                </div>
-
-                <span>
-                  25 min focus
-                </span>
-
-              </div>
+              
+             
 
               <div className="timer-display">
                 {minutes}:{seconds}
               </div>
+
+           
 
               <div className="timer-controls">
 
@@ -521,22 +606,10 @@ function Dashboard({
           </section>
         )}
 
-        {/* FOOTER */}
-        <div className="dashboard-footer">
-
-          <p>
-            Stay focused and keep making progress.
-          </p>
-
-          <button onClick={handleSignOut}>
-            Sign out
-          </button>
-
-        </div>
-
       </main>
 
-      {/* EDIT MODAL */}
+      {/* ================= EDIT MODAL ================= */}
+
       {editingTask && (
         <div
           className="edit-overlay"
@@ -544,6 +617,7 @@ function Dashboard({
             setEditingTask(null)
           }
         >
+
           <div
             className="edit-box"
             onClick={(e) =>
@@ -562,9 +636,7 @@ function Dashboard({
               placeholder="Task name"
             />
 
-            <p>
-              Choose category
-            </p>
+            <p>Choose category</p>
 
             <div className="edit-categories">
 
@@ -576,9 +648,7 @@ function Dashboard({
               ].map((item) => (
                 <button
                   key={item}
-                  className={`edit-category ${
-                    item.toLowerCase()
-                  } ${
+                  className={`edit-category ${item.toLowerCase()} ${
                     editCategory === item
                       ? "selected"
                       : ""
@@ -614,6 +684,7 @@ function Dashboard({
             </div>
 
           </div>
+
         </div>
       )}
 
