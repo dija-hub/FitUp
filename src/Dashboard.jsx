@@ -51,7 +51,7 @@ function Dashboard({
   const taskCategoryRef = useRef(null);
 
   const [focusMinutes, setFocusMinutes] = useState(25);
-  const [timerMode, setTimerMode] = useState("focus"); // "focus" | "break"
+  const [timerMode, setTimerMode] = useState("focus");
   const [timerSeconds, setTimerSeconds] = useState(25 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
 
@@ -59,22 +59,22 @@ function Dashboard({
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState("Study");
 
-  // WORKOUT TRACKER STATE
+  
   const [exercises, setExercises] = useState([]);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
   const [exerciseName, setExerciseName] = useState("");
   const [exerciseSets, setExerciseSets] = useState("");
   const [exerciseReps, setExerciseReps] = useState("");
 
-  // WEEKLY GOAL STATE
+  
   const [weeklyGoal, setWeeklyGoal] = useState(4);
   const [sessionsCompleted, setSessionsCompleted] = useState(0);
 
-  // NOTES STATE
+ 
   const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState("");
 
-  // CUSTOM CATEGORIES STATE
+  
   const [categories, setCategories] = useState([]);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [categoryEmoji, setCategoryEmoji] = useState("🏷️");
@@ -105,7 +105,7 @@ function Dashboard({
       ? 0
       : Math.min(100, Math.round((sessionsCompleted / weeklyGoal) * 100));
 
-  // CLOSE TASK CATEGORY DROPDOWN ON OUTSIDE CLICK
+  
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
