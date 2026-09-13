@@ -13,28 +13,30 @@ import {
   Tag,
   X,
   ChevronDown,
-  Target,
+  ListChecks,
   StickyNote,
 } from "lucide-react";
 
 import { supabase } from "./utils/supabase";
 import "./Dashboard.css";
 
-const FOCUS_DURATIONS = [15, 25, 45, 60]; 
+const FOCUS_DURATIONS = [15, 25, 45, 60];
 const BREAK_MINUTES = 5;
 
-const EMOJI_OPTIONS = [
-  "📚", "💪", "🎨", "💻", "🧘", "🎵",
-  "🍳", "🌱", "✈️", "💰", "🏠", "📝",
-  "🎯", "❤️", "🧠", "⚽", "📷", "🛠️",
-  "🎮", "🛒", "🐾", "🌟", "☕", "📖",
+const COLOR_OPTIONS = [
+  "#3b82f6", "#ef4444", "#f97316", "#eab308",
+  "#22c55e", "#14b8a6", "#06b6d4", "#6366f1",
+  "#8b5cf6", "#a855f7", "#ec4899", "#f43f5e",
+  "#84cc16", "#10b981", "#0ea5e9", "#64748b",
+  "#78716c", "#d946ef", "#f59e0b", "#059669",
+  "#7c3aed", "#db2777", "#ca8a04", "#475569",
 ];
 
 const DEFAULT_CATEGORIES = [
-  { name: "Study", emoji: "📚" },
-  { name: "Personal", emoji: "👤" },
-  { name: "Health", emoji: "❤️" },
-  { name: "Project", emoji: "📁" },
+  { name: "Study", color: "#3b82f6" },
+  { name: "Personal", color: "#a855f7" },
+  { name: "Health", color: "#ef4444" },
+  { name: "Project", color: "#f59e0b" },
 ];
 
 function Dashboard({
@@ -59,53 +61,49 @@ function Dashboard({
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState("Study");
 
-  
+  // WORKOUT TRACKER STATE
   const [exercises, setExercises] = useState([]);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
   const [exerciseName, setExerciseName] = useState("");
   const [exerciseSets, setExerciseSets] = useState("");
   const [exerciseReps, setExerciseReps] = useState("");
 
-  
-  const [weeklyGoal, setWeeklyGoal] = useState(4);
-  const [sessionsCompleted, setSessionsCompleted] = useState(0);
+  // MILESTONES STATE
+  const [milestones, setMilestones] = useState([]);
+  const [showMilestoneForm, setShowMilestoneForm] = useState(false);
+  const [milestoneText, setMilestoneText] = useState("");
 
- 
+  // NOTES STATE
   const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState("");
 
-  
+  // CUSTOM CATEGORIES STATE
   const [categories, setCategories] = useState([]);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
-  const [categoryEmoji, setCategoryEmoji] = useState("🏷️");
+  const [categoryColor, setCategoryColor] = useState("#94a3b8");
   const [categoryName, setCategoryName] = useState("");
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const emojiPickerRef = useRef(null);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const colorPickerRef = useRef(null);
 
   const allCategories = [
     ...DEFAULT_CATEGORIES,
-    ...categories.map((c) => ({ name: c.name, emoji: c.emoji })),
+    ...categories.map((c) => ({ name: c.name, color: c.color })),
   ];
 
-  const completedTasks = tasks.filter(
-    (task) => task.completed
-  ).length;
-
+  const completedTasks = tasks.filter((task) => task.completed).length;
   const totalTasks = tasks.length;
-
   const pendingTasks = totalTasks - completedTasks;
 
   const progress =
-    totalTasks === 0
-      ? 0
-      : Math.round((completedTasks / totalTasks) * 100);
+    totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
-  const goalProgress =
-    weeklyGoal === 0
+  const milestonesDone = milestones.filter((m) => m.done).length;
+  const milestoneProgress =
+    milestones.length === 0
       ? 0
-      : Math.min(100, Math.round((sessionsCompleted / weeklyGoal) * 100));
+      : Math.round((milestonesDone / milestones.length) * 100);
 
-  
+  // CLOSE TASK CATEGORY DROPDOWN ON OUTSIDE CLICK
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -117,27 +115,25 @@ function Dashboard({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  
+  // CLOSE COLOR PICKER ON OUTSIDE CLICK
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
-        emojiPickerRef.current &&
-        !emojiPickerRef.current.contains(e.target)
+        colorPickerRef.current &&
+        !colorPickerRef.current.contains(e.target)
       ) {
-        setShowEmojiPicker(false);
+        setShowColorPicker(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-
+  // TIMER
   useEffect(() => {
     if (!timerRunning) return;
 
@@ -153,7 +149,6 @@ function Dashboard({
             return focusMinutes * 60;
           }
         }
-
         return seconds - 1;
       });
     }, 1000);
@@ -161,21 +156,17 @@ function Dashboard({
     return () => clearInterval(interval);
   }, [timerRunning, timerMode, focusMinutes]);
 
- 
+  // TASK FUNCTIONS
   const toggleTask = (id) => {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
-        task.id === id
-          ? { ...task, completed: !task.completed }
-          : task
+        task.id === id ? { ...task, completed: !task.completed } : task
       )
     );
   };
 
   const deleteTask = (id) => {
-    setTasks((currentTasks) =>
-      currentTasks.filter((task) => task.id !== id)
-    );
+    setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
   };
 
   const editTask = (task) => {
@@ -205,21 +196,14 @@ function Dashboard({
 
     setTasks((currentTasks) => [
       ...currentTasks,
-      {
-        id: Date.now(),
-        title: newTask.trim(),
-        category,
-        completed: false,
-      },
+      { id: Date.now(), title: newTask.trim(), category, completed: false },
     ]);
 
     setNewTask("");
   };
 
   const clearCompleted = () => {
-    setTasks((currentTasks) =>
-      currentTasks.filter((task) => !task.completed)
-    );
+    setTasks((currentTasks) => currentTasks.filter((task) => !task.completed));
   };
 
   const selectTaskCategory = (name) => {
@@ -227,19 +211,17 @@ function Dashboard({
     setTaskCategoryOpen(false);
   };
 
-  const getCategoryEmoji = (name) => {
+  const getCategoryColor = (name) => {
     const found = allCategories.find((c) => c.name === name);
-    return found ? found.emoji : "🏷️";
+    return found ? found.color : "#94a3b8";
   };
 
   const getCategoryClass = (name) => {
     const known = ["study", "personal", "health", "project"];
-    return known.includes(name.toLowerCase())
-      ? name.toLowerCase()
-      : "custom";
+    return known.includes(name.toLowerCase()) ? name.toLowerCase() : "custom";
   };
 
-  
+  // TIMER FUNCTIONS
   const toggleTimer = () => {
     setTimerRunning((current) => !current);
   };
@@ -257,15 +239,10 @@ function Dashboard({
     setTimerSeconds(minutes * 60);
   };
 
-  const minutes = Math.floor(timerSeconds / 60)
-    .toString()
-    .padStart(2, "0");
+  const minutes = Math.floor(timerSeconds / 60).toString().padStart(2, "0");
+  const seconds = (timerSeconds % 60).toString().padStart(2, "0");
 
-  const seconds = (timerSeconds % 60)
-    .toString()
-    .padStart(2, "0");
-
-  
+  // WORKOUT TRACKER FUNCTIONS
   const addExercise = () => {
     if (!exerciseName.trim()) return;
 
@@ -296,20 +273,35 @@ function Dashboard({
     setExercises((current) => current.filter((e) => e.id !== id));
   };
 
- 
-  const incrementSession = () => {
-    setSessionsCompleted((current) => current + 1);
+  // MILESTONE FUNCTIONS
+  const addMilestone = () => {
+    if (!milestoneText.trim()) return;
+
+    setMilestones((current) => [
+      ...current,
+      { id: Date.now(), text: milestoneText.trim(), done: false },
+    ]);
+
+    setMilestoneText("");
+    setShowMilestoneForm(false);
   };
 
-  const resetSessions = () => {
-    setSessionsCompleted(0);
+  const cancelMilestoneForm = () => {
+    setMilestoneText("");
+    setShowMilestoneForm(false);
   };
 
-  const changeWeeklyGoal = (delta) => {
-    setWeeklyGoal((current) => Math.max(1, current + delta));
+  const toggleMilestone = (id) => {
+    setMilestones((current) =>
+      current.map((m) => (m.id === id ? { ...m, done: !m.done } : m))
+    );
   };
 
-  
+  const deleteMilestone = (id) => {
+    setMilestones((current) => current.filter((m) => m.id !== id));
+  };
+
+  // NOTES FUNCTIONS
   const addNote = () => {
     if (!newNote.trim()) return;
 
@@ -325,39 +317,43 @@ function Dashboard({
     setNotes((current) => current.filter((n) => n.id !== id));
   };
 
- 
+  const formatNoteTime = (id) => {
+    const d = new Date(id);
+    return `${d.toLocaleDateString([], {
+      month: "short",
+      day: "numeric",
+    })} • ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+  };
+
+  // CUSTOM CATEGORIES FUNCTIONS
   const addCategory = () => {
     if (!categoryName.trim()) return;
 
     setCategories((current) => [
       ...current,
-      {
-        id: Date.now(),
-        emoji: categoryEmoji,
-        name: categoryName.trim(),
-      },
+      { id: Date.now(), color: categoryColor, name: categoryName.trim() },
     ]);
 
-    setCategoryEmoji("🏷️");
+    setCategoryColor("#94a3b8");
     setCategoryName("");
     setShowCategoryForm(false);
-    setShowEmojiPicker(false);
+    setShowColorPicker(false);
   };
 
   const cancelCategoryForm = () => {
-    setCategoryEmoji("🏷️");
+    setCategoryColor("#94a3b8");
     setCategoryName("");
     setShowCategoryForm(false);
-    setShowEmojiPicker(false);
+    setShowColorPicker(false);
   };
 
   const deleteCategory = (id) => {
     setCategories((current) => current.filter((c) => c.id !== id));
   };
 
-  const selectEmoji = (emoji) => {
-    setCategoryEmoji(emoji);
-    setShowEmojiPicker(false);
+  const selectColor = (color) => {
+    setCategoryColor(color);
+    setShowColorPicker(false);
   };
 
   return (
@@ -371,7 +367,6 @@ function Dashboard({
               <p>Stay consistent and keep moving forward.</p>
             </div>
 
-            
             <section className="stats-grid">
 
               <div className="stat-card">
@@ -416,10 +411,8 @@ function Dashboard({
 
             </section>
 
-           
             <div className="dashboard-grid">
 
-              
               <div className="left-column">
 
                 <section className="add-task-section">
@@ -444,9 +437,10 @@ function Dashboard({
                         onClick={() => setTaskCategoryOpen((c) => !c)}
                       >
                         <span className="custom-select-label">
-                          <span className="custom-select-emoji">
-                            {getCategoryEmoji(category)}
-                          </span>
+                          <span
+                            className="custom-select-dot"
+                            style={{ backgroundColor: getCategoryColor(category) }}
+                          />
                           {category}
                         </span>
 
@@ -469,9 +463,10 @@ function Dashboard({
                               }`}
                               onClick={() => selectTaskCategory(cat.name)}
                             >
-                              <span className="custom-select-emoji">
-                                {cat.emoji}
-                              </span>
+                              <span
+                                className="custom-select-dot"
+                                style={{ backgroundColor: cat.color }}
+                              />
                               {cat.name}
                             </button>
                           ))}
@@ -526,7 +521,13 @@ function Dashboard({
                               task.category
                             )}`}
                           >
-                            {getCategoryEmoji(task.category)} {task.category}
+                            <span
+                              className="category-dot"
+                              style={{
+                                backgroundColor: getCategoryColor(task.category),
+                              }}
+                            />
+                            {task.category}
                           </span>
 
                           <div className="task-actions">
@@ -561,7 +562,6 @@ function Dashboard({
 
               </div>
 
-              
               <div className="right-column">
 
                 <section className="weekly-section">
@@ -586,7 +586,6 @@ function Dashboard({
                   </div>
                 </section>
 
-                
                 <section className="categories-section">
 
                   <div className="categories-header">
@@ -610,7 +609,13 @@ function Dashboard({
                     <div className="category-chips">
                       {categories.map((cat) => (
                         <span className="category-chip" key={cat.id}>
-                          {cat.emoji} {cat.name}
+                          <span
+                            className="category-chip-dot"
+                            style={{ backgroundColor: cat.color }}
+                          />
+                          <span style={{ color: cat.color, fontWeight: 600 }}>
+                            {cat.name}
+                          </span>
                           <button
                             className="category-chip-delete"
                             onClick={() => deleteCategory(cat.id)}
@@ -627,36 +632,31 @@ function Dashboard({
 
                       <div className="inline-form-row">
 
-                        <div
-                          className="emoji-picker-wrapper"
-                          ref={emojiPickerRef}
-                        >
+                        <div className="color-picker-wrapper" ref={colorPickerRef}>
                           <button
                             type="button"
-                            className="emoji-picker-trigger"
-                            onClick={() =>
-                              setShowEmojiPicker((c) => !c)
-                            }
+                            className="color-picker-trigger"
+                            onClick={() => setShowColorPicker((c) => !c)}
                           >
-                            <span className="emoji-picker-selected">
-                              {categoryEmoji}
-                            </span>
+                            <span
+                              className="color-picker-swatch"
+                              style={{ backgroundColor: categoryColor }}
+                            />
                             <ChevronDown size={16} />
                           </button>
 
-                          {showEmojiPicker && (
-                            <div className="emoji-picker-dropdown">
-                              {EMOJI_OPTIONS.map((emoji) => (
+                          {showColorPicker && (
+                            <div className="color-picker-dropdown">
+                              {COLOR_OPTIONS.map((c) => (
                                 <button
                                   type="button"
-                                  key={emoji}
-                                  className={`emoji-picker-option ${
-                                    categoryEmoji === emoji ? "selected" : ""
+                                  key={c}
+                                  className={`color-picker-option ${
+                                    categoryColor === c ? "selected" : ""
                                   }`}
-                                  onClick={() => selectEmoji(emoji)}
-                                >
-                                  {emoji}
-                                </button>
+                                  style={{ backgroundColor: c }}
+                                  onClick={() => selectColor(c)}
+                                />
                               ))}
                             </div>
                           )}
@@ -681,10 +681,7 @@ function Dashboard({
                           Cancel
                         </button>
 
-                        <button
-                          className="inline-form-save"
-                          onClick={addCategory}
-                        >
+                        <button className="inline-form-save" onClick={addCategory}>
                           <Check size={16} />
                           Save
                         </button>
@@ -709,7 +706,6 @@ function Dashboard({
           </>
         )}
 
-     
         {activePage === "focus" && (
           <section className="dashboard-page">
 
@@ -785,18 +781,17 @@ function Dashboard({
           </section>
         )}
 
-    
         {activePage === "goals" && (
           <section className="dashboard-page">
 
             <div className="dashboard-page-heading">
               <h1>Goals</h1>
-              <p>Track workouts, set weekly targets, and jot down notes.</p>
+              <p>Track workouts, hit milestones, and log your progress.</p>
             </div>
 
             <div className="goals-grid">
 
-              
+              {/* WORKOUT TRACKER */}
               <div className="feature-card">
 
                 <div className="feature-card-header">
@@ -896,71 +891,114 @@ function Dashboard({
 
               </div>
 
-              
+              {/* MILESTONES */}
               <div className="feature-card">
 
                 <div className="feature-card-header">
                   <div className="feature-icon purple">
-                    <Target size={24} />
+                    <ListChecks size={24} />
                   </div>
                   <div>
-                    <h2>Weekly Goal</h2>
-                    <p>Set a target and track your sessions</p>
+                    <h2>Milestones</h2>
+                    <p>Break big goals into small wins</p>
                   </div>
                 </div>
 
-                <div className="goal-tracker">
-
-                  <div className="goal-bar-track">
-                    <div
-                      className="goal-bar-fill"
-                      style={{ width: `${goalProgress}%` }}
-                    />
+                {milestones.length > 0 && (
+                  <div className="mini-progress">
+                    <div className="mini-progress-track">
+                      <div
+                        className="mini-progress-fill"
+                        style={{ width: `${milestoneProgress}%` }}
+                      />
+                    </div>
+                    <span>
+                      {milestonesDone} of {milestones.length} done
+                    </span>
                   </div>
+                )}
 
-                  <div className="goal-tracker-stats">
-                    <strong>
-                      {sessionsCompleted} / {weeklyGoal} sessions
-                    </strong>
-                    <span>{goalProgress}% complete</span>
+                {milestones.length === 0 && !showMilestoneForm && (
+                  <div className="feature-empty">
+                    <p>No milestones yet.</p>
                   </div>
+                )}
 
-                  <div className="goal-tracker-controls">
+                {milestones.length > 0 && (
+                  <div className="milestone-list">
+                    {milestones.map((m) => (
+                      <div
+                        className={`milestone-item ${
+                          m.done ? "milestone-done" : ""
+                        }`}
+                        key={m.id}
+                      >
+                        <button
+                          className={`milestone-check ${
+                            m.done ? "checked" : ""
+                          }`}
+                          onClick={() => toggleMilestone(m.id)}
+                        >
+                          {m.done && <Check size={14} />}
+                        </button>
 
-                    <div className="goal-target-adjust">
-                      <span>Target</span>
+                        <span className="milestone-text">{m.text}</span>
 
-                      <div className="goal-target-buttons">
-                        <button onClick={() => changeWeeklyGoal(-1)}>−</button>
-                        <strong>{weeklyGoal}</strong>
-                        <button onClick={() => changeWeeklyGoal(1)}>+</button>
+                        <button
+                          className="exercise-delete"
+                          onClick={() => deleteMilestone(m.id)}
+                        >
+                          <Trash2 size={15} />
+                        </button>
                       </div>
-                    </div>
+                    ))}
+                  </div>
+                )}
 
-                    <div className="goal-session-buttons">
+                {showMilestoneForm ? (
+                  <div className="inline-form">
+
+                    <input
+                      type="text"
+                      className="inline-form-input"
+                      placeholder="e.g. Run 5km without stopping"
+                      value={milestoneText}
+                      onChange={(e) => setMilestoneText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") addMilestone();
+                      }}
+                      autoFocus
+                    />
+
+                    <div className="inline-form-actions">
                       <button
-                        className="feature-add-btn small"
-                        onClick={incrementSession}
+                        className="inline-form-cancel"
+                        onClick={cancelMilestoneForm}
                       >
-                        <Plus size={16} />
-                        Log Session
+                        <X size={16} />
+                        Cancel
                       </button>
 
-                      <button
-                        className="goal-reset-btn"
-                        onClick={resetSessions}
-                      >
-                        <RotateCcw size={15} />
+                      <button className="inline-form-save" onClick={addMilestone}>
+                        <Check size={16} />
+                        Save
                       </button>
                     </div>
 
                   </div>
-
-                </div>
+                ) : (
+                  <button
+                    className="feature-add-btn"
+                    onClick={() => setShowMilestoneForm(true)}
+                  >
+                    <Plus size={18} />
+                    Add Milestone
+                  </button>
+                )}
 
               </div>
 
-              
+              {/* PROGRESS NOTES */}
               <div className="feature-card">
 
                 <div className="feature-card-header">
@@ -983,14 +1021,20 @@ function Dashboard({
                   <div className="notes-list">
                     {notes.map((note) => (
                       <div className="note-item" key={note.id}>
-                        <span>{note.text}</span>
+                        <div className="note-item-top">
+                          <span className="note-text">{note.text}</span>
 
-                        <button
-                          className="exercise-delete"
-                          onClick={() => deleteNote(note.id)}
-                        >
-                          <Trash2 size={15} />
-                        </button>
+                          <button
+                            className="exercise-delete"
+                            onClick={() => deleteNote(note.id)}
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+
+                        <span className="note-time">
+                          {formatNoteTime(note.id)}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -1023,7 +1067,6 @@ function Dashboard({
 
       </main>
 
-      
       {editingTask && (
         <div className="edit-overlay" onClick={() => setEditingTask(null)}>
           <div className="edit-box" onClick={(e) => e.stopPropagation()}>
@@ -1048,7 +1091,11 @@ function Dashboard({
                   }`}
                   onClick={() => setEditCategory(item.name)}
                 >
-                  {item.emoji} {item.name}
+                  <span
+                    className="edit-category-dot"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  {item.name}
                 </button>
               ))}
             </div>

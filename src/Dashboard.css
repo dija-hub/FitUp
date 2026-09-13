@@ -351,6 +351,10 @@
   font-size: 13px;
   font-weight: 600;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .category.study {
@@ -371,6 +375,11 @@
 .category.project {
   background: #ffe8e1;
   color: #ed5536;
+}
+
+.category.custom {
+  background: #eef1ff;
+  color: #5865e0;
 }
 
 .task-actions {
@@ -740,6 +749,10 @@
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
 }
 
 .edit-category.study {
@@ -760,6 +773,11 @@
 .edit-category.project {
   background: #ffe8e1;
   color: #ed5536;
+}
+
+.edit-category.custom {
+  background: #eef1ff;
+  color: #5865e0;
 }
 
 .edit-category.selected {
@@ -1110,6 +1128,7 @@
     padding: 22px;
   }
 }
+
 .dashboard-dark .category.study {
   background: #4a2f18;
   color: #ffb35c;
@@ -1128,6 +1147,16 @@
 .dashboard-dark .category.project {
   background: #49251f;
   color: #ff8f78;
+}
+
+.dashboard-dark .category.custom {
+  background: #262a4a;
+  color: #93a1ff;
+}
+
+.dashboard-dark .edit-category.custom {
+  background: #262a4a;
+  color: #93a1ff;
 }
 
 .dashboard-dark .stat-icon.orange {
@@ -1191,7 +1220,7 @@
   color: #f2f2f2;
 }
 
-
+/* ===== FOCUS PAGE / GENERIC DASHBOARD PAGE ===== */
 .dashboard-page {
   padding: 20px 0 60px;
 }
@@ -1288,7 +1317,6 @@
   color: #171717;
 }
 
-
 .break-badge {
   background: #e6f4ea !important;
   color: #3b9950 !important;
@@ -1316,7 +1344,7 @@
   color: #7edb8b;
 }
 
-
+/* ===== GOALS PAGE (feature cards) ===== */
 .goals-grid {
   display: flex;
   flex-direction: column;
@@ -1358,6 +1386,23 @@
 .feature-icon.yellow {
   background: #fff4d8;
   color: #e2a710;
+}
+
+.feature-icon.purple {
+  background: #eef1ff;
+  color: #5865e0;
+}
+
+.feature-icon.blue {
+  background: #e3f2fd;
+  color: #1e88c7;
+}
+
+.feature-icon.small {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  flex-shrink: 0;
 }
 
 .feature-card-header h2 {
@@ -1439,12 +1484,17 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 10px 10px 18px;
+  padding: 10px 10px 10px 16px;
   border-radius: 25px;
-  background: #fff0df;
-  color: #e87716;
+  background: #f5f2ed;
   font-size: 14px;
-  font-weight: 600;
+}
+
+.category-chip-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .category-chip-delete {
@@ -1454,15 +1504,15 @@
   align-items: center;
   justify-content: center;
   border: none;
-  background: rgba(232, 119, 22, 0.15);
-  color: #e87716;
+  background: rgba(0, 0, 0, 0.08);
+  color: #77716b;
   border-radius: 50%;
   cursor: pointer;
   transition: 0.2s ease;
 }
 
 .category-chip-delete:hover {
-  background: rgba(232, 119, 22, 0.3);
+  background: rgba(0, 0, 0, 0.15);
 }
 
 .feature-add-btn {
@@ -1518,11 +1568,6 @@
   box-shadow: 0 0 0 3px rgba(255, 154, 46, 0.1);
 }
 
-.inline-form-input.emoji-input {
-  flex: 0 0 60px;
-  text-align: center;
-}
-
 .inline-form-actions {
   display: flex;
   gap: 10px;
@@ -1564,7 +1609,6 @@
   background: #ff8c17;
 }
 
-
 .dashboard-dark .feature-card {
   background: #202020;
   border-color: #303030;
@@ -1579,6 +1623,16 @@
   color: #aaaaaa;
 }
 
+.dashboard-dark .feature-icon.purple {
+  background: #262a4a;
+  color: #93a1ff;
+}
+
+.dashboard-dark .feature-icon.blue {
+  background: #1c3548;
+  color: #6ec6ff;
+}
+
 .dashboard-dark .exercise-item {
   background: #292929;
 }
@@ -1588,17 +1642,16 @@
 }
 
 .dashboard-dark .category-chip {
-  background: #4a2f18;
-  color: #ffb35c;
+  background: #292929;
 }
 
 .dashboard-dark .category-chip-delete {
-  background: rgba(255, 179, 92, 0.15);
-  color: #ffb35c;
+  background: rgba(255, 255, 255, 0.1);
+  color: #cccccc;
 }
 
 .dashboard-dark .category-chip-delete:hover {
-  background: rgba(255, 179, 92, 0.3);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .dashboard-dark .inline-form-input {
@@ -1620,99 +1673,107 @@
   color: #888888;
 }
 
-
-.emoji-picker-wrapper {
+/* ===== COLOR PICKER (replaces emoji picker) ===== */
+.color-picker-wrapper {
   position: relative;
   display: inline-flex;
   flex-shrink: 0;
 }
 
-.emoji-picker-trigger {
+.color-picker-trigger {
   height: 48px;
-  min-width: 70px;
+  min-width: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 12px;
+  gap: 8px;
+  padding: 0 14px;
   border: 1px solid #e6ddd5;
   border-radius: 12px;
   background: #fffaf5;
   cursor: pointer;
   color: #77716b;
+  transition: border-color 0.2s ease;
 }
 
-.emoji-picker-dropdown {
+.color-picker-trigger:hover {
+  border-color: #ff9b2f;
+}
+
+.color-picker-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+}
+
+.color-picker-dropdown {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-
+  z-index: 100;
   width: 220px;
-  padding: 12px;
-
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 6px;
-
+  gap: 10px;
+  padding: 14px;
   background: #ffffff;
   border: 1px solid #eadfd5;
   border-radius: 14px;
-
   box-shadow: 0 16px 40px rgba(40, 25, 10, 0.25);
-
-  z-index: 9999;
-
-
-  margin: 0;
-  transform: none;
 }
 
-.emoji-picker-option {
-  width: 32px;
-  height: 32px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-
-  font-size: 18px;
+.color-picker-option {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
   cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease;
 }
 
-.emoji-picker-option:hover {
-  background: #fff0df;
+.color-picker-option:hover {
+  transform: scale(1.15);
 }
 
-.emoji-picker-option.selected {
-  background: #ff9b2f;
+.color-picker-option.selected {
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #171717;
 }
 
-
-
-.dashboard-dark .emoji-picker-trigger {
+.dashboard-dark .color-picker-trigger {
   background: #292929;
   border-color: #3a3a3a;
   color: #aaaaaa;
 }
 
-.dashboard-dark .emoji-picker-dropdown {
+.dashboard-dark .color-picker-dropdown {
   background: #202020;
   border-color: #363636;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
 }
 
-.dashboard-dark .emoji-picker-option:hover {
-  background: #333333;
+.dashboard-dark .color-picker-option {
+  border-color: #202020;
 }
 
-.dashboard-dark .emoji-picker-option.selected {
-  background: #ff9b2f;
+.dashboard-dark .color-picker-option.selected {
+  box-shadow: 0 0 0 2px #202020, 0 0 0 4px #ffffff;
 }
 
+/* ===== Category dots (used in select trigger/options, task pills, edit modal) ===== */
+.custom-select-dot,
+.category-dot,
+.edit-category-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* ===== CUSTOM SELECT (task category dropdown) ===== */
 .custom-select {
   position: relative;
   height: 58px;
@@ -1745,11 +1806,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.custom-select-emoji {
-  font-size: 16px;
-  line-height: 1;
 }
 
 .custom-select-chevron {
@@ -1808,7 +1864,6 @@
   font-weight: 600;
 }
 
-
 .dashboard-dark .custom-select-trigger {
   background: #292929;
   border-color: #3a3a3a;
@@ -1839,7 +1894,7 @@
   color: #171717;
 }
 
-
+/* ===== CUSTOM CATEGORIES SECTION (Overview page, right column) ===== */
 .categories-section {
   margin-top: 21px;
   padding: 27px;
@@ -1869,13 +1924,6 @@
   color: #77716b;
 }
 
-.feature-icon.small {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  flex-shrink: 0;
-}
-
 .dashboard-dark .categories-section {
   background: #202020;
   border-color: #303030;
@@ -1890,173 +1938,98 @@
   color: #aaaaaa;
 }
 
-
-.category.custom {
-  background: #eef1ff;
-  color: #5865e0;
-}
-
-.dashboard-dark .category.custom {
-  background: #262a4a;
-  color: #93a1ff;
-}
-
-.edit-category.custom {
-  background: #eef1ff;
-  color: #5865e0;
-}
-
-.dashboard-dark .edit-category.custom {
-  background: #262a4a;
-  color: #93a1ff;
-}
-
-.emoji-picker-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  z-index: 100;
-  width: 220px;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 6px;
-  padding: 12px;
-  background: #ffffff;
-  border: 1px solid #eadfd5;
-  border-radius: 14px;
-  box-shadow: 0 16px 40px rgba(40, 25, 10, 0.25);
-}
-
-.dashboard-dark .emoji-picker-dropdown {
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-}
-
-
-.feature-icon.purple {
-  background: #eef1ff;
-  color: #5865e0;
-}
-
-.feature-icon.blue {
-  background: #e3f2fd;
-  color: #1e88c7;
-}
-
-.goal-tracker {
+/* ===== MILESTONES ===== */
+.mini-progress {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
-.goal-bar-track {
-  height: 14px;
-  width: 100%;
+.mini-progress-track {
+  flex: 1;
+  height: 10px;
   border-radius: 20px;
   background: #f1e4d8;
   overflow: hidden;
 }
 
-.goal-bar-fill {
+.mini-progress-fill {
   height: 100%;
   border-radius: 20px;
-  background: linear-gradient(90deg, #ff9b2f, #ff7200);
+  background: linear-gradient(90deg, #8b5cf6, #6366f1);
   transition: width 0.4s ease;
 }
 
-.goal-tracker-stats {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.goal-tracker-stats strong {
-  font-size: 16px;
-  color: #171717;
-}
-
-.goal-tracker-stats span {
+.mini-progress span {
   font-size: 13px;
   color: #77716b;
+  white-space: nowrap;
 }
 
-.goal-tracker-controls {
+.milestone-list {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  margin-top: 4px;
-  flex-wrap: wrap;
-}
-
-.goal-target-adjust {
-  display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 10px;
+  margin-bottom: 20px;
 }
 
-.goal-target-adjust > span {
-  font-size: 13px;
-  color: #77716b;
-}
-
-.goal-target-buttons {
+.milestone-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 4px 8px;
-  border: 1px solid #eadfd5;
-  border-radius: 10px;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #fffaf5;
+  border-radius: 13px;
 }
 
-.goal-target-buttons button {
-  width: 26px;
-  height: 26px;
-  border: none;
-  border-radius: 7px;
-  background: #fff0df;
-  color: #e87716;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.goal-target-buttons strong {
-  min-width: 18px;
-  text-align: center;
-}
-
-.goal-session-buttons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.feature-add-btn.small {
-  width: auto;
-  height: 44px;
-  padding: 0 16px;
-  font-size: 13px;
-}
-
-.goal-reset-btn {
-  width: 44px;
-  height: 44px;
+.milestone-check {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #eadfd5;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #77716b;
+  border: 2px solid #8b5cf6;
+  border-radius: 7px;
+  background: transparent;
+  color: #ffffff;
   cursor: pointer;
 }
 
-.goal-reset-btn:hover {
-  border-color: #ff9b2f;
-  color: #e87515;
+.milestone-check.checked {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
 }
 
+.milestone-text {
+  flex: 1;
+  font-size: 14px;
+  color: #242424;
+}
 
+.milestone-done .milestone-text {
+  color: #999999;
+  text-decoration: line-through;
+}
+
+.dashboard-dark .mini-progress-track {
+  background: #333333;
+}
+
+.dashboard-dark .mini-progress span {
+  color: #999999;
+}
+
+.dashboard-dark .milestone-item {
+  background: #292929;
+}
+
+.dashboard-dark .milestone-text {
+  color: #eeeeee;
+}
+
+/* ===== NOTES (improved) ===== */
 .notes-list {
   display: flex;
   flex-direction: column;
@@ -2065,60 +2038,43 @@
 }
 
 .note-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
   padding: 14px 16px;
   background: #fffaf5;
-  border-radius: 12px;
+  border-left: 3px solid #ff9b2f;
+  border-radius: 10px;
+}
+
+.note-item-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.note-text {
+  flex: 1;
   font-size: 14px;
   color: #333333;
+  line-height: 1.5;
+  white-space: pre-wrap;
 }
 
-
-.dashboard-dark .feature-icon.purple {
-  background: #262a4a;
-  color: #93a1ff;
-}
-
-.dashboard-dark .feature-icon.blue {
-  background: #1c3548;
-  color: #6ec6ff;
-}
-
-.dashboard-dark .goal-bar-track {
-  background: #333333;
-}
-
-.dashboard-dark .goal-tracker-stats strong {
-  color: #f0f0f0;
-}
-
-.dashboard-dark .goal-tracker-stats span {
-  color: #999999;
-}
-
-.dashboard-dark .goal-target-adjust > span {
-  color: #999999;
-}
-
-.dashboard-dark .goal-target-buttons {
-  border-color: #3a3a3a;
-}
-
-.dashboard-dark .goal-target-buttons button {
-  background: #4a2f18;
-  color: #ffad52;
-}
-
-.dashboard-dark .goal-reset-btn {
-  background: #292929;
-  border-color: #3a3a3a;
-  color: #aaaaaa;
+.note-time {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #a39c93;
 }
 
 .dashboard-dark .note-item {
   background: #292929;
+  border-left-color: #ff9b2f;
+}
+
+.dashboard-dark .note-text {
   color: #eeeeee;
+}
+
+.dashboard-dark .note-time {
+  color: #888888;
 }
