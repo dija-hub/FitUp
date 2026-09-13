@@ -1983,3 +1983,11 @@
 .dashboard-dark .consistency-footer strong {
   color: #ffad52;
 }
+.color-picker-option:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.color-picker-option:disabled:hover {
+  transform: none;
+}
