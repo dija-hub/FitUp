@@ -14,10 +14,9 @@ import {
   X,
   ChevronDown,
   ListChecks,
-  StickyNote,
+  Flame,
 } from "lucide-react";
 
-import { supabase } from "./utils/supabase";
 import "./Dashboard.css";
 
 const FOCUS_DURATIONS = [15, 25, 45, 60];
@@ -39,13 +38,13 @@ const DEFAULT_CATEGORIES = [
   { name: "Project", color: "#f59e0b" },
 ];
 
-function Dashboard({
-  darkMode,
-  setShowDashboard,
-  setIsLoggedIn,
-  activePage,
-  setActivePage,
-}) {
+const WEEK_DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
+
+function getTodayIndex() {
+  return (new Date().getDay() + 6) % 7;
+}
+
+function Dashboard({ darkMode, activePage, setActivePage }) {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [category, setCategory] = useState("Study");
@@ -61,23 +60,21 @@ function Dashboard({
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState("Study");
 
-  // WORKOUT TRACKER STATE
   const [exercises, setExercises] = useState([]);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
   const [exerciseName, setExerciseName] = useState("");
   const [exerciseSets, setExerciseSets] = useState("");
   const [exerciseReps, setExerciseReps] = useState("");
 
-  // MILESTONES STATE
   const [milestones, setMilestones] = useState([]);
   const [showMilestoneForm, setShowMilestoneForm] = useState(false);
   const [milestoneText, setMilestoneText] = useState("");
 
-  // NOTES STATE
-  const [notes, setNotes] = useState([]);
-  const [newNote, setNewNote] = useState("");
+  const todayIndex = getTodayIndex();
+  const [weekDays, setWeekDays] = useState(
+    WEEK_DAY_LABELS.map((label, i) => ({ id: i, label, done: false }))
+  );
 
-  // CUSTOM CATEGORIES STATE
   const [categories, setCategories] = useState([]);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [categoryColor, setCategoryColor] = useState("#94a3b8");
@@ -103,7 +100,20 @@ function Dashboard({
       ? 0
       : Math.round((milestonesDone / milestones.length) * 100);
 
-  // CLOSE TASK CATEGORY DROPDOWN ON OUTSIDE CLICK
+  const workoutsDone = weekDays.filter((d) => d.done).length;
+
+  const workoutStreak = (() => {
+    let streak = 0;
+    for (let i = todayIndex; i >= 0; i--) {
+      if (weekDays[i].done) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    return streak;
+  })();
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -118,7 +128,6 @@ function Dashboard({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // CLOSE COLOR PICKER ON OUTSIDE CLICK
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -133,7 +142,6 @@ function Dashboard({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // TIMER
   useEffect(() => {
     if (!timerRunning) return;
 
@@ -156,7 +164,6 @@ function Dashboard({
     return () => clearInterval(interval);
   }, [timerRunning, timerMode, focusMinutes]);
 
-  // TASK FUNCTIONS
   const toggleTask = (id) => {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
@@ -221,7 +228,6 @@ function Dashboard({
     return known.includes(name.toLowerCase()) ? name.toLowerCase() : "custom";
   };
 
-  // TIMER FUNCTIONS
   const toggleTimer = () => {
     setTimerRunning((current) => !current);
   };
@@ -242,7 +248,6 @@ function Dashboard({
   const minutes = Math.floor(timerSeconds / 60).toString().padStart(2, "0");
   const seconds = (timerSeconds % 60).toString().padStart(2, "0");
 
-  // WORKOUT TRACKER FUNCTIONS
   const addExercise = () => {
     if (!exerciseName.trim()) return;
 
@@ -273,7 +278,6 @@ function Dashboard({
     setExercises((current) => current.filter((e) => e.id !== id));
   };
 
-  // MILESTONE FUNCTIONS
   const addMilestone = () => {
     if (!milestoneText.trim()) return;
 
@@ -301,31 +305,12 @@ function Dashboard({
     setMilestones((current) => current.filter((m) => m.id !== id));
   };
 
-  // NOTES FUNCTIONS
-  const addNote = () => {
-    if (!newNote.trim()) return;
-
-    setNotes((current) => [
-      ...current,
-      { id: Date.now(), text: newNote.trim() },
-    ]);
-
-    setNewNote("");
+  const toggleWorkoutDay = (id) => {
+    setWeekDays((current) =>
+      current.map((d) => (d.id === id ? { ...d, done: !d.done } : d))
+    );
   };
 
-  const deleteNote = (id) => {
-    setNotes((current) => current.filter((n) => n.id !== id));
-  };
-
-  const formatNoteTime = (id) => {
-    const d = new Date(id);
-    return `${d.toLocaleDateString([], {
-      month: "short",
-      day: "numeric",
-    })} • ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
-  };
-
-  // CUSTOM CATEGORIES FUNCTIONS
   const addCategory = () => {
     if (!categoryName.trim()) return;
 
@@ -644,6 +629,22 @@ function Dashboard({
                             />
                             <ChevronDown size={16} />
                           </button>
+
+                          {showColorPicker && (
+                            <div className="color-picker-dropdown">
+                              {COLOR_OPTIONS.map((c) => (
+                                <button
+                                  type="button"
+                                  key={c}
+                                  className={`color-picker-option ${
+                                    categoryColor === c ? "selected" : ""
+                                  }`}
+                                  style={{ backgroundColor: c }}
+                                  onClick={() => selectColor(c)}
+                                />
+                              ))}
+                            </div>
+                          )}
                         </div>
 
                         <input
@@ -655,22 +656,6 @@ function Dashboard({
                           autoFocus
                         />
                       </div>
-
-                      {showColorPicker && (
-                        <div className="color-picker-dropdown">
-                          {COLOR_OPTIONS.map((c) => (
-                            <button
-                              type="button"
-                              key={c}
-                              className={`color-picker-option ${
-                                categoryColor === c ? "selected" : ""
-                              }`}
-                              style={{ backgroundColor: c }}
-                              onClick={() => selectColor(c)}
-                            />
-                          ))}
-                        </div>
-                      )}
 
                       <div className="inline-form-actions">
                         <button
@@ -786,12 +771,11 @@ function Dashboard({
 
             <div className="dashboard-page-heading">
               <h1>Goals</h1>
-              <p>Track workouts, hit milestones, and log your progress.</p>
+              <p>Track workouts, hit milestones, and stay consistent.</p>
             </div>
 
             <div className="goals-grid">
 
-              {/* WORKOUT TRACKER */}
               <div className="feature-card">
 
                 <div className="feature-card-header">
@@ -891,7 +875,6 @@ function Dashboard({
 
               </div>
 
-              {/* MILESTONES */}
               <div className="feature-card">
 
                 <div className="feature-card-header">
@@ -998,64 +981,44 @@ function Dashboard({
 
               </div>
 
-              {/* PROGRESS NOTES */}
-              <div className="feature-card">
+              <div className="consistency-card">
 
-                <div className="feature-card-header">
-                  <div className="feature-icon blue">
-                    <StickyNote size={24} />
-                  </div>
-                  <div>
-                    <h2>Progress Notes</h2>
-                    <p>Jot down thoughts on your journey</p>
-                  </div>
+                <div className="consistency-top">
+                  <span className="consistency-label">Consistency</span>
+                  <span className="consistency-ratio">
+                    {workoutsDone} / 7
+                  </span>
                 </div>
 
-                {notes.length === 0 && (
-                  <div className="feature-empty">
-                    <p>No notes yet.</p>
-                  </div>
-                )}
+                <h2 className="consistency-title">This week</h2>
 
-                {notes.length > 0 && (
-                  <div className="notes-list">
-                    {notes.map((note) => (
-                      <div className="note-item" key={note.id}>
-                        <div className="note-item-top">
-                          <span className="note-text">{note.text}</span>
+                <div className="consistency-days">
+                  {weekDays.map((day) => (
+                    <div className="consistency-day" key={day.id}>
+                      <span className="consistency-day-label">{day.label}</span>
 
-                          <button
-                            className="exercise-delete"
-                            onClick={() => deleteNote(note.id)}
-                          >
-                            <Trash2 size={15} />
-                          </button>
-                        </div>
+                      <button
+                        type="button"
+                        className={`consistency-circle ${
+                          day.done ? "done" : ""
+                        } ${day.id === todayIndex ? "today" : ""}`}
+                        onClick={() => toggleWorkoutDay(day.id)}
+                      >
+                        {day.done ? (
+                          <Check size={18} strokeWidth={3} />
+                        ) : day.id === todayIndex ? (
+                          <span className="consistency-dot" />
+                        ) : null}
+                      </button>
+                    </div>
+                  ))}
+                </div>
 
-                        <span className="note-time">
-                          {formatNoteTime(note.id)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="inline-form">
-                  <input
-                    type="text"
-                    className="inline-form-input"
-                    placeholder="Write a quick note..."
-                    value={newNote}
-                    onChange={(e) => setNewNote(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") addNote();
-                    }}
-                  />
-
-                  <button className="feature-add-btn" onClick={addNote}>
-                    <Plus size={18} />
-                    Add Note
-                  </button>
+                <div className="consistency-footer">
+                  <Flame size={16} className="consistency-flame" />
+                  <span>
+                    <strong>{workoutStreak} day</strong> streak — keep it going
+                  </span>
                 </div>
 
               </div>
