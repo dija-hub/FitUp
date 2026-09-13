@@ -1711,9 +1711,11 @@
 .color-picker-dropdown {
   position: absolute;
   top: calc(100% + 8px);
-  left: 0;
+  right: 0;
+  left: auto;
   z-index: 100;
   width: 220px;
+  max-width: calc(100vw - 40px);
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 10px;
