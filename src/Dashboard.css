@@ -1673,11 +1673,11 @@
   color: #888888;
 }
 
-/* ===== COLOR PICKER (replaces emoji picker) ===== */
+
 .color-picker-wrapper {
   position: relative;
-  display: inline-flex;
-  flex-shrink: 0;
+  display: block;
+  width: 100%;
 }
 
 .color-picker-trigger {
@@ -1709,21 +1709,17 @@
 }
 
 .color-picker-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  left: auto;
-  z-index: 100;
-  width: 220px;
-  max-width: calc(100vw - 40px);
+  position: static;
+  width: 100%;
+  margin-top: 10px;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   gap: 10px;
   padding: 14px;
-  background: #ffffff;
+  background: #fffaf5;
   border: 1px solid #eadfd5;
   border-radius: 14px;
-  box-shadow: 0 16px 40px rgba(40, 25, 10, 0.25);
+  box-shadow: none;
 }
 
 .color-picker-option {
@@ -1750,12 +1746,11 @@
   color: #aaaaaa;
 }
 
-.dashboard-dark .color-picker-dropdown {
-  background: #202020;
-  border-color: #363636;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-}
 
+.dashboard-dark .color-picker-dropdown {
+  background: #292929;
+  border-color: #3a3a3a;
+}
 .dashboard-dark .color-picker-option {
   border-color: #202020;
 }

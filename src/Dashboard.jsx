@@ -644,22 +644,6 @@ function Dashboard({
                             />
                             <ChevronDown size={16} />
                           </button>
-
-                          {showColorPicker && (
-                            <div className="color-picker-dropdown">
-                              {COLOR_OPTIONS.map((c) => (
-                                <button
-                                  type="button"
-                                  key={c}
-                                  className={`color-picker-option ${
-                                    categoryColor === c ? "selected" : ""
-                                  }`}
-                                  style={{ backgroundColor: c }}
-                                  onClick={() => selectColor(c)}
-                                />
-                              ))}
-                            </div>
-                          )}
                         </div>
 
                         <input
@@ -671,6 +655,22 @@ function Dashboard({
                           autoFocus
                         />
                       </div>
+
+                      {showColorPicker && (
+                        <div className="color-picker-dropdown">
+                          {COLOR_OPTIONS.map((c) => (
+                            <button
+                              type="button"
+                              key={c}
+                              className={`color-picker-option ${
+                                categoryColor === c ? "selected" : ""
+                              }`}
+                              style={{ backgroundColor: c }}
+                              onClick={() => selectColor(c)}
+                            />
+                          ))}
+                        </div>
+                      )}
 
                       <div className="inline-form-actions">
                         <button
