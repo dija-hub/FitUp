@@ -20,9 +20,6 @@ import {
 import { supabase } from "./utils/supabase";
 import "./Dashboard.css";
 
-const FOCUS_DURATIONS = [15, 25, 45, 60];
-const BREAK_MINUTES = 5;
-
 const COLOR_OPTIONS = [
   "#3b82f6", "#ef4444", "#f97316", "#eab308",
   "#22c55e", "#14b8a6", "#06b6d4", "#6366f1",
@@ -52,9 +49,8 @@ function Dashboard({
   const [taskCategoryOpen, setTaskCategoryOpen] = useState(false);
   const taskCategoryRef = useRef(null);
 
-  const [focusMinutes, setFocusMinutes] = useState(25);
-  const [timerMode, setTimerMode] = useState("focus");
-  const [timerSeconds, setTimerSeconds] = useState(25 * 60);
+  // FOCUS TIMER STATE (stopwatch: counts up from 0)
+  const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
 
   const [editingTask, setEditingTask] = useState(null);
@@ -133,28 +129,16 @@ function Dashboard({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // TIMER
+  // TIMER (stopwatch — counts up while running)
   useEffect(() => {
     if (!timerRunning) return;
 
     const interval = setInterval(() => {
-      setTimerSeconds((seconds) => {
-        if (seconds <= 1) {
-          if (timerMode === "focus") {
-            setTimerMode("break");
-            return BREAK_MINUTES * 60;
-          } else {
-            setTimerMode("focus");
-            setTimerRunning(false);
-            return focusMinutes * 60;
-          }
-        }
-        return seconds - 1;
-      });
+      setTimerSeconds((seconds) => seconds + 1);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timerRunning, timerMode, focusMinutes]);
+  }, [timerRunning]);
 
   // TASK FUNCTIONS
   const toggleTask = (id) => {
@@ -228,15 +212,7 @@ function Dashboard({
 
   const resetTimer = () => {
     setTimerRunning(false);
-    setTimerMode("focus");
-    setTimerSeconds(focusMinutes * 60);
-  };
-
-  const selectFocusDuration = (minutes) => {
-    if (timerRunning) return;
-    setFocusMinutes(minutes);
-    setTimerMode("focus");
-    setTimerSeconds(minutes * 60);
+    setTimerSeconds(0);
   };
 
   const minutes = Math.floor(timerSeconds / 60).toString().padStart(2, "0");
@@ -717,11 +693,7 @@ function Dashboard({
 
             <div className="dashboard-page-heading">
               <h1>Focus Timer</h1>
-              <p>
-                {timerMode === "focus"
-                  ? "Stay focused and work without distractions."
-                  : "Take a short break — you've earned it."}
-              </p>
+              <p>Start the clock and stay with it as long as you like.</p>
             </div>
 
             <div className="progress-big-card">
@@ -729,50 +701,18 @@ function Dashboard({
               <div className="timer-header">
                 <div>
                   <Clock size={20} />
-                  <strong>
-                    {timerMode === "focus" ? "Pomodoro Timer" : "Break Time"}
-                  </strong>
+                  <strong>Stopwatch</strong>
                 </div>
 
-                <span className={timerMode === "break" ? "break-badge" : ""}>
-                  {timerMode === "focus"
-                    ? `${focusMinutes} min focus`
-                    : `${BREAK_MINUTES} min break`}
-                </span>
+                <span>{timerRunning ? "Running" : "Paused"}</span>
               </div>
 
-              {timerMode === "focus" && (
-                <div className="duration-select">
-                  {FOCUS_DURATIONS.map((min) => (
-                    <button
-                      key={min}
-                      className={`duration-btn ${
-                        focusMinutes === min ? "active" : ""
-                      }`}
-                      disabled={timerRunning}
-                      onClick={() => selectFocusDuration(min)}
-                    >
-                      {min}m
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              <div
-                className={`timer-display ${
-                  timerMode === "break" ? "break-mode" : ""
-                }`}
-              >
+              <div className="timer-display">
                 {minutes}:{seconds}
               </div>
 
               <div className="timer-controls">
-                <button
-                  className={`timer-start ${
-                    timerMode === "break" ? "break-start" : ""
-                  }`}
-                  onClick={toggleTimer}
-                >
+                <button className="timer-start" onClick={toggleTimer}>
                   <Play size={18} />
                   {timerRunning ? "Pause" : "Start"}
                 </button>
