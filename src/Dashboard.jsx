@@ -13,8 +13,7 @@ import {
   Tag,
   X,
   ChevronDown,
-  ListChecks,
-  StickyNote,
+  Target,
 } from "lucide-react";
 
 import { supabase } from "./utils/supabase";
@@ -60,18 +59,11 @@ function Dashboard({
   // WORKOUT TRACKER STATE
   const [exercises, setExercises] = useState([]);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
-  const [exerciseName, setExerciseName] = useState("");
-  const [exerciseSets, setExerciseSets] = useState("");
-  const [exerciseReps, setExerciseReps] = useState("");
+  const [exerciseSets, setExerciseSets] = useState("3");
+  const [exerciseReps, setExerciseReps] = useState("12");
+  const [exerciseCategory, setExerciseCategory] = useState("Strength");
+  const [selectedExercise, setSelectedExercise] = useState(null);
 
-  // MILESTONES STATE
-  const [milestones, setMilestones] = useState([]);
-  const [showMilestoneForm, setShowMilestoneForm] = useState(false);
-  const [milestoneText, setMilestoneText] = useState("");
-
-  // NOTES STATE
-  const [notes, setNotes] = useState([]);
-  const [newNote, setNewNote] = useState("");
 
   // CUSTOM CATEGORIES STATE
   const [categories, setCategories] = useState([]);
@@ -92,12 +84,6 @@ function Dashboard({
 
   const progress =
     totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
-
-  const milestonesDone = milestones.filter((m) => m.done).length;
-  const milestoneProgress =
-    milestones.length === 0
-      ? 0
-      : Math.round((milestonesDone / milestones.length) * 100);
 
   // CLOSE TASK CATEGORY DROPDOWN ON OUTSIDE CLICK
   useEffect(() => {
@@ -219,29 +205,68 @@ function Dashboard({
   const seconds = (timerSeconds % 60).toString().padStart(2, "0");
 
   // WORKOUT TRACKER FUNCTIONS
-  const addExercise = () => {
-    if (!exerciseName.trim()) return;
+  const EXERCISE_SUGGESTIONS = {
+    Strength: [
+      { name: "Push Ups", sets: "3", reps: "10" },
+      { name: "Squats", sets: "3", reps: "12" },
+      { name: "Lunges", sets: "3", reps: "10 each" },
+      { name: "Bicep Curls", sets: "3", reps: "12" },
+      { name: "Shoulder Press", sets: "3", reps: "10" },
+    ],
+    Cardio: [
+      { name: "Jumping Jacks", sets: "3", reps: "30s" },
+      { name: "High Knees", sets: "3", reps: "30s" },
+      { name: "Burpees", sets: "3", reps: "10" },
+      { name: "Mountain Climbers", sets: "3", reps: "30s" },
+      { name: "Jogging", sets: "1", reps: "20 min" },
+    ],
+    Core: [
+      { name: "Plank", sets: "3", reps: "30s" },
+      { name: "Crunches", sets: "3", reps: "15" },
+      { name: "Leg Raises", sets: "3", reps: "12" },
+      { name: "Russian Twists", sets: "3", reps: "12 each" },
+      { name: "Bicycle Crunches", sets: "3", reps: "15 each" },
+    ],
+    Flexibility: [
+      { name: "Hamstring Stretch", sets: "2", reps: "30s" },
+      { name: "Quad Stretch", sets: "2", reps: "30s each" },
+      { name: "Shoulder Stretch", sets: "2", reps: "30s each" },
+      { name: "Hip Flexor Stretch", sets: "2", reps: "30s each" },
+      { name: "Full Body Stretch", sets: "1", reps: "10 min" },
+    ],
+  };
+
+  const selectSuggestedExercise = (suggestion) => {
+    setSelectedExercise(suggestion);
+    setExerciseSets(suggestion.sets);
+    setExerciseReps(suggestion.reps);
+  };
+
+  const addSelectedExercise = () => {
+    if (!selectedExercise) return;
 
     setExercises((current) => [
       ...current,
       {
-        id: Date.now(),
-        name: exerciseName.trim(),
-        sets: exerciseSets.trim() || "3",
-        reps: exerciseReps.trim() || "12",
+        id: Date.now() + Math.random(),
+        name: selectedExercise.name,
+        sets: exerciseSets.trim() || selectedExercise.sets,
+        reps: exerciseReps.trim() || selectedExercise.reps,
       },
     ]);
 
-    setExerciseName("");
-    setExerciseSets("");
-    setExerciseReps("");
+    setSelectedExercise(null);
+    setExerciseSets("3");
+    setExerciseReps("12");
+    setExerciseCategory("Strength");
     setShowExerciseForm(false);
   };
 
   const cancelExerciseForm = () => {
-    setExerciseName("");
-    setExerciseSets("");
-    setExerciseReps("");
+    setSelectedExercise(null);
+    setExerciseSets("3");
+    setExerciseReps("12");
+    setExerciseCategory("Strength");
     setShowExerciseForm(false);
   };
 
@@ -249,56 +274,11 @@ function Dashboard({
     setExercises((current) => current.filter((e) => e.id !== id));
   };
 
-  // MILESTONE FUNCTIONS
-  const addMilestone = () => {
-    if (!milestoneText.trim()) return;
-
-    setMilestones((current) => [
-      ...current,
-      { id: Date.now(), text: milestoneText.trim(), done: false },
+  const addSuggestionTask = (title) => {
+    setTasks((currentTasks) => [
+      ...currentTasks,
+      { id: Date.now() + Math.random(), title, category: "Health", completed: false },
     ]);
-
-    setMilestoneText("");
-    setShowMilestoneForm(false);
-  };
-
-  const cancelMilestoneForm = () => {
-    setMilestoneText("");
-    setShowMilestoneForm(false);
-  };
-
-  const toggleMilestone = (id) => {
-    setMilestones((current) =>
-      current.map((m) => (m.id === id ? { ...m, done: !m.done } : m))
-    );
-  };
-
-  const deleteMilestone = (id) => {
-    setMilestones((current) => current.filter((m) => m.id !== id));
-  };
-
-  // NOTES FUNCTIONS
-  const addNote = () => {
-    if (!newNote.trim()) return;
-
-    setNotes((current) => [
-      ...current,
-      { id: Date.now(), text: newNote.trim() },
-    ]);
-
-    setNewNote("");
-  };
-
-  const deleteNote = (id) => {
-    setNotes((current) => current.filter((n) => n.id !== id));
-  };
-
-  const formatNoteTime = (id) => {
-    const d = new Date(id);
-    return `${d.toLocaleDateString([], {
-      month: "short",
-      day: "numeric",
-    })} • ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
   };
 
   // CUSTOM CATEGORIES FUNCTIONS
@@ -730,21 +710,20 @@ function Dashboard({
 
             <div className="dashboard-page-heading">
               <h1>Goals</h1>
-              <p>Track workouts, hit milestones, and log your progress.</p>
+              <p>Build your workout routine with simple guided suggestions.</p>
             </div>
 
             <div className="goals-grid">
 
               {/* WORKOUT TRACKER */}
               <div className="feature-card">
-
                 <div className="feature-card-header">
                   <div className="feature-icon orange">
                     <Dumbbell size={24} />
                   </div>
                   <div>
                     <h2>Workout Tracker</h2>
-                    <p>Track exercises, sets and reps</p>
+                    <p>Choose an exercise and build your routine</p>
                   </div>
                 </div>
 
@@ -779,49 +758,78 @@ function Dashboard({
 
                 {showExerciseForm ? (
                   <div className="inline-form">
-
-                    <input
-                      type="text"
-                      className="inline-form-input"
-                      placeholder="Exercise name"
-                      value={exerciseName}
-                      onChange={(e) => setExerciseName(e.target.value)}
-                      autoFocus
-                    />
-
-                    <div className="inline-form-row">
-                      <input
-                        type="text"
-                        className="inline-form-input"
-                        placeholder="Sets (e.g. 3)"
-                        value={exerciseSets}
-                        onChange={(e) => setExerciseSets(e.target.value)}
-                      />
-
-                      <input
-                        type="text"
-                        className="inline-form-input"
-                        placeholder="Reps (e.g. 12 or 30s)"
-                        value={exerciseReps}
-                        onChange={(e) => setExerciseReps(e.target.value)}
-                      />
+                    <div className="suggestion-categories">
+                      {Object.keys(EXERCISE_SUGGESTIONS).map((type) => (
+                        <button
+                          key={type}
+                          type="button"
+                          className={`suggestion-category ${
+                            exerciseCategory === type ? "active" : ""
+                          }`}
+                          onClick={() => setExerciseCategory(type)}
+                        >
+                          {type}
+                        </button>
+                      ))}
                     </div>
 
+                    <div className="suggestion-list">
+                      {EXERCISE_SUGGESTIONS[exerciseCategory].map((suggestion) => (
+                        <button
+                          type="button"
+                          key={suggestion.name}
+                          className={`suggestion-item ${
+                            selectedExercise?.name === suggestion.name ? "selected" : ""
+                          }`}
+                          onClick={() => selectSuggestedExercise(suggestion)}
+                        >
+                          <span>
+                            <strong>{suggestion.name}</strong>
+                            <small>Suggested: {suggestion.sets} × {suggestion.reps}</small>
+                          </span>
+                          <Plus size={17} />
+                        </button>
+                      ))}
+                    </div>
+
+                    {selectedExercise && (
+                      <>
+                        <div className="selected-exercise">
+                          <span>Selected: <strong>{selectedExercise.name}</strong></span>
+                        </div>
+
+                        <div className="inline-form-row">
+                          <input
+                            type="text"
+                            className="inline-form-input"
+                            placeholder="Sets"
+                            value={exerciseSets}
+                            onChange={(e) => setExerciseSets(e.target.value)}
+                          />
+                          <input
+                            type="text"
+                            className="inline-form-input"
+                            placeholder="Reps / time"
+                            value={exerciseReps}
+                            onChange={(e) => setExerciseReps(e.target.value)}
+                          />
+                        </div>
+                      </>
+                    )}
+
                     <div className="inline-form-actions">
-                      <button
-                        className="inline-form-cancel"
-                        onClick={cancelExerciseForm}
-                      >
+                      <button className="inline-form-cancel" onClick={cancelExerciseForm}>
                         <X size={16} />
                         Cancel
                       </button>
 
-                      <button className="inline-form-save" onClick={addExercise}>
-                        <Check size={16} />
-                        Save
-                      </button>
+                      {selectedExercise && (
+                        <button className="inline-form-save" onClick={addSelectedExercise}>
+                          <Check size={16} />
+                          Add Exercise
+                        </button>
+                      )}
                     </div>
-
                   </div>
                 ) : (
                   <button
@@ -829,182 +837,64 @@ function Dashboard({
                     onClick={() => setShowExerciseForm(true)}
                   >
                     <Plus size={18} />
-                    Add Exercise
+                    Choose Exercise
                   </button>
                 )}
-
               </div>
 
-              {/* MILESTONES */}
+              {/* DAILY SUGGESTIONS */}
               <div className="feature-card">
-
                 <div className="feature-card-header">
                   <div className="feature-icon purple">
-                    <ListChecks size={24} />
+                    <Target size={24} />
                   </div>
                   <div>
-                    <h2>Milestones</h2>
-                    <p>Break big goals into small wins</p>
+                    <h2>Daily Suggestions</h2>
+                    <p>Small actions to keep your fitness goal moving</p>
                   </div>
                 </div>
 
-                {milestones.length > 0 && (
-                  <div className="mini-progress">
-                    <div className="mini-progress-track">
-                      <div
-                        className="mini-progress-fill"
-                        style={{ width: `${milestoneProgress}%` }}
-                      />
-                    </div>
-                    <span>
-                      {milestonesDone} of {milestones.length} done
-                    </span>
-                  </div>
-                )}
-
-                {milestones.length === 0 && !showMilestoneForm && (
-                  <div className="feature-empty">
-                    <p>No milestones yet.</p>
-                  </div>
-                )}
-
-                {milestones.length > 0 && (
-                  <div className="milestone-list">
-                    {milestones.map((m) => (
-                      <div
-                        className={`milestone-item ${
-                          m.done ? "milestone-done" : ""
-                        }`}
-                        key={m.id}
-                      >
-                        <button
-                          className={`milestone-check ${
-                            m.done ? "checked" : ""
-                          }`}
-                          onClick={() => toggleMilestone(m.id)}
-                        >
-                          {m.done && <Check size={14} />}
-                        </button>
-
-                        <span className="milestone-text">{m.text}</span>
-
-                        <button
-                          className="exercise-delete"
-                          onClick={() => deleteMilestone(m.id)}
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {showMilestoneForm ? (
-                  <div className="inline-form">
-
-                    <input
-                      type="text"
-                      className="inline-form-input"
-                      placeholder="e.g. Run 5km without stopping"
-                      value={milestoneText}
-                      onChange={(e) => setMilestoneText(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") addMilestone();
-                      }}
-                      autoFocus
-                    />
-
-                    <div className="inline-form-actions">
-                      <button
-                        className="inline-form-cancel"
-                        onClick={cancelMilestoneForm}
-                      >
-                        <X size={16} />
-                        Cancel
-                      </button>
-
-                      <button className="inline-form-save" onClick={addMilestone}>
-                        <Check size={16} />
-                        Save
-                      </button>
-                    </div>
-
-                  </div>
-                ) : (
+                <div className="suggestion-list goal-suggestion-list">
                   <button
-                    className="feature-add-btn"
-                    onClick={() => setShowMilestoneForm(true)}
+                    type="button"
+                    className="suggestion-item"
+                    onClick={() => addSuggestionTask("Walk for 20 minutes")}
                   >
-                    <Plus size={18} />
-                    Add Milestone
+                    <span>
+                      <strong>20-minute walk</strong>
+                      <small>Light cardio and movement</small>
+                    </span>
+                    <Plus size={17} />
                   </button>
-                )}
 
-              </div>
+                  <button
+                    type="button"
+                    className="suggestion-item"
+                    onClick={() => addSuggestionTask("Do 10 minutes of stretching")}
+                  >
+                    <span>
+                      <strong>10-minute stretch</strong>
+                      <small>Improve mobility and recovery</small>
+                    </span>
+                    <Plus size={17} />
+                  </button>
 
-              {/* PROGRESS NOTES */}
-              <div className="feature-card">
-
-                <div className="feature-card-header">
-                  <div className="feature-icon blue">
-                    <StickyNote size={24} />
-                  </div>
-                  <div>
-                    <h2>Progress Notes</h2>
-                    <p>Jot down thoughts on your journey</p>
-                  </div>
-                </div>
-
-                {notes.length === 0 && (
-                  <div className="feature-empty">
-                    <p>No notes yet.</p>
-                  </div>
-                )}
-
-                {notes.length > 0 && (
-                  <div className="notes-list">
-                    {notes.map((note) => (
-                      <div className="note-item" key={note.id}>
-                        <div className="note-item-top">
-                          <span className="note-text">{note.text}</span>
-
-                          <button
-                            className="exercise-delete"
-                            onClick={() => deleteNote(note.id)}
-                          >
-                            <Trash2 size={15} />
-                          </button>
-                        </div>
-
-                        <span className="note-time">
-                          {formatNoteTime(note.id)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="inline-form">
-                  <input
-                    type="text"
-                    className="inline-form-input"
-                    placeholder="Write a quick note..."
-                    value={newNote}
-                    onChange={(e) => setNewNote(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") addNote();
-                    }}
-                  />
-
-                  <button className="feature-add-btn" onClick={addNote}>
-                    <Plus size={18} />
-                    Add Note
+                  <button
+                    type="button"
+                    className="suggestion-item"
+                    onClick={() => addSuggestionTask("Drink enough water today")}
+                  >
+                    <span>
+                      <strong>Stay hydrated</strong>
+                      <small>Keep water nearby throughout the day</small>
+                    </span>
+                    <Plus size={17} />
                   </button>
                 </div>
 
+                <p className="suggestion-footer">Tap + to add a suggestion to My Tasks.</p>
               </div>
 
-            </div>
 
           </section>
         )}

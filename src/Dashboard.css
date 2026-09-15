@@ -1991,3 +1991,139 @@
 .color-picker-option:disabled:hover {
   transform: none;
 }
+.suggestion-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.suggestion-category {
+  border: 1px solid #eadfd5;
+  background: transparent;
+  color: #6b625a;
+  border-radius: 9px;
+  padding: 8px 11px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.suggestion-category:hover,
+.suggestion-category.active {
+  background: #fff1e6;
+  border-color: #f97316;
+  color: #f97316;
+}
+
+.suggestion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.suggestion-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid #eee5dd;
+  background: #fffaf5;
+  color: inherit;
+  border-radius: 10px;
+  padding: 11px 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.suggestion-item:hover,
+.suggestion-item.selected {
+  border-color: #f97316;
+  background: #fff4eb;
+}
+
+.suggestion-item span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.suggestion-item strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.suggestion-item small {
+  color: #8a8178;
+  font-size: 11px;
+}
+
+.suggestion-item > svg {
+  flex: 0 0 auto;
+  color: #f97316;
+}
+
+.selected-exercise {
+  margin: 12px 0 10px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #fff4eb;
+  border: 1px solid #ffd8bf;
+  color: #6b625a;
+  font-size: 12px;
+}
+
+.selected-exercise strong {
+  color: #f97316;
+}
+
+.goal-suggestion-list {
+  margin-top: 2px;
+}
+
+.suggestion-footer {
+  margin-top: 12px;
+  color: #8a8178;
+  font-size: 11px;
+}
+
+.dashboard-dark .suggestion-category {
+  background: #202020;
+  border-color: #343434;
+  color: #bdbdbd;
+}
+
+.dashboard-dark .suggestion-category:hover,
+.dashboard-dark .suggestion-category.active {
+  background: #2a211b;
+  border-color: #f97316;
+  color: #f97316;
+}
+
+.dashboard-dark .suggestion-item {
+  background: #202020;
+  border-color: #343434;
+  color: #eee;
+}
+
+.dashboard-dark .suggestion-item:hover,
+.dashboard-dark .suggestion-item.selected {
+  background: #2a211b;
+  border-color: #f97316;
+}
+
+.dashboard-dark .suggestion-item small,
+.dashboard-dark .suggestion-footer {
+  color: #9d9d9d;
+}
+
+.dashboard-dark .selected-exercise {
+  background: #2a211b;
+  border-color: #5b3823;
+  color: #bdbdbd;
+}
