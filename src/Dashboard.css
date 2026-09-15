@@ -2127,3 +2127,107 @@
   border-color: #5b3823;
   color: #bdbdbd;
 }
+/* Exercise row: completion checkbox + labeled sets/reps/time */
+.exercise-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.exercise-check {
+  width: 19px;
+  height: 19px;
+  min-width: 19px;
+  border: 1.5px solid #cfc5bb;
+  border-radius: 5px;
+  background: transparent;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.exercise-check:hover {
+  border-color: #f97316;
+}
+
+.exercise-check.checked {
+  background: #f97316;
+  border-color: #f97316;
+}
+
+.exercise-completed .exercise-name {
+  color: #aaa19a;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.exercise-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.exercise-metrics {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.exercise-metric {
+  min-width: 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.exercise-metric strong {
+  color: #f97316;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.exercise-metric small {
+  margin-top: 3px;
+  color: #9b9189;
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: lowercase;
+  letter-spacing: 0.2px;
+}
+
+.exercise-multiply {
+  color: #b2a9a1;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: -1px;
+}
+
+.dashboard-dark .exercise-check {
+  border-color: #555;
+  background: transparent;
+}
+
+.dashboard-dark .exercise-check:hover {
+  border-color: #f97316;
+}
+
+.dashboard-dark .exercise-check.checked {
+  background: #f97316;
+  border-color: #f97316;
+}
+
+.dashboard-dark .exercise-completed .exercise-name {
+  color: #777;
+}
+
+.dashboard-dark .exercise-metric small,
+.dashboard-dark .exercise-multiply {
+  color: #8d8d8d;
+}

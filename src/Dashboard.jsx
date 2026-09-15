@@ -252,6 +252,7 @@ function Dashboard({
         name: selectedExercise.name,
         sets: exerciseSets.trim() || selectedExercise.sets,
         reps: exerciseReps.trim() || selectedExercise.reps,
+        completed: false,
       },
     ]);
 
@@ -270,8 +271,25 @@ function Dashboard({
     setShowExerciseForm(false);
   };
 
+  const toggleExercise = (id) => {
+    setExercises((current) =>
+      current.map((exercise) =>
+        exercise.id === id
+          ? { ...exercise, completed: !exercise.completed }
+          : exercise
+      )
+    );
+  };
+
   const deleteExercise = (id) => {
     setExercises((current) => current.filter((e) => e.id !== id));
+  };
+
+  const getExerciseMetricLabel = (value) => {
+    const text = String(value).toLowerCase().trim();
+    return /(s|sec|secs|min|mins|minute|minutes|hour|hours)$/.test(text)
+      ? "time"
+      : "reps";
   };
 
   const addSuggestionTask = (title) => {
@@ -736,17 +754,49 @@ function Dashboard({
                 {exercises.length > 0 && (
                   <div className="exercise-list">
                     {exercises.map((exercise) => (
-                      <div className="exercise-item" key={exercise.id}>
+                      <div
+                        className={`exercise-item ${
+                          exercise.completed ? "exercise-completed" : ""
+                        }`}
+                        key={exercise.id}
+                      >
+                        <button
+                          type="button"
+                          className={`exercise-check ${
+                            exercise.completed ? "checked" : ""
+                          }`}
+                          onClick={() => toggleExercise(exercise.id)}
+                          aria-label={
+                            exercise.completed
+                              ? `Mark ${exercise.name} as incomplete`
+                              : `Mark ${exercise.name} as complete`
+                          }
+                        >
+                          {exercise.completed && <Check size={13} />}
+                        </button>
+
                         <span className="exercise-name">{exercise.name}</span>
 
                         <div className="exercise-right">
-                          <span className="exercise-sets">
-                            {exercise.sets} × {exercise.reps}
-                          </span>
+                          <div className="exercise-metrics">
+                            <div className="exercise-metric">
+                              <strong>{exercise.sets}</strong>
+                              <small>sets</small>
+                            </div>
+
+                            <span className="exercise-multiply">×</span>
+
+                            <div className="exercise-metric">
+                              <strong>{exercise.reps}</strong>
+                              <small>{getExerciseMetricLabel(exercise.reps)}</small>
+                            </div>
+                          </div>
 
                           <button
+                            type="button"
                             className="exercise-delete"
                             onClick={() => deleteExercise(exercise.id)}
+                            aria-label={`Delete ${exercise.name}`}
                           >
                             <Trash2 size={15} />
                           </button>
