@@ -87,6 +87,7 @@ function Dashboard({
   const [timerSeconds, setTimerSeconds] = useState(25 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
   const [selectedFocusTaskId, setSelectedFocusTaskId] = useState("");
+  const [focusTaskDropdownOpen, setFocusTaskDropdownOpen] = useState(false);
   const [focusSessions, setFocusSessions] = useState([]);
   const [lastCompletedSession, setLastCompletedSession] = useState(null);
 
@@ -177,6 +178,19 @@ function Dashboard({
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // CLOSE FOCUS TASK DROPDOWN ON OUTSIDE CLICK
+  useEffect(() => {
+    const handleFocusTaskOutside = (e) => {
+      if (!e.target.closest(".focus-task-dropdown")) {
+        setFocusTaskDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleFocusTaskOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleFocusTaskOutside);
   }, []);
 
   // CLOSE COLOR PICKER ON OUTSIDE CLICK
@@ -855,28 +869,68 @@ function Dashboard({
               </div>
 
               {unfinishedTasks.length > 0 ? (
-                <select
-                  className="focus-task-select"
-                  value={selectedFocusTaskId}
-                  onChange={(e) => {
-                    setSelectedFocusTaskId(e.target.value ? Number(e.target.value) : "");
-                    setTimerRunning(false);
-                    setTimerSeconds(focusDuration * 60);
-                    setLastCompletedSession(null);
-                  }}
-                  disabled={timerRunning}
-                >
-                  <option value="">Select a task</option>
-                  {unfinishedTasks.map((task) => (
-                    <option key={task.id} value={task.id}>
-                      {task.title}
-                    </option>
-                  ))}
-                </select>
+                <div className="focus-task-dropdown">
+                  <button
+                    type="button"
+                    className={`focus-task-trigger ${
+                      focusTaskDropdownOpen ? "open" : ""
+                    }`}
+                    onClick={() =>
+                      setFocusTaskDropdownOpen((current) => !current)
+                    }
+                    disabled={timerRunning}
+                  >
+                    <span>
+                      {selectedFocusTask?.title || "Select a task"}
+                    </span>
+
+                    <ChevronDown
+                      size={18}
+                      className={focusTaskDropdownOpen ? "rotated" : ""}
+                    />
+                  </button>
+
+                  {focusTaskDropdownOpen && (
+                    <div className="focus-task-menu">
+                      <div className="focus-task-menu-title">
+                        Select a task
+                      </div>
+
+                      {unfinishedTasks.map((task) => (
+                        <button
+                          type="button"
+                          key={task.id}
+                          className={`focus-task-option ${
+                            selectedFocusTaskId === task.id ? "selected" : ""
+                          }`}
+                          onClick={() => {
+                            setSelectedFocusTaskId(task.id);
+                            setFocusTaskDropdownOpen(false);
+                            setTimerRunning(false);
+                            setTimerSeconds(focusDuration * 60);
+                            setLastCompletedSession(null);
+                          }}
+                        >
+                          <span className="focus-task-option-check">
+                            {selectedFocusTaskId === task.id && (
+                              <Check size={14} />
+                            )}
+                          </span>
+
+                          <span className="focus-task-option-name">
+                            {task.title}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ) : (
                 <div className="focus-no-tasks">
                   <p>No unfinished tasks yet.</p>
-                  <span>Add a task from your Overview page to start a focus session.</span>
+                  <span>
+                    Add a task from your Overview page to start a focus session.
+                  </span>
                 </div>
               )}
             </div>
