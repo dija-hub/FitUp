@@ -895,7 +895,7 @@ function Dashboard({
                 <p className="suggestion-footer">Tap + to add a suggestion to My Tasks.</p>
               </div>
 
-
+            </div>
           </section>
         )}
 
