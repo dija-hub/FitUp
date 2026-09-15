@@ -54,9 +54,41 @@ function Dashboard({
   const [taskCategoryOpen, setTaskCategoryOpen] = useState(false);
   const taskCategoryRef = useRef(null);
 
-  // FOCUS TIMER STATE (stopwatch: counts up from 0)
-  const [timerSeconds, setTimerSeconds] = useState(0);
+  // FOCUS TIMER STATE
+  const FOCUS_MODES = [
+    {
+      id: "deep",
+      name: "Deep Work",
+      description: "Long uninterrupted focus",
+      duration: 50,
+    },
+    {
+      id: "quick",
+      name: "Quick Focus",
+      description: "Short focused session",
+      duration: 15,
+    },
+    {
+      id: "study",
+      name: "Study",
+      description: "Focused study session",
+      duration: 25,
+    },
+    {
+      id: "workout",
+      name: "Workout",
+      description: "Focus while training",
+      duration: 45,
+    },
+  ];
+
+  const [focusMode, setFocusMode] = useState("study");
+  const [focusDuration, setFocusDuration] = useState(25);
+  const [timerSeconds, setTimerSeconds] = useState(25 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
+  const [selectedFocusTaskId, setSelectedFocusTaskId] = useState("");
+  const [focusSessions, setFocusSessions] = useState([]);
+  const [lastCompletedSession, setLastCompletedSession] = useState(null);
 
   const [editingTask, setEditingTask] = useState(null);
   const [editTitle, setEditTitle] = useState("");
@@ -162,16 +194,38 @@ function Dashboard({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // TIMER (stopwatch — counts up while running)
+  // FOCUS TIMER (counts down while running)
   useEffect(() => {
     if (!timerRunning) return;
 
     const interval = setInterval(() => {
-      setTimerSeconds((seconds) => seconds + 1);
+      setTimerSeconds((seconds) => {
+        if (seconds <= 1) {
+          setTimerRunning(false);
+
+          const task = tasks.find((item) => item.id === selectedFocusTaskId);
+          const session = {
+            id: Date.now(),
+            taskTitle: task?.title || "Focus Session",
+            duration: focusDuration,
+            date: getDateKey(),
+            completedAt: new Date().toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+            }),
+          };
+
+          setFocusSessions((current) => [session, ...current]);
+          setLastCompletedSession(session);
+          return 0;
+        }
+
+        return seconds - 1;
+      });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timerRunning]);
+  }, [timerRunning, tasks, selectedFocusTaskId, focusDuration]);
 
   // TASK FUNCTIONS
   const toggleTask = (id) => {
@@ -238,18 +292,51 @@ function Dashboard({
     return known.includes(name.toLowerCase()) ? name.toLowerCase() : "custom";
   };
 
-  // TIMER FUNCTIONS
+  // FOCUS TIMER FUNCTIONS
   const toggleTimer = () => {
+    if (!selectedFocusTaskId) return;
+
+    setLastCompletedSession(null);
     setTimerRunning((current) => !current);
   };
 
   const resetTimer = () => {
     setTimerRunning(false);
-    setTimerSeconds(0);
+    setTimerSeconds(focusDuration * 60);
+    setLastCompletedSession(null);
+  };
+
+  const selectFocusDuration = (minutes) => {
+    if (timerRunning) return;
+
+    setFocusDuration(minutes);
+    setTimerSeconds(minutes * 60);
+    setLastCompletedSession(null);
+  };
+
+  const selectFocusMode = (mode) => {
+    if (timerRunning) return;
+
+    setFocusMode(mode.id);
+    setFocusDuration(mode.duration);
+    setTimerSeconds(mode.duration * 60);
+    setLastCompletedSession(null);
   };
 
   const minutes = Math.floor(timerSeconds / 60).toString().padStart(2, "0");
   const seconds = (timerSeconds % 60).toString().padStart(2, "0");
+
+  const todayFocusSessions = focusSessions.filter(
+    (session) => session.date === getDateKey()
+  );
+
+  const todayFocusMinutes = todayFocusSessions.reduce(
+    (total, session) => total + session.duration,
+    0
+  );
+
+  const unfinishedTasks = tasks.filter((task) => !task.completed);
+  const selectedFocusTask = tasks.find((task) => task.id === selectedFocusTaskId);
 
   // WORKOUT TRACKER FUNCTIONS
   const EXERCISE_SUGGESTIONS = {
@@ -731,33 +818,179 @@ function Dashboard({
 
             <div className="dashboard-page-heading">
               <h1>Focus Timer</h1>
-              <p>Start the clock and stay with it as long as you like.</p>
+              <p>Choose a task, set your focus time, and get to work.</p>
             </div>
 
-            <div className="progress-big-card">
+            <div className="focus-task-card">
+              <div className="focus-task-top">
+                <div>
+                  <span className="focus-eyebrow">CHOOSE YOUR SESSION</span>
+                  <h2>How do you want to focus?</h2>
+                </div>
+              </div>
 
+              <div className="focus-modes-grid">
+                {FOCUS_MODES.map((mode) => (
+                  <button
+                    key={mode.id}
+                    type="button"
+                    className={`focus-mode-card ${focusMode === mode.id ? "active" : ""}`}
+                    onClick={() => selectFocusMode(mode)}
+                    disabled={timerRunning}
+                  >
+                    <span className="focus-mode-name">{mode.name}</span>
+                    <span className="focus-mode-description">{mode.description}</span>
+                    <span className="focus-mode-duration">{mode.duration} min</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="focus-task-divider" />
+
+              <div className="focus-task-top focus-task-select-heading">
+                <div>
+                  <span className="focus-eyebrow">WHAT ARE YOU WORKING ON?</span>
+                  <h2>Choose a task to focus on</h2>
+                </div>
+              </div>
+
+              {unfinishedTasks.length > 0 ? (
+                <select
+                  className="focus-task-select"
+                  value={selectedFocusTaskId}
+                  onChange={(e) => {
+                    setSelectedFocusTaskId(e.target.value ? Number(e.target.value) : "");
+                    setTimerRunning(false);
+                    setTimerSeconds(focusDuration * 60);
+                    setLastCompletedSession(null);
+                  }}
+                  disabled={timerRunning}
+                >
+                  <option value="">Select a task</option>
+                  {unfinishedTasks.map((task) => (
+                    <option key={task.id} value={task.id}>
+                      {task.title}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div className="focus-no-tasks">
+                  <p>No unfinished tasks yet.</p>
+                  <span>Add a task from your Overview page to start a focus session.</span>
+                </div>
+              )}
+            </div>
+
+            <div className="focus-main-card progress-big-card">
               <div className="timer-header">
                 <div>
                   <Clock size={20} />
-                  <strong>Stopwatch</strong>
+                  <strong>Focus Session</strong>
                 </div>
+
+                <span>{selectedFocusTask?.title || "Choose a task"}</span>
+              </div>
+
+              <div className="focus-selected-mode">
+                {FOCUS_MODES.find((mode) => mode.id === focusMode)?.name || "Study"}
+                <span>{focusDuration} min session</span>
               </div>
 
               <div className="timer-display">
                 {minutes}:{seconds}
               </div>
 
+              <p className="focus-helper-text">
+                {timerRunning
+                  ? "Stay focused. One task at a time."
+                  : selectedFocusTask
+                    ? `${focusDuration} minutes of focused work`
+                    : "Choose a task before starting your session."}
+              </p>
+
               <div className="timer-controls">
-                <button className="timer-start" onClick={toggleTimer}>
+                <button
+                  className="timer-start"
+                  onClick={toggleTimer}
+                  disabled={!selectedFocusTask}
+                >
                   <Play size={18} />
-                  {timerRunning ? "Pause" : "Start"}
+                  {timerRunning ? "Pause" : "Start Focus"}
                 </button>
 
                 <button className="timer-reset" onClick={resetTimer}>
                   <RotateCcw size={18} />
                 </button>
               </div>
+            </div>
 
+            {lastCompletedSession && (
+              <div className="focus-complete-card">
+                <div className="focus-complete-icon">
+                  <Check size={20} />
+                </div>
+                <div>
+                  <strong>Focus session completed</strong>
+                  <p>
+                    Task: {lastCompletedSession.taskTitle} · Time: {lastCompletedSession.duration} minutes
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="focus-bottom-grid">
+              <div className="focus-stat-card">
+                <div className="focus-card-heading">
+                  <div>
+                    <span className="focus-eyebrow">TODAY'S FOCUS</span>
+                    <h2>Focus stats</h2>
+                  </div>
+                  <Clock size={20} />
+                </div>
+
+                <div className="focus-stat-values">
+                  <div>
+                    <strong>{todayFocusSessions.length}</strong>
+                    <span>Sessions</span>
+                  </div>
+                  <div>
+                    <strong>{todayFocusMinutes} min</strong>
+                    <span>Focused</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="focus-stat-card">
+                <div className="focus-card-heading">
+                  <div>
+                    <span className="focus-eyebrow">RECENT SESSIONS</span>
+                    <h2>Your latest focus</h2>
+                  </div>
+                </div>
+
+                {focusSessions.length === 0 ? (
+                  <div className="focus-empty-sessions">
+                    <p>No completed sessions yet.</p>
+                  </div>
+                ) : (
+                  <div className="focus-session-list">
+                    {focusSessions.slice(0, 5).map((session) => (
+                      <div className="focus-session-item" key={session.id}>
+                        <span className="focus-session-check">
+                          <Check size={14} />
+                        </span>
+                        <div>
+                          <strong>{session.taskTitle}</strong>
+                          <small>{session.completedAt}</small>
+                        </div>
+                        <span className="focus-session-duration">
+                          {session.duration}m
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
           </section>
