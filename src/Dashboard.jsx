@@ -13,7 +13,6 @@ import {
   Tag,
   X,
   ChevronDown,
-  Target,
 } from "lucide-react";
 
 import { supabase } from "./utils/supabase";
@@ -34,6 +33,13 @@ const DEFAULT_CATEGORIES = [
   { name: "Health", color: "#ef4444" },
   { name: "Project", color: "#f59e0b" },
 ];
+
+const getDateKey = (date = new Date()) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 function Dashboard({
   darkMode,
@@ -84,6 +90,47 @@ function Dashboard({
 
   const progress =
     totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+  const startOfWeek = new Date();
+  const currentDay = startOfWeek.getDay();
+  const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+  startOfWeek.setDate(startOfWeek.getDate() + mondayOffset);
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const weekDays = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(startOfWeek);
+    date.setDate(startOfWeek.getDate() + index);
+
+    const dateKey = getDateKey(date);
+    const dayTasks = tasks.filter(
+      (task) => (task.date || getDateKey()) === dateKey
+    );
+    const isCompleted = dayTasks.length > 0 && dayTasks.every((task) => task.completed);
+
+    return {
+      date,
+      dateKey,
+      label: date.toLocaleDateString("en-US", { weekday: "short" }).slice(0, 1),
+      isToday: dateKey === getDateKey(),
+      hasTasks: dayTasks.length > 0,
+      isCompleted,
+    };
+  });
+
+  const completedDays = weekDays.filter((day) => day.isCompleted).length;
+
+  const todayIndex = weekDays.findIndex((day) => day.isToday);
+
+  const currentStreak = (() => {
+    let streak = 0;
+
+    for (let index = todayIndex; index >= 0; index -= 1) {
+      if (!weekDays[index].isCompleted) break;
+      streak += 1;
+    }
+
+    return streak;
+  })();
 
   // CLOSE TASK CATEGORY DROPDOWN ON OUTSIDE CLICK
   useEffect(() => {
@@ -166,7 +213,7 @@ function Dashboard({
 
     setTasks((currentTasks) => [
       ...currentTasks,
-      { id: Date.now(), title: newTask.trim(), category, completed: false },
+      { id: Date.now(), title: newTask.trim(), category, completed: false, date: getDateKey() },
     ]);
 
     setNewTask("");
@@ -252,7 +299,6 @@ function Dashboard({
         name: selectedExercise.name,
         sets: exerciseSets.trim() || selectedExercise.sets,
         reps: exerciseReps.trim() || selectedExercise.reps,
-        completed: false,
       },
     ]);
 
@@ -271,31 +317,14 @@ function Dashboard({
     setShowExerciseForm(false);
   };
 
-  const toggleExercise = (id) => {
-    setExercises((current) =>
-      current.map((exercise) =>
-        exercise.id === id
-          ? { ...exercise, completed: !exercise.completed }
-          : exercise
-      )
-    );
-  };
-
   const deleteExercise = (id) => {
     setExercises((current) => current.filter((e) => e.id !== id));
-  };
-
-  const getExerciseMetricLabel = (value) => {
-    const text = String(value).toLowerCase().trim();
-    return /(s|sec|secs|min|mins|minute|minutes|hour|hours)$/.test(text)
-      ? "time"
-      : "reps";
   };
 
   const addSuggestionTask = (title) => {
     setTasks((currentTasks) => [
       ...currentTasks,
-      { id: Date.now() + Math.random(), title, category: "Health", completed: false },
+      { id: Date.now() + Math.random(), title, category: "Health", completed: false, date: getDateKey() },
     ]);
   };
 
@@ -754,49 +783,17 @@ function Dashboard({
                 {exercises.length > 0 && (
                   <div className="exercise-list">
                     {exercises.map((exercise) => (
-                      <div
-                        className={`exercise-item ${
-                          exercise.completed ? "exercise-completed" : ""
-                        }`}
-                        key={exercise.id}
-                      >
-                        <button
-                          type="button"
-                          className={`exercise-check ${
-                            exercise.completed ? "checked" : ""
-                          }`}
-                          onClick={() => toggleExercise(exercise.id)}
-                          aria-label={
-                            exercise.completed
-                              ? `Mark ${exercise.name} as incomplete`
-                              : `Mark ${exercise.name} as complete`
-                          }
-                        >
-                          {exercise.completed && <Check size={13} />}
-                        </button>
-
+                      <div className="exercise-item" key={exercise.id}>
                         <span className="exercise-name">{exercise.name}</span>
 
                         <div className="exercise-right">
-                          <div className="exercise-metrics">
-                            <div className="exercise-metric">
-                              <strong>{exercise.sets}</strong>
-                              <small>sets</small>
-                            </div>
-
-                            <span className="exercise-multiply">×</span>
-
-                            <div className="exercise-metric">
-                              <strong>{exercise.reps}</strong>
-                              <small>{getExerciseMetricLabel(exercise.reps)}</small>
-                            </div>
-                          </div>
+                          <span className="exercise-sets">
+                            {exercise.sets} × {exercise.reps}
+                          </span>
 
                           <button
-                            type="button"
                             className="exercise-delete"
                             onClick={() => deleteExercise(exercise.id)}
-                            aria-label={`Delete ${exercise.name}`}
                           >
                             <Trash2 size={15} />
                           </button>
@@ -892,59 +889,55 @@ function Dashboard({
                 )}
               </div>
 
-              {/* DAILY SUGGESTIONS */}
-              <div className="feature-card">
-                <div className="feature-card-header">
-                  <div className="feature-icon purple">
-                    <Target size={24} />
-                  </div>
-                  <div>
-                    <h2>Daily Suggestions</h2>
-                    <p>Small actions to keep your fitness goal moving</p>
-                  </div>
+              {/* WEEKLY CONSISTENCY */}
+              <div className="feature-card weekly-consistency-card">
+                <div className="weekly-consistency-top">
+                  <span className="weekly-label">CONSISTENCY</span>
+                  <strong className="weekly-count">{completedDays} / 7</strong>
                 </div>
 
-                <div className="suggestion-list goal-suggestion-list">
-                  <button
-                    type="button"
-                    className="suggestion-item"
-                    onClick={() => addSuggestionTask("Walk for 20 minutes")}
-                  >
-                    <span>
-                      <strong>20-minute walk</strong>
-                      <small>Light cardio and movement</small>
-                    </span>
-                    <Plus size={17} />
-                  </button>
-
-                  <button
-                    type="button"
-                    className="suggestion-item"
-                    onClick={() => addSuggestionTask("Do 10 minutes of stretching")}
-                  >
-                    <span>
-                      <strong>10-minute stretch</strong>
-                      <small>Improve mobility and recovery</small>
-                    </span>
-                    <Plus size={17} />
-                  </button>
-
-                  <button
-                    type="button"
-                    className="suggestion-item"
-                    onClick={() => addSuggestionTask("Drink enough water today")}
-                  >
-                    <span>
-                      <strong>Stay hydrated</strong>
-                      <small>Keep water nearby throughout the day</small>
-                    </span>
-                    <Plus size={17} />
-                  </button>
+                <div className="weekly-heading">
+                  <h2>This week</h2>
+                  <p>Complete all your tasks for a day to mark it complete.</p>
                 </div>
 
-                <p className="suggestion-footer">Tap + to add a suggestion to My Tasks.</p>
+                <div className="weekly-days">
+                  {weekDays.map((day) => (
+                    <div className="weekly-day" key={day.dateKey}>
+                      <span className="weekly-day-label">{day.label}</span>
+
+                      <div
+                        className={`weekly-day-circle ${
+                          day.isCompleted
+                            ? "completed"
+                            : day.isToday
+                              ? "today"
+                              : ""
+                        }`}
+                        title={
+                          day.isCompleted
+                            ? "All tasks completed"
+                            : day.hasTasks
+                              ? "Tasks still remaining"
+                              : "No tasks for this day"
+                        }
+                      >
+                        {day.isCompleted ? <Check size={18} /> : day.isToday ? <span /> : null}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="weekly-status">
+                  {completedDays === 7 ? (
+                    <strong>✓ Week completed — amazing consistency!</strong>
+                  ) : currentStreak > 0 ? (
+                    <strong>{currentStreak} day streak — keep it going</strong>
+                  ) : (
+                    <strong>{completedDays} day completed — start today</strong>
+                  )}
+                </div>
               </div>
-
             </div>
           </section>
         )}
