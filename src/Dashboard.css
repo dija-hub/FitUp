@@ -5285,3 +5285,222 @@
     max-height: 220px;
   }
 }
+/* ===== SESSION COUNTER ===== */
+.session-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 12px;
+  background: #fffaf5;
+  border-radius: 12px;
+}
+
+.session-counter-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.session-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ff9b2f;
+}
+
+.session-counter-text {
+  font-size: 13px;
+  color: #77716b;
+}
+
+.session-counter-text strong {
+  color: #ef7415;
+  font-weight: 700;
+}
+
+.dashboard-dark .session-counter {
+  background: #292929;
+}
+
+.dashboard-dark .session-counter-text {
+  color: #999999;
+}
+
+.dashboard-dark .session-counter-text strong {
+  color: #ffad52;
+}
+
+/* ===== CUSTOM DURATION INPUT ===== */
+.duration-select {
+  flex-wrap: wrap;
+}
+
+.duration-custom {
+  width: 86px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #eadfd5;
+  border-radius: 12px;
+  outline: none;
+  background: #fffaf5;
+  color: #77716b;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  transition: 0.2s ease;
+}
+
+.duration-custom::placeholder {
+  color: #b0aaa3;
+  font-weight: 500;
+}
+
+.duration-custom:focus {
+  border-color: #ff9b2f;
+  color: #e87515;
+  box-shadow: 0 0 0 3px rgba(255, 154, 46, 0.1);
+}
+
+.duration-custom:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dashboard-dark .duration-custom {
+  background: #292929;
+  border-color: #3a3a3a;
+  color: #eeeeee;
+}
+
+/* ===== TIMER OPTIONS ===== */
+.timer-options {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid #eee8e2;
+}
+
+.timer-option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 2px;
+  flex-wrap: wrap;
+}
+
+.timer-option-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  color: #55504b;
+}
+
+.timer-option-label svg {
+  color: #e97716;
+  flex-shrink: 0;
+}
+
+.sound-options {
+  display: flex;
+  gap: 6px;
+}
+
+.sound-btn {
+  height: 34px;
+  padding: 0 13px;
+  border: 1px solid #eadfd5;
+  border-radius: 10px;
+  background: #fffaf5;
+  color: #77716b;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.sound-btn:hover {
+  border-color: #ff9b2f;
+  color: #e87515;
+}
+
+.sound-btn.active {
+  background: #ff9b2f;
+  border-color: #ff9b2f;
+  color: #171717;
+}
+
+.toggle-switch {
+  width: 48px;
+  height: 27px;
+  flex-shrink: 0;
+  padding: 3px;
+  border: none;
+  border-radius: 20px;
+  background: #e3dcd4;
+  cursor: pointer;
+  transition: background 0.25s ease;
+  display: flex;
+  align-items: center;
+}
+
+.toggle-switch.on {
+  background: #ff9b2f;
+}
+
+.toggle-knob {
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  transition: transform 0.25s ease;
+}
+
+.toggle-switch.on .toggle-knob {
+  transform: translateX(21px);
+}
+
+.dashboard-dark .timer-options {
+  border-color: #333333;
+}
+
+.dashboard-dark .timer-option-label {
+  color: #cccccc;
+}
+
+.dashboard-dark .sound-btn {
+  background: #292929;
+  border-color: #3a3a3a;
+  color: #aaaaaa;
+}
+
+.dashboard-dark .sound-btn.active {
+  background: #ff9b2f;
+  border-color: #ff9b2f;
+  color: #171717;
+}
+
+.dashboard-dark .toggle-switch {
+  background: #3a3a3a;
+}
+
+.dashboard-dark .toggle-switch.on {
+  background: #ff9b2f;
+}
+
+@media (max-width: 650px) {
+  .timer-option-row {
+    justify-content: flex-start;
+  }
+
+  .sound-options {
+    flex-wrap: wrap;
+  }
+}
