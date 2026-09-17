@@ -69,6 +69,45 @@ const DEFAULT_CATEGORIES = [
 
 const WEEK_DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
 
+// ===== EXERCISE SUGGESTION LIBRARY =====
+const EXERCISE_LIBRARY = {
+  Strength: [
+    { name: "Squats", type: "reps" },
+    { name: "Push Ups", type: "reps" },
+    { name: "Lunges", type: "reps" },
+    { name: "Deadlifts", type: "reps" },
+    { name: "Bench Press", type: "reps" },
+    { name: "Pull Ups", type: "reps" },
+    { name: "Shoulder Press", type: "reps" },
+  ],
+  Cardio: [
+    { name: "Running", type: "time" },
+    { name: "Jump Rope", type: "time" },
+    { name: "Cycling", type: "time" },
+    { name: "Burpees", type: "reps" },
+    { name: "Mountain Climbers", type: "reps" },
+    { name: "Jumping Jacks", type: "reps" },
+  ],
+  Core: [
+    { name: "Plank", type: "time" },
+    { name: "Sit Ups", type: "reps" },
+    { name: "Russian Twists", type: "reps" },
+    { name: "Leg Raises", type: "reps" },
+    { name: "Bicycle Crunches", type: "reps" },
+  ],
+  Flexibility: [
+    { name: "Hamstring Stretch", type: "time" },
+    { name: "Shoulder Stretch", type: "time" },
+    { name: "Yoga Flow", type: "time" },
+    { name: "Cat-Cow Stretch", type: "time" },
+    { name: "Hip Flexor Stretch", type: "time" },
+  ],
+};
+
+const SET_OPTIONS = [1, 2, 3, 4, 5];
+const REP_OPTIONS = [8, 10, 12, 15, 20];
+const TIME_OPTIONS = ["15s", "30s", "45s", "60s", "90s"];
+
 function getTodayIndex() {
   return (new Date().getDay() + 6) % 7;
 }
@@ -91,7 +130,7 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
   const [timerSeconds, setTimerSeconds] = useState(25 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
 
-  // NEW TIMER FEATURES
+  // TIMER FEATURES
   const [sessionsToday, setSessionsToday] = useState(0);
   const [sessionDate, setSessionDate] = useState(todayKey());
   const [autoStart, setAutoStart] = useState(true);
@@ -106,11 +145,13 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState("Study");
 
+  // WORKOUT TRACKER (suggestion-based)
   const [exercises, setExercises] = useState([]);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
-  const [exerciseName, setExerciseName] = useState("");
-  const [exerciseSets, setExerciseSets] = useState("");
-  const [exerciseReps, setExerciseReps] = useState("");
+  const [exerciseCategory, setExerciseCategory] = useState("Strength");
+  const [selectedExercise, setSelectedExercise] = useState(null); // { name, type }
+  const [selectedSets, setSelectedSets] = useState(3);
+  const [selectedMetric, setSelectedMetric] = useState(null); // number (reps) or string (time)
 
   const [milestones, setMilestones] = useState([]);
   const [showMilestoneForm, setShowMilestoneForm] = useState(false);
@@ -228,13 +269,11 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
 
       stopNoise();
 
-      // 2 seconds of looping noise
       const length = ctx.sampleRate * 2;
       const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
       const data = buffer.getChannelData(0);
 
       if (type === "rain" || type === "waves") {
-        // brown-ish noise: smoother, deeper
         let last = 0;
 
         for (let i = 0; i < length; i++) {
@@ -266,7 +305,6 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
         filter.type = "lowpass";
         filter.frequency.value = 700;
 
-        // slow swell in and out
         const lfo = ctx.createOscillator();
         lfo.frequency.value = 0.12;
 
@@ -302,7 +340,6 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
     return () => stopNoise();
   }, [timerRunning, soundType, startNoise, stopNoise]);
 
-  // stop audio entirely when leaving the focus page
   useEffect(() => {
     if (activePage !== "focus") stopNoise();
   }, [activePage, stopNoise]);
@@ -531,7 +568,6 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
 
   // ===== TIMER CONTROLS =====
   const toggleTimer = () => {
-    // resume audio context on a user gesture
     const ctx = getAudioCtx();
     if (ctx && ctx.state === "suspended") ctx.resume();
 
@@ -575,30 +611,49 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
     .toString()
     .padStart(2, "0");
 
+  // ===== WORKOUT TRACKER FUNCTIONS (suggestion-based) =====
+  const openExerciseForm = () => {
+    setShowExerciseForm(true);
+    setExerciseCategory("Strength");
+    setSelectedExercise(null);
+    setSelectedSets(3);
+    setSelectedMetric(null);
+  };
+
+  const pickExerciseCategory = (cat) => {
+    setExerciseCategory(cat);
+    setSelectedExercise(null);
+    setSelectedMetric(null);
+  };
+
+  const pickExercise = (ex) => {
+    setSelectedExercise(ex);
+    setSelectedSets(3);
+    setSelectedMetric(ex.type === "reps" ? 12 : "30s");
+  };
+
   const addExercise = () => {
-    if (!exerciseName.trim()) return;
+    if (!selectedExercise || selectedMetric === null) return;
 
     setExercises((current) => [
       ...current,
       {
         id: Date.now(),
-        name: exerciseName.trim(),
-        sets: exerciseSets.trim() || "3",
-        reps: exerciseReps.trim() || "12",
+        name: selectedExercise.name,
+        sets: selectedSets,
+        reps: selectedMetric,
       },
     ]);
 
-    setExerciseName("");
-    setExerciseSets("");
-    setExerciseReps("");
-    setShowExerciseForm(false);
+    cancelExerciseForm();
   };
 
   const cancelExerciseForm = () => {
-    setExerciseName("");
-    setExerciseSets("");
-    setExerciseReps("");
     setShowExerciseForm(false);
+    setExerciseCategory("Strength");
+    setSelectedExercise(null);
+    setSelectedSets(3);
+    setSelectedMetric(null);
   };
 
   const deleteExercise = (id) => {
@@ -1389,6 +1444,7 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
 
             <div className="goals-grid">
 
+              {/* ===== WORKOUT TRACKER (suggestion-based) ===== */}
               <div className="feature-card">
 
                 <div className="feature-card-header">
@@ -1399,7 +1455,7 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
 
                   <div>
                     <h2>Workout Tracker</h2>
-                    <p>Track exercises, sets and reps</p>
+                    <p>Pick an exercise, then choose sets and reps</p>
                   </div>
 
                 </div>
@@ -1453,40 +1509,114 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                 {showExerciseForm ? (
                   <div className="inline-form">
 
-                    <input
-                      type="text"
-                      className="inline-form-input"
-                      placeholder="Exercise name"
-                      value={exerciseName}
-                      onChange={(e) =>
-                        setExerciseName(e.target.value)
-                      }
-                      autoFocus
-                    />
-
-                    <div className="inline-form-row">
-
-                      <input
-                        type="text"
-                        className="inline-form-input"
-                        placeholder="Sets (e.g. 3)"
-                        value={exerciseSets}
-                        onChange={(e) =>
-                          setExerciseSets(e.target.value)
-                        }
-                      />
-
-                      <input
-                        type="text"
-                        className="inline-form-input"
-                        placeholder="Reps (e.g. 12 or 30s)"
-                        value={exerciseReps}
-                        onChange={(e) =>
-                          setExerciseReps(e.target.value)
-                        }
-                      />
-
+                    {/* CATEGORY TABS */}
+                    <div className="suggestion-categories">
+                      {Object.keys(EXERCISE_LIBRARY).map((cat) => (
+                        <button
+                          type="button"
+                          key={cat}
+                          className={`suggestion-category ${
+                            exerciseCategory === cat ? "active" : ""
+                          }`}
+                          onClick={() => pickExerciseCategory(cat)}
+                        >
+                          {cat}
+                        </button>
+                      ))}
                     </div>
+
+                    {/* EXERCISE SUGGESTIONS */}
+                    <div className="suggestion-list goal-suggestion-list">
+                      {EXERCISE_LIBRARY[exerciseCategory].map((ex) => (
+                        <button
+                          type="button"
+                          key={ex.name}
+                          className={`suggestion-item ${
+                            selectedExercise?.name === ex.name
+                              ? "selected"
+                              : ""
+                          }`}
+                          onClick={() => pickExercise(ex)}
+                        >
+                          <span>
+                            <strong>{ex.name}</strong>
+                            <small>
+                              {ex.type === "reps"
+                                ? "Sets × reps"
+                                : "Sets × time"}
+                            </small>
+                          </span>
+
+                          {selectedExercise?.name === ex.name && (
+                            <Check size={16} />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+
+                    {selectedExercise && (
+                      <>
+                        <div className="selected-exercise">
+                          <strong>{selectedExercise.name}</strong>{" "}
+                          selected — choose sets and{" "}
+                          {selectedExercise.type === "reps"
+                            ? "reps"
+                            : "duration"}{" "}
+                          below.
+                        </div>
+
+                        {/* SETS PICKER */}
+                        <div className="timer-option-row">
+                          <div className="timer-option-label">
+                            <span>Sets</span>
+                          </div>
+
+                          <div className="sound-options">
+                            {SET_OPTIONS.map((n) => (
+                              <button
+                                key={n}
+                                type="button"
+                                className={`sound-btn ${
+                                  selectedSets === n ? "active" : ""
+                                }`}
+                                onClick={() => setSelectedSets(n)}
+                              >
+                                {n}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* REPS / TIME PICKER */}
+                        <div className="timer-option-row">
+                          <div className="timer-option-label">
+                            <span>
+                              {selectedExercise.type === "reps"
+                                ? "Reps"
+                                : "Duration"}
+                            </span>
+                          </div>
+
+                          <div className="sound-options">
+                            {(selectedExercise.type === "reps"
+                              ? REP_OPTIONS
+                              : TIME_OPTIONS
+                            ).map((val) => (
+                              <button
+                                key={val}
+                                type="button"
+                                className={`sound-btn ${
+                                  selectedMetric === val ? "active" : ""
+                                }`}
+                                onClick={() => setSelectedMetric(val)}
+                              >
+                                {val}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
 
                     <div className="inline-form-actions">
 
@@ -1501,6 +1631,13 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                       <button
                         className="inline-form-save"
                         onClick={addExercise}
+                        disabled={!selectedExercise}
+                        style={{
+                          opacity: selectedExercise ? 1 : 0.5,
+                          cursor: selectedExercise
+                            ? "pointer"
+                            : "not-allowed",
+                        }}
                       >
                         <Check size={16} />
                         Save
@@ -1512,9 +1649,7 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                 ) : (
                   <button
                     className="feature-add-btn"
-                    onClick={() =>
-                      setShowExerciseForm(true)
-                    }
+                    onClick={openExerciseForm}
                   >
                     <Plus size={18} />
                     Add Exercise
@@ -1523,6 +1658,7 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
 
               </div>
 
+              {/* MILESTONES */}
               <div className="feature-card">
 
                 <div className="feature-card-header">
