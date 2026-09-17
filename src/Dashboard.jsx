@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Check,
   Plus,
@@ -13,51 +13,18 @@ import {
   Tag,
   X,
   ChevronDown,
-  ListChecks,
-  Flame,
-  Volume2,
-  VolumeX,
-  Bell,
-  BellOff,
 } from "lucide-react";
 
+import { supabase } from "./utils/supabase";
 import "./Dashboard.css";
 
-const FOCUS_DURATIONS = [15, 25, 45, 60];
-const BREAK_MINUTES = 5;
-
-const SOUND_OPTIONS = [
-  { id: "off", label: "Off" },
-  { id: "white", label: "White" },
-  { id: "rain", label: "Rain" },
-  { id: "waves", label: "Waves" },
-];
-
 const COLOR_OPTIONS = [
-  "#3b82f6",
-  "#ef4444",
-  "#f97316",
-  "#eab308",
-  "#22c55e",
-  "#14b8a6",
-  "#06b6d4",
-  "#6366f1",
-  "#8b5cf6",
-  "#a855f7",
-  "#ec4899",
-  "#f43f5e",
-  "#84cc16",
-  "#10b981",
-  "#0ea5e9",
-  "#64748b",
-  "#78716c",
-  "#d946ef",
-  "#f59e0b",
-  "#059669",
-  "#7c3aed",
-  "#db2777",
-  "#ca8a04",
-  "#475569",
+  "#3b82f6", "#ef4444", "#f97316", "#eab308",
+  "#22c55e", "#14b8a6", "#06b6d4", "#6366f1",
+  "#8b5cf6", "#a855f7", "#ec4899", "#f43f5e",
+  "#84cc16", "#10b981", "#0ea5e9", "#64748b",
+  "#78716c", "#d946ef", "#f59e0b", "#059669",
+  "#7c3aed", "#db2777", "#ca8a04", "#475569",
 ];
 
 const DEFAULT_CATEGORIES = [
@@ -67,106 +34,77 @@ const DEFAULT_CATEGORIES = [
   { name: "Project", color: "#f59e0b" },
 ];
 
-const WEEK_DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
-
-// ===== EXERCISE SUGGESTION LIBRARY =====
-const EXERCISE_LIBRARY = {
-  Strength: [
-    { name: "Squats", type: "reps" },
-    { name: "Push Ups", type: "reps" },
-    { name: "Lunges", type: "reps" },
-    { name: "Deadlifts", type: "reps" },
-    { name: "Bench Press", type: "reps" },
-    { name: "Pull Ups", type: "reps" },
-    { name: "Shoulder Press", type: "reps" },
-  ],
-  Cardio: [
-    { name: "Running", type: "time" },
-    { name: "Jump Rope", type: "time" },
-    { name: "Cycling", type: "time" },
-    { name: "Burpees", type: "reps" },
-    { name: "Mountain Climbers", type: "reps" },
-    { name: "Jumping Jacks", type: "reps" },
-  ],
-  Core: [
-    { name: "Plank", type: "time" },
-    { name: "Sit Ups", type: "reps" },
-    { name: "Russian Twists", type: "reps" },
-    { name: "Leg Raises", type: "reps" },
-    { name: "Bicycle Crunches", type: "reps" },
-  ],
-  Flexibility: [
-    { name: "Hamstring Stretch", type: "time" },
-    { name: "Shoulder Stretch", type: "time" },
-    { name: "Yoga Flow", type: "time" },
-    { name: "Cat-Cow Stretch", type: "time" },
-    { name: "Hip Flexor Stretch", type: "time" },
-  ],
+const getDateKey = (date = new Date()) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
 
-const SET_OPTIONS = [1, 2, 3, 4, 5];
-const REP_OPTIONS = [8, 10, 12, 15, 20];
-const TIME_OPTIONS = ["15s", "30s", "45s", "60s", "90s"];
-
-function getTodayIndex() {
-  return (new Date().getDay() + 6) % 7;
-}
-
-function todayKey() {
-  return new Date().toDateString();
-}
-
-function Dashboard({ darkMode, activePage, setActivePage }) {
+function Dashboard({
+  darkMode,
+  setShowDashboard,
+  setIsLoggedIn,
+  activePage,
+  setActivePage,
+}) {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [category, setCategory] = useState("Study");
   const [taskCategoryOpen, setTaskCategoryOpen] = useState(false);
   const taskCategoryRef = useRef(null);
 
-  // TIMER STATE
-  const [focusMinutes, setFocusMinutes] = useState(25);
-  const [customMinutes, setCustomMinutes] = useState("");
-  const [timerMode, setTimerMode] = useState("focus");
+  // FOCUS TIMER STATE
+  const FOCUS_MODES = [
+    {
+      id: "deep",
+      name: "Deep Work",
+      description: "Long uninterrupted focus",
+      duration: 50,
+    },
+    {
+      id: "quick",
+      name: "Quick Focus",
+      description: "Short focused session",
+      duration: 15,
+    },
+    {
+      id: "study",
+      name: "Study",
+      description: "Focused study session",
+      duration: 25,
+    },
+    {
+      id: "workout",
+      name: "Workout",
+      description: "Focus while training",
+      duration: 45,
+    },
+  ];
+
+  const [focusMode, setFocusMode] = useState("study");
+  const [focusDuration, setFocusDuration] = useState(25);
   const [timerSeconds, setTimerSeconds] = useState(25 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
-
-  // TIMER FEATURES
-  const [sessionsToday, setSessionsToday] = useState(0);
-  const [sessionDate, setSessionDate] = useState(todayKey());
-  const [autoStart, setAutoStart] = useState(true);
-  const [soundType, setSoundType] = useState("off");
-  const [notifyOn, setNotifyOn] = useState(false);
-
-  const audioCtxRef = useRef(null);
-  const noiseNodeRef = useRef(null);
-  const gainNodeRef = useRef(null);
+  const [selectedFocusTaskId, setSelectedFocusTaskId] = useState("");
+  const [focusTaskDropdownOpen, setFocusTaskDropdownOpen] = useState(false);
+  const [focusSessions, setFocusSessions] = useState([]);
+  const [lastCompletedSession, setLastCompletedSession] = useState(null);
 
   const [editingTask, setEditingTask] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState("Study");
 
-  // WORKOUT TRACKER (suggestion-based)
+  // WORKOUT TRACKER STATE
   const [exercises, setExercises] = useState([]);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
+  const [exerciseSets, setExerciseSets] = useState("3");
+  const [exerciseReps, setExerciseReps] = useState("12");
   const [exerciseCategory, setExerciseCategory] = useState("Strength");
-  const [selectedExercise, setSelectedExercise] = useState(null); // { name, type }
-  const [selectedSets, setSelectedSets] = useState(3);
-  const [selectedMetric, setSelectedMetric] = useState(null); // number (reps) or string (time)
+  const [selectedExercise, setSelectedExercise] = useState(null);
 
-  const [milestones, setMilestones] = useState([]);
-  const [showMilestoneForm, setShowMilestoneForm] = useState(false);
-  const [milestoneText, setMilestoneText] = useState("");
 
-  const todayIndex = getTodayIndex();
-
-  const [weekDays, setWeekDays] = useState(
-    WEEK_DAY_LABELS.map((label, i) => ({
-      id: i,
-      label,
-      done: false,
-    }))
-  );
-
+  // CUSTOM CATEGORIES STATE
   const [categories, setCategories] = useState([]);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [categoryColor, setCategoryColor] = useState("#94a3b8");
@@ -176,10 +114,7 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
 
   const allCategories = [
     ...DEFAULT_CATEGORIES,
-    ...categories.map((c) => ({
-      name: c.name,
-      color: c.color,
-    })),
+    ...categories.map((c) => ({ name: c.name, color: c.color })),
   ];
 
   const completedTasks = tasks.filter((task) => task.completed).length;
@@ -187,270 +122,50 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
   const pendingTasks = totalTasks - completedTasks;
 
   const progress =
-    totalTasks === 0
-      ? 0
-      : Math.round((completedTasks / totalTasks) * 100);
+    totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
-  const milestonesDone = milestones.filter((m) => m.done).length;
+  const startOfWeek = new Date();
+  const currentDay = startOfWeek.getDay();
+  const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+  startOfWeek.setDate(startOfWeek.getDate() + mondayOffset);
+  startOfWeek.setHours(0, 0, 0, 0);
 
-  const milestoneProgress =
-    milestones.length === 0
-      ? 0
-      : Math.round((milestonesDone / milestones.length) * 100);
+  const weekDays = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(startOfWeek);
+    date.setDate(startOfWeek.getDate() + index);
 
-  const workoutsDone = weekDays.filter((d) => d.done).length;
+    const dateKey = getDateKey(date);
+    const dayTasks = tasks.filter(
+      (task) => (task.date || getDateKey()) === dateKey
+    );
+    const isCompleted = dayTasks.length > 0 && dayTasks.every((task) => task.completed);
 
-  const workoutStreak = (() => {
+    return {
+      date,
+      dateKey,
+      label: date.toLocaleDateString("en-US", { weekday: "short" }).slice(0, 1),
+      isToday: dateKey === getDateKey(),
+      hasTasks: dayTasks.length > 0,
+      isCompleted,
+    };
+  });
+
+  const completedDays = weekDays.filter((day) => day.isCompleted).length;
+
+  const todayIndex = weekDays.findIndex((day) => day.isToday);
+
+  const currentStreak = (() => {
     let streak = 0;
 
-    for (let i = todayIndex; i >= 0; i--) {
-      if (weekDays[i].done) {
-        streak++;
-      } else {
-        break;
-      }
+    for (let index = todayIndex; index >= 0; index -= 1) {
+      if (!weekDays[index].isCompleted) break;
+      streak += 1;
     }
 
     return streak;
   })();
 
-  // ===== DAILY RESET FOR SESSION COUNTER =====
-  useEffect(() => {
-    const check = () => {
-      const key = todayKey();
-
-      if (key !== sessionDate) {
-        setSessionDate(key);
-        setSessionsToday(0);
-      }
-    };
-
-    check();
-
-    const id = setInterval(check, 60000);
-    return () => clearInterval(id);
-  }, [sessionDate]);
-
-  // ===== AMBIENT SOUND =====
-  const getAudioCtx = useCallback(() => {
-    if (!audioCtxRef.current) {
-      const Ctx = window.AudioContext || window.webkitAudioContext;
-      if (!Ctx) return null;
-      audioCtxRef.current = new Ctx();
-    }
-
-    return audioCtxRef.current;
-  }, []);
-
-  const stopNoise = useCallback(() => {
-    if (noiseNodeRef.current) {
-      try {
-        noiseNodeRef.current.stop();
-      } catch (e) {
-        /* already stopped */
-      }
-
-      noiseNodeRef.current.disconnect();
-      noiseNodeRef.current = null;
-    }
-
-    if (gainNodeRef.current) {
-      gainNodeRef.current.disconnect();
-      gainNodeRef.current = null;
-    }
-  }, []);
-
-  const startNoise = useCallback(
-    (type) => {
-      const ctx = getAudioCtx();
-      if (!ctx) return;
-
-      if (ctx.state === "suspended") ctx.resume();
-
-      stopNoise();
-
-      const length = ctx.sampleRate * 2;
-      const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-
-      if (type === "rain" || type === "waves") {
-        let last = 0;
-
-        for (let i = 0; i < length; i++) {
-          const white = Math.random() * 2 - 1;
-          last = (last + 0.02 * white) / 1.02;
-          data[i] = last * 3.5;
-        }
-      } else {
-        for (let i = 0; i < length; i++) {
-          data[i] = Math.random() * 2 - 1;
-        }
-      }
-
-      const source = ctx.createBufferSource();
-      source.buffer = buffer;
-      source.loop = true;
-
-      const gain = ctx.createGain();
-      gain.gain.value = 0.12;
-
-      if (type === "rain") {
-        const filter = ctx.createBiquadFilter();
-        filter.type = "lowpass";
-        filter.frequency.value = 1200;
-        source.connect(filter);
-        filter.connect(gain);
-      } else if (type === "waves") {
-        const filter = ctx.createBiquadFilter();
-        filter.type = "lowpass";
-        filter.frequency.value = 700;
-
-        const lfo = ctx.createOscillator();
-        lfo.frequency.value = 0.12;
-
-        const lfoGain = ctx.createGain();
-        lfoGain.gain.value = 0.07;
-
-        lfo.connect(lfoGain);
-        lfoGain.connect(gain.gain);
-        lfo.start();
-
-        source.connect(filter);
-        filter.connect(gain);
-      } else {
-        source.connect(gain);
-      }
-
-      gain.connect(ctx.destination);
-      source.start();
-
-      noiseNodeRef.current = source;
-      gainNodeRef.current = gain;
-    },
-    [getAudioCtx, stopNoise]
-  );
-
-  useEffect(() => {
-    if (timerRunning && soundType !== "off") {
-      startNoise(soundType);
-    } else {
-      stopNoise();
-    }
-
-    return () => stopNoise();
-  }, [timerRunning, soundType, startNoise, stopNoise]);
-
-  useEffect(() => {
-    if (activePage !== "focus") stopNoise();
-  }, [activePage, stopNoise]);
-
-  // ===== END-OF-SESSION CHIME =====
-  const playChime = useCallback(() => {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-
-    if (ctx.state === "suspended") ctx.resume();
-
-    const now = ctx.currentTime;
-
-    [880, 1320].forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = "sine";
-      osc.frequency.value = freq;
-
-      const start = now + i * 0.18;
-
-      gain.gain.setValueAtTime(0, start);
-      gain.gain.linearRampToValueAtTime(0.25, start + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.5);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(start);
-      osc.stop(start + 0.55);
-    });
-  }, [getAudioCtx]);
-
-  // ===== DESKTOP NOTIFICATIONS =====
-  const toggleNotify = async () => {
-    if (notifyOn) {
-      setNotifyOn(false);
-      return;
-    }
-
-    if (!("Notification" in window)) return;
-
-    if (Notification.permission === "granted") {
-      setNotifyOn(true);
-      return;
-    }
-
-    const result = await Notification.requestPermission();
-    setNotifyOn(result === "granted");
-  };
-
-  const sendNotification = useCallback(
-    (title, body) => {
-      if (!notifyOn) return;
-      if (!("Notification" in window)) return;
-      if (Notification.permission !== "granted") return;
-
-      new Notification(title, { body });
-    },
-    [notifyOn]
-  );
-
-  // ===== TIMER TICK =====
-  useEffect(() => {
-    if (!timerRunning) return;
-
-    const interval = setInterval(() => {
-      setTimerSeconds((s) => Math.max(0, s - 1));
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [timerRunning]);
-
-  // ===== SESSION END HANDLER =====
-  useEffect(() => {
-    if (timerSeconds !== 0 || !timerRunning) return;
-
-    playChime();
-
-    if (timerMode === "focus") {
-      setSessionsToday((c) => c + 1);
-
-      sendNotification(
-        "Focus session complete",
-        `Time for a ${BREAK_MINUTES} minute break.`
-      );
-
-      setTimerMode("break");
-      setTimerSeconds(BREAK_MINUTES * 60);
-      setTimerRunning(autoStart);
-    } else {
-      sendNotification(
-        "Break over",
-        `Ready for another ${focusMinutes} minute session?`
-      );
-
-      setTimerMode("focus");
-      setTimerSeconds(focusMinutes * 60);
-      setTimerRunning(autoStart);
-    }
-  }, [
-    timerSeconds,
-    timerRunning,
-    timerMode,
-    autoStart,
-    focusMinutes,
-    playChime,
-    sendNotification,
-  ]);
-
+  // CLOSE TASK CATEGORY DROPDOWN ON OUTSIDE CLICK
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -462,11 +177,23 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // CLOSE FOCUS TASK DROPDOWN ON OUTSIDE CLICK
+  useEffect(() => {
+    const handleFocusTaskOutside = (e) => {
+      if (!e.target.closest(".focus-task-dropdown")) {
+        setFocusTaskDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleFocusTaskOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleFocusTaskOutside);
+  }, []);
+
+  // CLOSE COLOR PICKER ON OUTSIDE CLICK
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -478,25 +205,53 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // FOCUS TIMER (counts down while running)
+  useEffect(() => {
+    if (!timerRunning) return;
+
+    const interval = setInterval(() => {
+      setTimerSeconds((seconds) => {
+        if (seconds <= 1) {
+          setTimerRunning(false);
+
+          const task = tasks.find((item) => item.id === selectedFocusTaskId);
+          const session = {
+            id: Date.now(),
+            taskTitle: task?.title || "Focus Session",
+            duration: focusDuration,
+            date: getDateKey(),
+            completedAt: new Date().toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+            }),
+          };
+
+          setFocusSessions((current) => [session, ...current]);
+          setLastCompletedSession(session);
+          return 0;
+        }
+
+        return seconds - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timerRunning, tasks, selectedFocusTaskId, focusDuration]);
+
+  // TASK FUNCTIONS
   const toggleTask = (id) => {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
-        task.id === id
-          ? { ...task, completed: !task.completed }
-          : task
+        task.id === id ? { ...task, completed: !task.completed } : task
       )
     );
   };
 
   const deleteTask = (id) => {
-    setTasks((currentTasks) =>
-      currentTasks.filter((task) => task.id !== id)
-    );
+    setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
   };
 
   const editTask = (task) => {
@@ -511,11 +266,7 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
     setTasks((currentTasks) =>
       currentTasks.map((item) =>
         item.id === editingTask.id
-          ? {
-              ...item,
-              title: editTitle.trim(),
-              category: editCategory,
-            }
+          ? { ...item, title: editTitle.trim(), category: editCategory }
           : item
       )
     );
@@ -530,21 +281,14 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
 
     setTasks((currentTasks) => [
       ...currentTasks,
-      {
-        id: Date.now(),
-        title: newTask.trim(),
-        category,
-        completed: false,
-      },
+      { id: Date.now(), title: newTask.trim(), category, completed: false, date: getDateKey() },
     ]);
 
     setNewTask("");
   };
 
   const clearCompleted = () => {
-    setTasks((currentTasks) =>
-      currentTasks.filter((task) => !task.completed)
-    );
+    setTasks((currentTasks) => currentTasks.filter((task) => !task.completed));
   };
 
   const selectTaskCategory = (name) => {
@@ -554,167 +298,161 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
 
   const getCategoryColor = (name) => {
     const found = allCategories.find((c) => c.name === name);
-
     return found ? found.color : "#94a3b8";
   };
 
   const getCategoryClass = (name) => {
     const known = ["study", "personal", "health", "project"];
-
-    return known.includes(name.toLowerCase())
-      ? name.toLowerCase()
-      : "custom";
+    return known.includes(name.toLowerCase()) ? name.toLowerCase() : "custom";
   };
 
-  // ===== TIMER CONTROLS =====
+  // FOCUS TIMER FUNCTIONS
   const toggleTimer = () => {
-    const ctx = getAudioCtx();
-    if (ctx && ctx.state === "suspended") ctx.resume();
+    if (!selectedFocusTaskId) return;
 
+    setLastCompletedSession(null);
     setTimerRunning((current) => !current);
   };
 
   const resetTimer = () => {
     setTimerRunning(false);
-    setTimerMode("focus");
-    setTimerSeconds(focusMinutes * 60);
+    setTimerSeconds(focusDuration * 60);
+    setLastCompletedSession(null);
   };
 
-  const selectFocusDuration = (mins) => {
+  const selectFocusDuration = (minutes) => {
     if (timerRunning) return;
 
-    setFocusMinutes(mins);
-    setCustomMinutes("");
-    setTimerMode("focus");
-    setTimerSeconds(mins * 60);
+    setFocusDuration(minutes);
+    setTimerSeconds(minutes * 60);
+    setLastCompletedSession(null);
   };
 
-  const applyCustomMinutes = () => {
+  const selectFocusMode = (mode) => {
     if (timerRunning) return;
 
-    const value = parseInt(customMinutes, 10);
-    if (Number.isNaN(value)) return;
-
-    const clamped = Math.min(180, Math.max(1, value));
-
-    setFocusMinutes(clamped);
-    setCustomMinutes(String(clamped));
-    setTimerMode("focus");
-    setTimerSeconds(clamped * 60);
+    setFocusMode(mode.id);
+    setFocusDuration(mode.duration);
+    setTimerSeconds(mode.duration * 60);
+    setLastCompletedSession(null);
   };
 
-  const minutes = Math.floor(timerSeconds / 60)
-    .toString()
-    .padStart(2, "0");
+  const minutes = Math.floor(timerSeconds / 60).toString().padStart(2, "0");
+  const seconds = (timerSeconds % 60).toString().padStart(2, "0");
 
-  const seconds = (timerSeconds % 60)
-    .toString()
-    .padStart(2, "0");
+  const todayFocusSessions = focusSessions.filter(
+    (session) => session.date === getDateKey()
+  );
 
-  // ===== WORKOUT TRACKER FUNCTIONS (suggestion-based) =====
-  const openExerciseForm = () => {
-    setShowExerciseForm(true);
-    setExerciseCategory("Strength");
-    setSelectedExercise(null);
-    setSelectedSets(3);
-    setSelectedMetric(null);
+  const todayFocusMinutes = todayFocusSessions.reduce(
+    (total, session) => total + session.duration,
+    0
+  );
+
+  const unfinishedTasks = tasks.filter((task) => !task.completed);
+
+  // FOCUS PAGE CALCULATED VALUES
+  const focusMinutesToday = todayFocusMinutes;
+  const focusStreak = currentStreak;
+  const incompleteTasks = unfinishedTasks.slice(0, 5);
+
+  const selectedFocusTask = tasks.find((task) => task.id === selectedFocusTaskId);
+
+  // WORKOUT TRACKER FUNCTIONS
+  const EXERCISE_SUGGESTIONS = {
+    Strength: [
+      { name: "Push Ups", sets: "3", reps: "10" },
+      { name: "Squats", sets: "3", reps: "12" },
+      { name: "Lunges", sets: "3", reps: "10 each" },
+      { name: "Bicep Curls", sets: "3", reps: "12" },
+      { name: "Shoulder Press", sets: "3", reps: "10" },
+    ],
+    Cardio: [
+      { name: "Jumping Jacks", sets: "3", reps: "30s" },
+      { name: "High Knees", sets: "3", reps: "30s" },
+      { name: "Burpees", sets: "3", reps: "10" },
+      { name: "Mountain Climbers", sets: "3", reps: "30s" },
+      { name: "Jogging", sets: "1", reps: "20 min" },
+    ],
+    Core: [
+      { name: "Plank", sets: "3", reps: "30s" },
+      { name: "Crunches", sets: "3", reps: "15" },
+      { name: "Leg Raises", sets: "3", reps: "12" },
+      { name: "Russian Twists", sets: "3", reps: "12 each" },
+      { name: "Bicycle Crunches", sets: "3", reps: "15 each" },
+    ],
+    Flexibility: [
+      { name: "Hamstring Stretch", sets: "2", reps: "30s" },
+      { name: "Quad Stretch", sets: "2", reps: "30s each" },
+      { name: "Shoulder Stretch", sets: "2", reps: "30s each" },
+      { name: "Hip Flexor Stretch", sets: "2", reps: "30s each" },
+      { name: "Full Body Stretch", sets: "1", reps: "10 min" },
+    ],
   };
 
-  const pickExerciseCategory = (cat) => {
-    setExerciseCategory(cat);
-    setSelectedExercise(null);
-    setSelectedMetric(null);
+  const selectSuggestedExercise = (suggestion) => {
+    setSelectedExercise(suggestion);
+    setExerciseSets(suggestion.sets);
+    setExerciseReps(suggestion.reps);
   };
 
-  const pickExercise = (ex) => {
-    setSelectedExercise(ex);
-    setSelectedSets(3);
-    setSelectedMetric(ex.type === "reps" ? 12 : "30s");
-  };
-
-  const addExercise = () => {
-    if (!selectedExercise || selectedMetric === null) return;
+  const addSelectedExercise = () => {
+    if (!selectedExercise) return;
 
     setExercises((current) => [
       ...current,
       {
-        id: Date.now(),
+        id: Date.now() + Math.random(),
         name: selectedExercise.name,
-        sets: selectedSets,
-        reps: selectedMetric,
+        sets: exerciseSets.trim() || selectedExercise.sets,
+        reps: exerciseReps.trim() || selectedExercise.reps,
+        completed: false,
       },
     ]);
 
-    cancelExerciseForm();
+    setSelectedExercise(null);
+    setExerciseSets("3");
+    setExerciseReps("12");
+    setExerciseCategory("Strength");
+    setShowExerciseForm(false);
   };
 
   const cancelExerciseForm = () => {
-    setShowExerciseForm(false);
-    setExerciseCategory("Strength");
     setSelectedExercise(null);
-    setSelectedSets(3);
-    setSelectedMetric(null);
+    setExerciseSets("3");
+    setExerciseReps("12");
+    setExerciseCategory("Strength");
+    setShowExerciseForm(false);
+  };
+
+  const toggleExercise = (id) => {
+    setExercises((current) =>
+      current.map((exercise) =>
+        exercise.id === id
+          ? { ...exercise, completed: !exercise.completed }
+          : exercise
+      )
+    );
   };
 
   const deleteExercise = (id) => {
-    setExercises((current) =>
-      current.filter((e) => e.id !== id)
-    );
+    setExercises((current) => current.filter((e) => e.id !== id));
   };
 
-  const addMilestone = () => {
-    if (!milestoneText.trim()) return;
-
-    setMilestones((current) => [
-      ...current,
-      {
-        id: Date.now(),
-        text: milestoneText.trim(),
-        done: false,
-      },
-    ]);
-
-    setMilestoneText("");
-    setShowMilestoneForm(false);
+  const getExerciseMetricLabel = (value) => {
+    const text = String(value).toLowerCase().trim();
+    return /(s|sec|secs|min|mins|minute|minutes|hour|hours)$/.test(text)
+      ? "time"
+      : "reps";
   };
 
-  const cancelMilestoneForm = () => {
-    setMilestoneText("");
-    setShowMilestoneForm(false);
-  };
-
-  const toggleMilestone = (id) => {
-    setMilestones((current) =>
-      current.map((m) =>
-        m.id === id ? { ...m, done: !m.done } : m
-      )
-    );
-  };
-
-  const deleteMilestone = (id) => {
-    setMilestones((current) =>
-      current.filter((m) => m.id !== id)
-    );
-  };
-
-  const toggleWorkoutDay = (id) => {
-    setWeekDays((current) =>
-      current.map((d) =>
-        d.id === id ? { ...d, done: !d.done } : d
-      )
-    );
-  };
-
+  // CUSTOM CATEGORIES FUNCTIONS
   const addCategory = () => {
     if (!categoryName.trim()) return;
 
     setCategories((current) => [
       ...current,
-      {
-        id: Date.now(),
-        color: categoryColor,
-        name: categoryName.trim(),
-      },
+      { id: Date.now(), color: categoryColor, name: categoryName.trim() },
     ]);
 
     setCategoryColor("#94a3b8");
@@ -731,9 +469,7 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
   };
 
   const deleteCategory = (id) => {
-    setCategories((current) =>
-      current.filter((c) => c.id !== id)
-    );
+    setCategories((current) => current.filter((c) => c.id !== id));
   };
 
   const selectColor = (color) => {
@@ -758,12 +494,9 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                 <div className="stat-icon orange">
                   <ListTodo size={25} />
                 </div>
-
                 <div>
                   <span className="stat-title">All Tasks</span>
-                  <strong className="stat-number orange-text">
-                    {totalTasks}
-                  </strong>
+                  <strong className="stat-number orange-text">{totalTasks}</strong>
                 </div>
               </div>
 
@@ -771,12 +504,9 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                 <div className="stat-icon green">
                   <Check size={25} />
                 </div>
-
                 <div>
                   <span className="stat-title">Done</span>
-                  <strong className="stat-number green-text">
-                    {completedTasks}
-                  </strong>
+                  <strong className="stat-number green-text">{completedTasks}</strong>
                 </div>
               </div>
 
@@ -784,12 +514,9 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                 <div className="stat-icon dark-icon">
                   <Clock size={25} />
                 </div>
-
                 <div>
                   <span className="stat-title">In Progress</span>
-                  <strong className="stat-number dark-text">
-                    {pendingTasks}
-                  </strong>
+                  <strong className="stat-number dark-text">{pendingTasks}</strong>
                 </div>
               </div>
 
@@ -797,12 +524,9 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                 <div className="stat-icon red-icon">
                   <CalendarDays size={25} />
                 </div>
-
                 <div>
                   <span className="stat-title">Pending</span>
-                  <strong className="stat-number red-text">
-                    {pendingTasks}
-                  </strong>
+                  <strong className="stat-number red-text">{pendingTasks}</strong>
                 </div>
               </div>
 
@@ -827,26 +551,17 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                       placeholder="What do you want to do?"
                     />
 
-                    <div
-                      className="custom-select"
-                      ref={taskCategoryRef}
-                    >
+                    <div className="custom-select" ref={taskCategoryRef}>
                       <button
                         type="button"
                         className="custom-select-trigger"
-                        onClick={() =>
-                          setTaskCategoryOpen((c) => !c)
-                        }
+                        onClick={() => setTaskCategoryOpen((c) => !c)}
                       >
                         <span className="custom-select-label">
                           <span
                             className="custom-select-dot"
-                            style={{
-                              backgroundColor:
-                                getCategoryColor(category),
-                            }}
+                            style={{ backgroundColor: getCategoryColor(category) }}
                           />
-
                           {category}
                         </span>
 
@@ -865,21 +580,14 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                               type="button"
                               key={cat.name}
                               className={`custom-select-option ${
-                                category === cat.name
-                                  ? "active"
-                                  : ""
+                                category === cat.name ? "active" : ""
                               }`}
-                              onClick={() =>
-                                selectTaskCategory(cat.name)
-                              }
+                              onClick={() => selectTaskCategory(cat.name)}
                             >
                               <span
                                 className="custom-select-dot"
-                                style={{
-                                  backgroundColor: cat.color,
-                                }}
+                                style={{ backgroundColor: cat.color }}
                               />
-
                               {cat.name}
                             </button>
                           ))}
@@ -887,10 +595,7 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                       )}
                     </div>
 
-                    <button
-                      className="add-button"
-                      onClick={addTask}
-                    >
+                    <button className="add-button" onClick={addTask}>
                       <Plus size={21} />
                       Add Task
                     </button>
@@ -915,24 +620,17 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                       tasks.map((task) => (
                         <div
                           className={`task-item ${
-                            task.completed
-                              ? "task-completed"
-                              : ""
+                            task.completed ? "task-completed" : ""
                           }`}
                           key={task.id}
                         >
-
                           <button
                             className={`task-check ${
                               task.completed ? "checked" : ""
                             }`}
-                            onClick={() =>
-                              toggleTask(task.id)
-                            }
+                            onClick={() => toggleTask(task.id)}
                           >
-                            {task.completed && (
-                              <Check size={16} />
-                            )}
+                            {task.completed && <Check size={16} />}
                           </button>
 
                           <div className="task-title">
@@ -947,36 +645,21 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                             <span
                               className="category-dot"
                               style={{
-                                backgroundColor:
-                                  getCategoryColor(
-                                    task.category
-                                  ),
+                                backgroundColor: getCategoryColor(task.category),
                               }}
                             />
-
                             {task.category}
                           </span>
 
                           <div className="task-actions">
-
-                            <button
-                              onClick={() =>
-                                editTask(task)
-                              }
-                            >
+                            <button onClick={() => editTask(task)}>
                               <Edit3 size={17} />
                             </button>
 
-                            <button
-                              onClick={() =>
-                                deleteTask(task.id)
-                              }
-                            >
+                            <button onClick={() => deleteTask(task.id)}>
                               <Trash2 size={17} />
                             </button>
-
                           </div>
-
                         </div>
                       ))
                     )}
@@ -984,7 +667,6 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                   </div>
 
                   <div className="tasks-footer">
-
                     <span>
                       {completedTasks} of {totalTasks} completed
                     </span>
@@ -995,7 +677,6 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                         <Trash2 size={15} />
                       </button>
                     )}
-
                   </div>
 
                 </section>
@@ -1005,16 +686,12 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
               <div className="right-column">
 
                 <section className="weekly-section">
-
                   <h2>Today's Progress</h2>
 
                   <div className="completion-area">
-
                     <div
                       className="progress-ring"
-                      style={{
-                        "--progress": `${progress * 3.6}deg`,
-                      }}
+                      style={{ "--progress": `${progress * 3.6}deg` }}
                     >
                       <div>
                         <strong>{progress}%</strong>
@@ -1025,18 +702,14 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                       <strong>
                         {completedTasks} of {totalTasks} tasks
                       </strong>
-
                       <span>completed</span>
                     </div>
-
                   </div>
-
                 </section>
 
                 <section className="categories-section">
 
                   <div className="categories-header">
-
                     <div className="feature-icon yellow small">
                       <Tag size={20} />
                     </div>
@@ -1045,81 +718,56 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                       <h2>Custom Categories</h2>
                       <p>Create your own categories</p>
                     </div>
-
                   </div>
 
-                  {categories.length === 0 &&
-                    !showCategoryForm && (
-                      <div className="feature-empty">
-                        <p>No categories yet.</p>
-                      </div>
-                    )}
+                  {categories.length === 0 && !showCategoryForm && (
+                    <div className="feature-empty">
+                      <p>No categories yet.</p>
+                    </div>
+                  )}
 
                   {categories.length > 0 && (
                     <div className="category-chips">
-
                       {categories.map((cat) => (
-                        <span
-                          className="category-chip"
-                          key={cat.id}
-                        >
-
+                        <span className="category-chip" key={cat.id}>
                           <span
                             className="category-chip-dot"
-                            style={{
-                              backgroundColor: cat.color,
-                            }}
+                            style={{ backgroundColor: cat.color }}
                           />
-
-                          <span
-                            style={{
-                              color: cat.color,
-                              fontWeight: 600,
-                            }}
-                          >
+                          <span style={{ color: cat.color, fontWeight: 600 }}>
                             {cat.name}
                           </span>
-
                           <button
                             className="category-chip-delete"
-                            onClick={() =>
-                              deleteCategory(cat.id)
-                            }
+                            onClick={() => deleteCategory(cat.id)}
                           >
                             <X size={13} />
                           </button>
-
                         </span>
                       ))}
-
                     </div>
                   )}
 
                   {showCategoryForm ? (
                     <div className="inline-form">
 
-                      <div
-                        className="color-picker-wrapper"
-                        ref={colorPickerRef}
-                      >
+                      {/* Both the trigger button and the dropdown live inside
+                          the same ref'd wrapper, so clicking a swatch counts
+                          as an "inside" click and doesn't get closed by the
+                          outside-click handler before onClick can fire. */}
+                      <div className="color-picker-wrapper" ref={colorPickerRef}>
 
                         <div className="inline-form-row">
 
                           <button
                             type="button"
                             className="color-picker-trigger"
-                            onClick={() =>
-                              setShowColorPicker((c) => !c)
-                            }
+                            onClick={() => setShowColorPicker((c) => !c)}
                           >
                             <span
                               className="color-picker-swatch"
-                              style={{
-                                backgroundColor:
-                                  categoryColor,
-                              }}
+                              style={{ backgroundColor: categoryColor }}
                             />
-
                             <ChevronDown size={16} />
                           </button>
 
@@ -1128,51 +776,30 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                             className="inline-form-input"
                             placeholder="Category name"
                             value={categoryName}
-                            onChange={(e) =>
-                              setCategoryName(e.target.value)
-                            }
+                            onChange={(e) => setCategoryName(e.target.value)}
                             autoFocus
                           />
-
                         </div>
 
                         {showColorPicker && (
                           <div className="color-picker-dropdown">
-
-                            {COLOR_OPTIONS.map((c) => {
-
-                              const colorAlreadyUsed =
-                                allCategories.some(
-                                  (cat) => cat.color === c
-                                ) && categoryColor !== c;
-
-                              return (
-                                <button
-                                  type="button"
-                                  key={c}
-                                  disabled={colorAlreadyUsed}
-                                  className={`color-picker-option ${
-                                    categoryColor === c
-                                      ? "selected"
-                                      : ""
-                                  }`}
-                                  style={{
-                                    backgroundColor: c,
-                                  }}
-                                  onClick={() =>
-                                    selectColor(c)
-                                  }
-                                />
-                              );
-                            })}
-
+                            {COLOR_OPTIONS.map((c) => (
+                              <button
+                                type="button"
+                                key={c}
+                                className={`color-picker-option ${
+                                  categoryColor === c ? "selected" : ""
+                                }`}
+                                style={{ backgroundColor: c }}
+                                onClick={() => selectColor(c)}
+                              />
+                            ))}
                           </div>
                         )}
 
                       </div>
 
                       <div className="inline-form-actions">
-
                         <button
                           className="inline-form-cancel"
                           onClick={cancelCategoryForm}
@@ -1181,23 +808,17 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                           Cancel
                         </button>
 
-                        <button
-                          className="inline-form-save"
-                          onClick={addCategory}
-                        >
+                        <button className="inline-form-save" onClick={addCategory}>
                           <Check size={16} />
                           Save
                         </button>
-
                       </div>
 
                     </div>
                   ) : (
                     <button
                       className="feature-add-btn"
-                      onClick={() =>
-                        setShowCategoryForm(true)
-                      }
+                      onClick={() => setShowCategoryForm(true)}
                     >
                       <Plus size={18} />
                       Create Category
@@ -1212,408 +833,344 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
           </>
         )}
 
-       {/* ================= FOCUS ================= */}
-{activePage === "focus" && (
-  <section className="dashboard-page focus-page">
+        {activePage === "focus" && (
+          <section className="dashboard-page">
 
-    <div className="dashboard-page-heading">
-      <span className="focus-label">FOCUS MODE</span>
-
-      <h1>Stay focused. Make progress.</h1>
-
-      <p>
-        {timerMode === "focus"
-          ? "Work on what matters, one session at a time."
-          : "Take a short break and recharge your mind."}
-      </p>
-    </div>
-
-    <div className="focus-layout">
-
-      {/* MAIN TIMER CARD */}
-      <div className="progress-big-card focus-main-card">
-
-        <div className="timer-header">
-          <div>
-            <Clock size={20} />
-
-            <strong>
-              {timerMode === "focus"
-                ? "Focus Session"
-                : "Break Time"}
-            </strong>
-          </div>
-
-          <span
-            className={
-              timerMode === "break"
-                ? "break-badge"
-                : ""
-            }
-          >
-            {timerMode === "focus"
-              ? `${focusMinutes} min`
-              : `${BREAK_MINUTES} min break`}
-          </span>
-        </div>
-
-        <div className="session-counter">
-          <span className="session-counter-dots">
-            {Array.from({
-              length: Math.min(sessionsToday, 8),
-            }).map((_, i) => (
-              <span
-                key={i}
-                className="session-dot"
-              />
-            ))}
-          </span>
-
-          <span className="session-counter-text">
-            <strong>{sessionsToday}</strong>{" "}
-            {sessionsToday === 1
-              ? "session"
-              : "sessions"}{" "}
-            completed today
-          </span>
-        </div>
-
-        {timerMode === "focus" && (
-          <div className="duration-select">
-
-            {FOCUS_DURATIONS.map((min) => (
-              <button
-                key={min}
-                className={`duration-btn ${
-                  focusMinutes === min &&
-                  customMinutes === ""
-                    ? "active"
-                    : ""
-                }`}
-                disabled={timerRunning}
-                onClick={() =>
-                  selectFocusDuration(min)
-                }
-              >
-                {min}m
-              </button>
-            ))}
-
-            <input
-              type="number"
-              min="1"
-              max="180"
-              className="duration-custom"
-              placeholder="Custom"
-              value={customMinutes}
-              disabled={timerRunning}
-              onChange={(e) =>
-                setCustomMinutes(e.target.value)
-              }
-              onBlur={applyCustomMinutes}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  applyCustomMinutes();
-                  e.target.blur();
-                }
-              }}
-            />
-
-          </div>
-        )}
-
-        <div
-          className={`timer-display ${
-            timerMode === "break"
-              ? "break-mode"
-              : ""
-          }`}
-        >
-          {minutes}:{seconds}
-        </div>
-
-        <div className="timer-controls">
-
-          <button
-            className={`timer-start ${
-              timerMode === "break"
-                ? "break-start"
-                : ""
-            }`}
-            onClick={toggleTimer}
-          >
-            <Play size={18} />
-
-            {timerRunning ? "Pause" : "Start Focus"}
-          </button>
-
-          <button
-            className="timer-reset"
-            onClick={resetTimer}
-          >
-            <RotateCcw size={18} />
-          </button>
-
-        </div>
-
-        <div className="timer-options">
-
-          <div className="timer-option-row">
-
-            <div className="timer-option-label">
-              {soundType === "off" ? (
-                <VolumeX size={17} />
-              ) : (
-                <Volume2 size={17} />
-              )}
-
-              <span>Ambient sound</span>
+            <div className="dashboard-page-heading">
+              <h1>Focus Timer</h1>
+              <p>Choose a task, set your focus time, and get to work.</p>
             </div>
 
-            <div className="sound-options">
-              {SOUND_OPTIONS.map((s) => (
-                <button
-                  key={s.id}
-                  className={`sound-btn ${
-                    soundType === s.id
-                      ? "active"
-                      : ""
-                  }`}
-                  onClick={() =>
-                    setSoundType(s.id)
-                  }
-                >
-                  {s.label}
-                </button>
-              ))}
-            </div>
-
-          </div>
-
-          <div className="timer-option-row">
-
-            <div className="timer-option-label">
-              <RotateCcw size={17} />
-              <span>Auto-start next session</span>
-            </div>
-
-            <button
-              className={`toggle-switch ${
-                autoStart ? "on" : ""
-              }`}
-              onClick={() =>
-                setAutoStart((v) => !v)
-              }
-              aria-label="Toggle auto-start"
-            >
-              <span className="toggle-knob" />
-            </button>
-
-          </div>
-
-          <div className="timer-option-row">
-
-            <div className="timer-option-label">
-              {notifyOn ? (
-                <Bell size={17} />
-              ) : (
-                <BellOff size={17} />
-              )}
-
-              <span>Notify when session ends</span>
-            </div>
-
-            <button
-              className={`toggle-switch ${
-                notifyOn ? "on" : ""
-              }`}
-              onClick={toggleNotify}
-              aria-label="Toggle notifications"
-            >
-              <span className="toggle-knob" />
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* RIGHT SIDE */}
-      <div className="focus-side">
-
-        <div className="focus-stat-card">
-          <span>Sessions</span>
-          <strong>{sessionsToday}</strong>
-          <small>Completed today</small>
-        </div>
-
-        <div className="focus-stat-card">
-          <span>Focus Time</span>
-          <strong>{focusMinutesToday}</strong>
-          <small>Minutes focused</small>
-        </div>
-
-        <div className="focus-stat-card">
-          <span>Streak</span>
-          <strong>{focusStreak}</strong>
-          <small>Days consistent</small>
-        </div>
-
-        <div className="today-focus-card">
-
-          <div className="today-focus-header">
-            <h2>Today's Focus</h2>
-            <ListChecks size={20} />
-          </div>
-
-          {incompleteTasks.length === 0 ? (
-            <p className="focus-empty">
-              No pending tasks. You're all caught up!
-            </p>
-          ) : (
-            <div className="today-focus-list">
-              {incompleteTasks.map((task) => (
-                <div
-                  className="today-focus-item"
-                  key={task.id}
-                >
-                  <span className="focus-task-dot" />
-
-                  <span>{task.title}</span>
+            <div className="focus-task-card">
+              <div className="focus-task-top">
+                <div>
+                  <span className="focus-eyebrow">CHOOSE YOUR SESSION</span>
+                  <h2>How do you want to focus?</h2>
                 </div>
-              ))}
+              </div>
+
+              <div className="focus-modes-grid">
+                {FOCUS_MODES.map((mode) => (
+                  <button
+                    key={mode.id}
+                    type="button"
+                    className={`focus-mode-card ${focusMode === mode.id ? "active" : ""}`}
+                    onClick={() => selectFocusMode(mode)}
+                    disabled={timerRunning}
+                  >
+                    <span className="focus-mode-name">{mode.name}</span>
+                    <span className="focus-mode-description">{mode.description}</span>
+                    <span className="focus-mode-duration">{mode.duration} min</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="focus-task-divider" />
+
+              <div className="focus-task-top focus-task-select-heading">
+                <div>
+                  <span className="focus-eyebrow">WHAT ARE YOU WORKING ON?</span>
+                  <h2>Choose a task to focus on</h2>
+                </div>
+              </div>
+
+              {unfinishedTasks.length > 0 ? (
+                <div className="focus-task-dropdown">
+                  <button
+                    type="button"
+                    className={`focus-task-trigger ${
+                      focusTaskDropdownOpen ? "open" : ""
+                    }`}
+                    onClick={() =>
+                      setFocusTaskDropdownOpen((current) => !current)
+                    }
+                    disabled={timerRunning}
+                  >
+                    <span>
+                      {selectedFocusTask?.title || "Select a task"}
+                    </span>
+
+                    <ChevronDown
+                      size={18}
+                      className={focusTaskDropdownOpen ? "rotated" : ""}
+                    />
+                  </button>
+
+                  {focusTaskDropdownOpen && (
+                    <div className="focus-task-menu">
+                      <div className="focus-task-menu-title">
+                        Select a task
+                      </div>
+
+                      {unfinishedTasks.map((task) => (
+                        <button
+                          type="button"
+                          key={task.id}
+                          className={`focus-task-option ${
+                            selectedFocusTaskId === task.id ? "selected" : ""
+                          }`}
+                          onClick={() => {
+                            setSelectedFocusTaskId(task.id);
+                            setFocusTaskDropdownOpen(false);
+                            setTimerRunning(false);
+                            setTimerSeconds(focusDuration * 60);
+                            setLastCompletedSession(null);
+                          }}
+                        >
+                          <span className="focus-task-option-check">
+                            {selectedFocusTaskId === task.id && (
+                              <Check size={14} />
+                            )}
+                          </span>
+
+                          <span className="focus-task-option-name">
+                            {task.title}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="focus-no-tasks">
+                  <p>No unfinished tasks yet.</p>
+                  <span>
+                    Add a task from your Overview page to start a focus session.
+                  </span>
+                </div>
+              )}
             </div>
-          )}
 
-        </div>
+            <div className="focus-main-card progress-big-card">
+              <div className="timer-header">
+                <div>
+                  <Clock size={20} />
+                  <strong>Focus Session</strong>
+                </div>
 
-      </div>
+                <span>{selectedFocusTask?.title || "Choose a task"}</span>
+              </div>
 
-    </div>
+              <div className="focus-selected-mode">
+                {FOCUS_MODES.find((mode) => mode.id === focusMode)?.name || "Study"}
+                <span>{focusDuration} min session</span>
+              </div>
 
-  </section>
-)}
+              <div className="timer-display">
+                {minutes}:{seconds}
+              </div>
+
+              <p className="focus-helper-text">
+                {timerRunning
+                  ? "Stay focused. One task at a time."
+                  : selectedFocusTask
+                    ? `${focusDuration} minutes of focused work`
+                    : "Choose a task before starting your session."}
+              </p>
+
+              <div className="timer-controls">
+                <button
+                  className="timer-start"
+                  onClick={toggleTimer}
+                  disabled={!selectedFocusTask}
+                >
+                  <Play size={18} />
+                  {timerRunning ? "Pause" : "Start Focus"}
+                </button>
+
+                <button className="timer-reset" onClick={resetTimer}>
+                  <RotateCcw size={18} />
+                </button>
+              </div>
+            </div>
+
+            {lastCompletedSession && (
+              <div className="focus-complete-card">
+                <div className="focus-complete-icon">
+                  <Check size={20} />
+                </div>
+                <div>
+                  <strong>Focus session completed</strong>
+                  <p>
+                    Task: {lastCompletedSession.taskTitle} · Time: {lastCompletedSession.duration} minutes
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="focus-bottom-grid">
+              <div className="focus-stat-card">
+                <div className="focus-card-heading">
+                  <div>
+                    <span className="focus-eyebrow">TODAY'S FOCUS</span>
+                    <h2>Focus stats</h2>
+                  </div>
+                  <Clock size={20} />
+                </div>
+
+                <div className="focus-stat-values">
+                  <div>
+                    <strong>{todayFocusSessions.length}</strong>
+                    <span>Sessions</span>
+                  </div>
+                  <div>
+                    <strong>{todayFocusMinutes} min</strong>
+                    <span>Focused</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="focus-stat-card">
+                <div className="focus-card-heading">
+                  <div>
+                    <span className="focus-eyebrow">RECENT SESSIONS</span>
+                    <h2>Your latest focus</h2>
+                  </div>
+                </div>
+
+                {focusSessions.length === 0 ? (
+                  <div className="focus-empty-sessions">
+                    <p>No completed sessions yet.</p>
+                  </div>
+                ) : (
+                  <div className="focus-session-list">
+                    {focusSessions.slice(0, 5).map((session) => (
+                      <div className="focus-session-item" key={session.id}>
+                        <span className="focus-session-check">
+                          <Check size={14} />
+                        </span>
+                        <div>
+                          <strong>{session.taskTitle}</strong>
+                          <small>{session.completedAt}</small>
+                        </div>
+                        <span className="focus-session-duration">
+                          {session.duration}m
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+          </section>
+        )}
 
         {activePage === "goals" && (
           <section className="dashboard-page">
 
             <div className="dashboard-page-heading">
               <h1>Goals</h1>
-              <p>
-                Track workouts, hit milestones, and stay
-                consistent.
-              </p>
+              <p>Build your workout routine with simple guided suggestions.</p>
             </div>
 
             <div className="goals-grid">
 
-              {/* ===== WORKOUT TRACKER (suggestion-based) ===== */}
+              {/* WORKOUT TRACKER */}
               <div className="feature-card">
-
                 <div className="feature-card-header">
-
                   <div className="feature-icon orange">
                     <Dumbbell size={24} />
                   </div>
-
                   <div>
                     <h2>Workout Tracker</h2>
-                    <p>Pick an exercise, then choose sets and reps</p>
+                    <p>Choose an exercise and build your routine</p>
                   </div>
-
                 </div>
 
-                {exercises.length === 0 &&
-                  !showExerciseForm && (
-                    <div className="feature-empty">
-                      <p>No exercises yet.</p>
-                    </div>
-                  )}
+                {exercises.length === 0 && !showExerciseForm && (
+                  <div className="feature-empty">
+                    <p>No exercises yet.</p>
+                  </div>
+                )}
 
                 {exercises.length > 0 && (
                   <div className="exercise-list">
-
                     {exercises.map((exercise) => (
                       <div
-                        className="exercise-item"
+                        className={`exercise-item ${
+                          exercise.completed ? "exercise-completed" : ""
+                        }`}
                         key={exercise.id}
                       >
+                        <button
+                          type="button"
+                          className={`exercise-check ${
+                            exercise.completed ? "checked" : ""
+                          }`}
+                          onClick={() => toggleExercise(exercise.id)}
+                          aria-label={
+                            exercise.completed
+                              ? `Mark ${exercise.name} as incomplete`
+                              : `Mark ${exercise.name} as complete`
+                          }
+                        >
+                          {exercise.completed && <Check size={13} />}
+                        </button>
 
-                        <span className="exercise-name">
-                          {exercise.name}
-                        </span>
+                        <span className="exercise-name">{exercise.name}</span>
 
                         <div className="exercise-right">
+                          <div className="exercise-metrics">
+                            <div className="exercise-metric">
+                              <strong>{exercise.sets}</strong>
+                              <small>sets</small>
+                            </div>
 
-                          <span className="exercise-sets">
-                            {exercise.sets} ×{" "}
-                            {exercise.reps}
-                          </span>
+                            <span className="exercise-multiply">×</span>
+
+                            <div className="exercise-metric">
+                              <strong>{exercise.reps}</strong>
+                              <small>{getExerciseMetricLabel(exercise.reps)}</small>
+                            </div>
+                          </div>
 
                           <button
+                            type="button"
                             className="exercise-delete"
-                            onClick={() =>
-                              deleteExercise(
-                                exercise.id
-                              )
-                            }
+                            onClick={() => deleteExercise(exercise.id)}
+                            aria-label={`Delete ${exercise.name}`}
                           >
                             <Trash2 size={15} />
                           </button>
-
                         </div>
-
                       </div>
                     ))}
-
                   </div>
                 )}
 
                 {showExerciseForm ? (
                   <div className="inline-form">
-
-                    {/* CATEGORY TABS */}
                     <div className="suggestion-categories">
-                      {Object.keys(EXERCISE_LIBRARY).map((cat) => (
+                      {Object.keys(EXERCISE_SUGGESTIONS).map((type) => (
                         <button
+                          key={type}
                           type="button"
-                          key={cat}
                           className={`suggestion-category ${
-                            exerciseCategory === cat ? "active" : ""
+                            exerciseCategory === type ? "active" : ""
                           }`}
-                          onClick={() => pickExerciseCategory(cat)}
+                          onClick={() => setExerciseCategory(type)}
                         >
-                          {cat}
+                          {type}
                         </button>
                       ))}
                     </div>
 
-                    {/* EXERCISE SUGGESTIONS */}
-                    <div className="suggestion-list goal-suggestion-list">
-                      {EXERCISE_LIBRARY[exerciseCategory].map((ex) => (
+                    <div className="suggestion-list">
+                      {EXERCISE_SUGGESTIONS[exerciseCategory].map((suggestion) => (
                         <button
                           type="button"
-                          key={ex.name}
+                          key={suggestion.name}
                           className={`suggestion-item ${
-                            selectedExercise?.name === ex.name
-                              ? "selected"
-                              : ""
+                            selectedExercise?.name === suggestion.name ? "selected" : ""
                           }`}
-                          onClick={() => pickExercise(ex)}
+                          onClick={() => selectSuggestedExercise(suggestion)}
                         >
                           <span>
-                            <strong>{ex.name}</strong>
-                            <small>
-                              {ex.type === "reps"
-                                ? "Sets × reps"
-                                : "Sets × time"}
-                            </small>
+                            <strong>{suggestion.name}</strong>
+                            <small>Suggested: {suggestion.sets} × {suggestion.reps}</small>
                           </span>
-
-                          {selectedExercise?.name === ex.name && (
-                            <Check size={16} />
-                          )}
+                          <Plus size={17} />
                         </button>
                       ))}
                     </div>
@@ -1621,402 +1178,152 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
                     {selectedExercise && (
                       <>
                         <div className="selected-exercise">
-                          <strong>{selectedExercise.name}</strong>{" "}
-                          selected — choose sets and{" "}
-                          {selectedExercise.type === "reps"
-                            ? "reps"
-                            : "duration"}{" "}
-                          below.
+                          <span>Selected: <strong>{selectedExercise.name}</strong></span>
                         </div>
 
-                        {/* SETS PICKER */}
-                        <div className="timer-option-row">
-                          <div className="timer-option-label">
-                            <span>Sets</span>
-                          </div>
-
-                          <div className="sound-options">
-                            {SET_OPTIONS.map((n) => (
-                              <button
-                                key={n}
-                                type="button"
-                                className={`sound-btn ${
-                                  selectedSets === n ? "active" : ""
-                                }`}
-                                onClick={() => setSelectedSets(n)}
-                              >
-                                {n}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* REPS / TIME PICKER */}
-                        <div className="timer-option-row">
-                          <div className="timer-option-label">
-                            <span>
-                              {selectedExercise.type === "reps"
-                                ? "Reps"
-                                : "Duration"}
-                            </span>
-                          </div>
-
-                          <div className="sound-options">
-                            {(selectedExercise.type === "reps"
-                              ? REP_OPTIONS
-                              : TIME_OPTIONS
-                            ).map((val) => (
-                              <button
-                                key={val}
-                                type="button"
-                                className={`sound-btn ${
-                                  selectedMetric === val ? "active" : ""
-                                }`}
-                                onClick={() => setSelectedMetric(val)}
-                              >
-                                {val}
-                              </button>
-                            ))}
-                          </div>
+                        <div className="inline-form-row">
+                          <input
+                            type="text"
+                            className="inline-form-input"
+                            placeholder="Sets"
+                            value={exerciseSets}
+                            onChange={(e) => setExerciseSets(e.target.value)}
+                          />
+                          <input
+                            type="text"
+                            className="inline-form-input"
+                            placeholder="Reps / time"
+                            value={exerciseReps}
+                            onChange={(e) => setExerciseReps(e.target.value)}
+                          />
                         </div>
                       </>
                     )}
 
                     <div className="inline-form-actions">
-
-                      <button
-                        className="inline-form-cancel"
-                        onClick={cancelExerciseForm}
-                      >
+                      <button className="inline-form-cancel" onClick={cancelExerciseForm}>
                         <X size={16} />
                         Cancel
                       </button>
 
-                      <button
-                        className="inline-form-save"
-                        onClick={addExercise}
-                        disabled={!selectedExercise}
-                        style={{
-                          opacity: selectedExercise ? 1 : 0.5,
-                          cursor: selectedExercise
-                            ? "pointer"
-                            : "not-allowed",
-                        }}
-                      >
-                        <Check size={16} />
-                        Save
-                      </button>
-
+                      {selectedExercise && (
+                        <button className="inline-form-save" onClick={addSelectedExercise}>
+                          <Check size={16} />
+                          Add Exercise
+                        </button>
+                      )}
                     </div>
-
                   </div>
                 ) : (
                   <button
                     className="feature-add-btn"
-                    onClick={openExerciseForm}
+                    onClick={() => setShowExerciseForm(true)}
                   >
                     <Plus size={18} />
-                    Add Exercise
+                    Choose Exercise
                   </button>
                 )}
-
               </div>
 
-              {/* MILESTONES */}
-              <div className="feature-card">
-
-                <div className="feature-card-header">
-
-                  <div className="feature-icon purple">
-                    <ListChecks size={24} />
-                  </div>
-
-                  <div>
-                    <h2>Milestones</h2>
-                    <p>Break big goals into small wins</p>
-                  </div>
-
+              {/* WEEKLY CONSISTENCY */}
+              <div className="feature-card weekly-consistency-card">
+                <div className="weekly-consistency-top">
+                  <span className="weekly-label">CONSISTENCY</span>
+                  <strong className="weekly-count">{completedDays} / 7</strong>
                 </div>
 
-                {milestones.length > 0 && (
-                  <div className="mini-progress">
-
-                    <div className="mini-progress-track">
-                      <div
-                        className="mini-progress-fill"
-                        style={{
-                          width: `${milestoneProgress}%`,
-                        }}
-                      />
-                    </div>
-
-                    <span>
-                      {milestonesDone} of{" "}
-                      {milestones.length} done
-                    </span>
-
-                  </div>
-                )}
-
-                {milestones.length === 0 &&
-                  !showMilestoneForm && (
-                    <div className="feature-empty">
-                      <p>No milestones yet.</p>
-                    </div>
-                  )}
-
-                {milestones.length > 0 && (
-                  <div className="milestone-list">
-
-                    {milestones.map((m) => (
-                      <div
-                        className={`milestone-item ${
-                          m.done
-                            ? "milestone-done"
-                            : ""
-                        }`}
-                        key={m.id}
-                      >
-
-                        <button
-                          className={`milestone-check ${
-                            m.done ? "checked" : ""
-                          }`}
-                          onClick={() =>
-                            toggleMilestone(m.id)
-                          }
-                        >
-                          {m.done && (
-                            <Check size={14} />
-                          )}
-                        </button>
-
-                        <span className="milestone-text">
-                          {m.text}
-                        </span>
-
-                        <button
-                          className="exercise-delete"
-                          onClick={() =>
-                            deleteMilestone(m.id)
-                          }
-                        >
-                          <Trash2 size={15} />
-                        </button>
-
-                      </div>
-                    ))}
-
-                  </div>
-                )}
-
-                {showMilestoneForm ? (
-                  <div className="inline-form">
-
-                    <input
-                      type="text"
-                      className="inline-form-input"
-                      placeholder="e.g. Run 5km without stopping"
-                      value={milestoneText}
-                      onChange={(e) =>
-                        setMilestoneText(e.target.value)
-                      }
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          addMilestone();
-                        }
-                      }}
-                      autoFocus
-                    />
-
-                    <div className="inline-form-actions">
-
-                      <button
-                        className="inline-form-cancel"
-                        onClick={cancelMilestoneForm}
-                      >
-                        <X size={16} />
-                        Cancel
-                      </button>
-
-                      <button
-                        className="inline-form-save"
-                        onClick={addMilestone}
-                      >
-                        <Check size={16} />
-                        Save
-                      </button>
-
-                    </div>
-
-                  </div>
-                ) : (
-                  <button
-                    className="feature-add-btn"
-                    onClick={() =>
-                      setShowMilestoneForm(true)
-                    }
-                  >
-                    <Plus size={18} />
-                    Add Milestone
-                  </button>
-                )}
-
-              </div>
-
-              <div className="consistency-card">
-
-                <div className="consistency-top">
-
-                  <span className="consistency-label">
-                    Consistency
-                  </span>
-
-                  <span className="consistency-ratio">
-                    {workoutsDone} / 7
-                  </span>
-
+                <div className="weekly-heading">
+                  <h2>This week</h2>
+                  <p>Complete all your tasks for a day to mark it complete.</p>
                 </div>
 
-                <h2 className="consistency-title">
-                  This week
-                </h2>
-
-                <div className="consistency-days">
-
+                <div className="weekly-days">
                   {weekDays.map((day) => (
-                    <div
-                      className="consistency-day"
-                      key={day.id}
-                    >
+                    <div className="weekly-day" key={day.dateKey}>
+                      <span className="weekly-day-label">{day.label}</span>
 
-                      <span className="consistency-day-label">
-                        {day.label}
-                      </span>
-
-                      <button
-                        type="button"
-                        className={`consistency-circle ${
-                          day.done ? "done" : ""
-                        } ${
-                          day.id === todayIndex
-                            ? "today"
-                            : ""
+                      <div
+                        className={`weekly-day-circle ${
+                          day.isCompleted
+                            ? "completed"
+                            : day.isToday
+                              ? "today"
+                              : ""
                         }`}
-                        onClick={() =>
-                          toggleWorkoutDay(day.id)
+                        title={
+                          day.isCompleted
+                            ? "All tasks completed"
+                            : day.hasTasks
+                              ? "Tasks still remaining"
+                              : "No tasks for this day"
                         }
                       >
-                        {day.done ? (
-                          <Check
-                            size={18}
-                            strokeWidth={3}
-                          />
-                        ) : day.id === todayIndex ? (
-                          <span className="consistency-dot" />
-                        ) : null}
-                      </button>
-
+                        {day.isCompleted ? <Check size={18} /> : day.isToday ? <span /> : null}
+                      </div>
                     </div>
                   ))}
-
                 </div>
 
-                <div className="consistency-footer">
-
-                  <Flame
-                    size={16}
-                    className="consistency-flame"
-                  />
-
-                  <span>
-                    <strong>
-                      {workoutStreak} day
-                    </strong>{" "}
-                    streak — keep it going
-                  </span>
-
+                <div className="weekly-status">
+                  {completedDays === 7 ? (
+                    <strong>✓ Week completed — amazing consistency!</strong>
+                  ) : currentStreak > 0 ? (
+                    <strong>{currentStreak} day streak — keep it going</strong>
+                  ) : (
+                    <strong>{completedDays} day completed — start today</strong>
+                  )}
                 </div>
-
               </div>
-
             </div>
-
           </section>
         )}
 
       </main>
 
       {editingTask && (
-        <div
-          className="edit-overlay"
-          onClick={() => setEditingTask(null)}
-        >
-          <div
-            className="edit-box"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="edit-overlay" onClick={() => setEditingTask(null)}>
+          <div className="edit-box" onClick={(e) => e.stopPropagation()}>
 
             <h2>Edit Task</h2>
 
             <input
               type="text"
               value={editTitle}
-              onChange={(e) =>
-                setEditTitle(e.target.value)
-              }
+              onChange={(e) => setEditTitle(e.target.value)}
               placeholder="Task name"
             />
 
             <p>Choose category</p>
 
             <div className="edit-categories">
-
               {allCategories.map((item) => (
                 <button
                   key={item.name}
-                  className={`edit-category ${getCategoryClass(
-                    item.name
-                  )} ${
-                    editCategory === item.name
-                      ? "selected"
-                      : ""
+                  className={`edit-category ${getCategoryClass(item.name)} ${
+                    editCategory === item.name ? "selected" : ""
                   }`}
-                  onClick={() =>
-                    setEditCategory(item.name)
-                  }
+                  onClick={() => setEditCategory(item.name)}
                 >
                   <span
                     className="edit-category-dot"
-                    style={{
-                      backgroundColor: item.color,
-                    }}
+                    style={{ backgroundColor: item.color }}
                   />
-
                   {item.name}
                 </button>
               ))}
-
             </div>
 
             <div className="edit-actions">
-
               <button
                 className="cancel-edit"
-                onClick={() =>
-                  setEditingTask(null)
-                }
+                onClick={() => setEditingTask(null)}
               >
                 Cancel
               </button>
 
-              <button
-                className="save-edit"
-                onClick={saveEdit}
-              >
+              <button className="save-edit" onClick={saveEdit}>
                 Save Changes
               </button>
-
             </div>
 
           </div>
