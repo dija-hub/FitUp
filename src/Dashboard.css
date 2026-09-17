@@ -998,7 +998,7 @@
   color: #f2f2f2;
 }
 
-/* ===== FOCUS PAGE / GENERIC DASHBOARD PAGE ===== */
+
 .dashboard-page {
   padding: 20px 0 60px;
 }
@@ -1122,7 +1122,7 @@
   color: #7edb8b;
 }
 
-/* ===== GOALS PAGE (feature cards) ===== */
+
 .goals-grid {
   display: flex;
   flex-direction: column;
@@ -1525,7 +1525,7 @@
   box-shadow: 0 0 0 2px #202020, 0 0 0 4px #ffffff;
 }
 
-/* ===== Category dots (used in select trigger/options, task pills, edit modal) ===== */
+
 .custom-select-dot,
 .category-dot,
 .edit-category-dot {
@@ -1536,7 +1536,7 @@
   display: inline-block;
 }
 
-/* ===== CUSTOM SELECT (task category dropdown) ===== */
+
 .custom-select {
   position: relative;
   height: 58px;
@@ -1657,7 +1657,7 @@
   color: #171717;
 }
 
-/* ===== CUSTOM CATEGORIES SECTION (Overview page, right column) ===== */
+
 .categories-section {
   margin-top: 21px;
   padding: 27px;
@@ -4469,7 +4469,7 @@
 .dashboard-dark .exercise-multiply {
   color: #8d8d8d;
 }
-/* WEEKLY CONSISTENCY */
+
 .weekly-consistency-card {
   min-height: 100%;
   padding: 38px 38px 30px;
@@ -4624,7 +4624,7 @@
     height: 44px;
   }
 }
-/* ================= FOCUS PAGE ================= */
+
 .focus-task-card,
 .focus-stat-card,
 .focus-complete-card {
@@ -4944,7 +4944,6 @@
   }
 }
 
-/* ================= FOCUS MODES ================= */
 .focus-modes-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -5087,7 +5086,7 @@
 }
 
 
-/* ================= FOCUS TASK CUSTOM DROPDOWN ================= */
+
 .focus-task-dropdown {
   position: relative;
   width: 100%;
@@ -5282,7 +5281,7 @@
     max-height: 220px;
   }
 }
-/* ===== SESSION COUNTER ===== */
+
 .session-counter {
   display: flex;
   align-items: center;
@@ -5328,7 +5327,7 @@
   color: #ffad52;
 }
 
-/* ===== CUSTOM DURATION INPUT ===== */
+
 .duration-select {
   flex-wrap: wrap;
 }
@@ -5371,7 +5370,7 @@
   color: #eeeeee;
 }
 
-/* ===== TIMER OPTIONS ===== */
+
 .timer-options {
   display: flex;
   flex-direction: column;
@@ -5502,7 +5501,6 @@
   }
 }
 
-/* ================= FOCUS PAGE ================= */
 
 .focus-page {
   width: 100%;
@@ -5524,7 +5522,7 @@
   align-items: start;
 }
 
-/* MAIN TIMER CARD */
+
 
 .focus-main-card {
   width: 100%;
@@ -5536,7 +5534,7 @@
   margin: 35px auto;
 }
 
-/* RIGHT SIDE */
+
 
 .focus-side {
   display: flex;
@@ -5571,7 +5569,7 @@
   color: #999;
 }
 
-/* TODAY'S FOCUS */
+
 
 .today-focus-card {
   padding: 24px;
@@ -5626,7 +5624,7 @@
   color: #999;
 }
 
-/* ================= DARK MODE ================= */
+
 
 .dashboard-dark .focus-stat-card,
 .dashboard-dark .today-focus-card {
@@ -5647,7 +5645,6 @@
   color: #999;
 }
 
-/* ================= RESPONSIVE ================= */
 
 @media (max-width: 1000px) {
   .focus-layout {
