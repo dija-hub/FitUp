@@ -1212,224 +1212,288 @@ function Dashboard({ darkMode, activePage, setActivePage }) {
           </>
         )}
 
-        {/* ================= FOCUS ================= */}
-        {activePage === "focus" && (
-          <section className="dashboard-page">
+       {/* ================= FOCUS ================= */}
+{activePage === "focus" && (
+  <section className="dashboard-page focus-page">
 
-            <div className="dashboard-page-heading">
-              <h1>Focus Timer</h1>
+    <div className="dashboard-page-heading">
+      <span className="focus-label">FOCUS MODE</span>
 
-              <p>
-                {timerMode === "focus"
-                  ? "Stay focused and work without distractions."
-                  : "Take a short break — you've earned it."}
-              </p>
-            </div>
+      <h1>Stay focused. Make progress.</h1>
 
-            <div className="progress-big-card">
+      <p>
+        {timerMode === "focus"
+          ? "Work on what matters, one session at a time."
+          : "Take a short break and recharge your mind."}
+      </p>
+    </div>
 
-              <div className="timer-header">
+    <div className="focus-layout">
 
-                <div>
-                  <Clock size={20} />
+      {/* MAIN TIMER CARD */}
+      <div className="progress-big-card focus-main-card">
 
-                  <strong>
-                    {timerMode === "focus"
-                      ? "Pomodoro Timer"
-                      : "Break Time"}
-                  </strong>
-                </div>
+        <div className="timer-header">
+          <div>
+            <Clock size={20} />
 
-                <span
-                  className={
-                    timerMode === "break"
-                      ? "break-badge"
-                      : ""
-                  }
-                >
-                  {timerMode === "focus"
-                    ? `${focusMinutes} min focus`
-                    : `${BREAK_MINUTES} min break`}
-                </span>
+            <strong>
+              {timerMode === "focus"
+                ? "Focus Session"
+                : "Break Time"}
+            </strong>
+          </div>
 
-              </div>
+          <span
+            className={
+              timerMode === "break"
+                ? "break-badge"
+                : ""
+            }
+          >
+            {timerMode === "focus"
+              ? `${focusMinutes} min`
+              : `${BREAK_MINUTES} min break`}
+          </span>
+        </div>
 
-              {/* SESSION COUNTER */}
-              <div className="session-counter">
-                <span className="session-counter-dots">
-                  {Array.from({
-                    length: Math.min(sessionsToday, 8),
-                  }).map((_, i) => (
-                    <span key={i} className="session-dot" />
-                  ))}
-                </span>
+        <div className="session-counter">
+          <span className="session-counter-dots">
+            {Array.from({
+              length: Math.min(sessionsToday, 8),
+            }).map((_, i) => (
+              <span
+                key={i}
+                className="session-dot"
+              />
+            ))}
+          </span>
 
-                <span className="session-counter-text">
-                  <strong>{sessionsToday}</strong>{" "}
-                  {sessionsToday === 1 ? "session" : "sessions"}{" "}
-                  completed today
-                </span>
-              </div>
+          <span className="session-counter-text">
+            <strong>{sessionsToday}</strong>{" "}
+            {sessionsToday === 1
+              ? "session"
+              : "sessions"}{" "}
+            completed today
+          </span>
+        </div>
 
-              {timerMode === "focus" && (
-                <div className="duration-select">
+        {timerMode === "focus" && (
+          <div className="duration-select">
 
-                  {FOCUS_DURATIONS.map((min) => (
-                    <button
-                      key={min}
-                      className={`duration-btn ${
-                        focusMinutes === min &&
-                        customMinutes === ""
-                          ? "active"
-                          : ""
-                      }`}
-                      disabled={timerRunning}
-                      onClick={() =>
-                        selectFocusDuration(min)
-                      }
-                    >
-                      {min}m
-                    </button>
-                  ))}
-
-                  <input
-                    type="number"
-                    min="1"
-                    max="180"
-                    className="duration-custom"
-                    placeholder="Custom"
-                    value={customMinutes}
-                    disabled={timerRunning}
-                    onChange={(e) =>
-                      setCustomMinutes(e.target.value)
-                    }
-                    onBlur={applyCustomMinutes}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        applyCustomMinutes();
-                        e.target.blur();
-                      }
-                    }}
-                  />
-
-                </div>
-              )}
-
-              <div
-                className={`timer-display ${
-                  timerMode === "break"
-                    ? "break-mode"
+            {FOCUS_DURATIONS.map((min) => (
+              <button
+                key={min}
+                className={`duration-btn ${
+                  focusMinutes === min &&
+                  customMinutes === ""
+                    ? "active"
                     : ""
                 }`}
+                disabled={timerRunning}
+                onClick={() =>
+                  selectFocusDuration(min)
+                }
               >
-                {minutes}:{seconds}
-              </div>
+                {min}m
+              </button>
+            ))}
 
-              <div className="timer-controls">
+            <input
+              type="number"
+              min="1"
+              max="180"
+              className="duration-custom"
+              placeholder="Custom"
+              value={customMinutes}
+              disabled={timerRunning}
+              onChange={(e) =>
+                setCustomMinutes(e.target.value)
+              }
+              onBlur={applyCustomMinutes}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  applyCustomMinutes();
+                  e.target.blur();
+                }
+              }}
+            />
 
-                <button
-                  className={`timer-start ${
-                    timerMode === "break"
-                      ? "break-start"
-                      : ""
-                  }`}
-                  onClick={toggleTimer}
-                >
-                  <Play size={18} />
+          </div>
+        )}
 
-                  {timerRunning ? "Pause" : "Start"}
-                </button>
+        <div
+          className={`timer-display ${
+            timerMode === "break"
+              ? "break-mode"
+              : ""
+          }`}
+        >
+          {minutes}:{seconds}
+        </div>
 
-                <button
-                  className="timer-reset"
-                  onClick={resetTimer}
-                >
-                  <RotateCcw size={18} />
-                </button>
+        <div className="timer-controls">
 
-              </div>
+          <button
+            className={`timer-start ${
+              timerMode === "break"
+                ? "break-start"
+                : ""
+            }`}
+            onClick={toggleTimer}
+          >
+            <Play size={18} />
 
-              {/* TIMER OPTIONS */}
-              <div className="timer-options">
+            {timerRunning ? "Pause" : "Start Focus"}
+          </button>
 
-                {/* AMBIENT SOUND */}
-                <div className="timer-option-row">
+          <button
+            className="timer-reset"
+            onClick={resetTimer}
+          >
+            <RotateCcw size={18} />
+          </button>
 
-                  <div className="timer-option-label">
-                    {soundType === "off" ? (
-                      <VolumeX size={17} />
-                    ) : (
-                      <Volume2 size={17} />
-                    )}
-                    <span>Ambient sound</span>
-                  </div>
+        </div>
 
-                  <div className="sound-options">
-                    {SOUND_OPTIONS.map((s) => (
-                      <button
-                        key={s.id}
-                        className={`sound-btn ${
-                          soundType === s.id ? "active" : ""
-                        }`}
-                        onClick={() => setSoundType(s.id)}
-                      >
-                        {s.label}
-                      </button>
-                    ))}
-                  </div>
+        <div className="timer-options">
 
-                </div>
+          <div className="timer-option-row">
 
-                {/* AUTO-START */}
-                <div className="timer-option-row">
+            <div className="timer-option-label">
+              {soundType === "off" ? (
+                <VolumeX size={17} />
+              ) : (
+                <Volume2 size={17} />
+              )}
 
-                  <div className="timer-option-label">
-                    <RotateCcw size={17} />
-                    <span>Auto-start next session</span>
-                  </div>
-
-                  <button
-                    className={`toggle-switch ${
-                      autoStart ? "on" : ""
-                    }`}
-                    onClick={() => setAutoStart((v) => !v)}
-                    aria-label="Toggle auto-start"
-                  >
-                    <span className="toggle-knob" />
-                  </button>
-
-                </div>
-
-                {/* NOTIFICATIONS */}
-                <div className="timer-option-row">
-
-                  <div className="timer-option-label">
-                    {notifyOn ? (
-                      <Bell size={17} />
-                    ) : (
-                      <BellOff size={17} />
-                    )}
-                    <span>Notify when session ends</span>
-                  </div>
-
-                  <button
-                    className={`toggle-switch ${
-                      notifyOn ? "on" : ""
-                    }`}
-                    onClick={toggleNotify}
-                    aria-label="Toggle notifications"
-                  >
-                    <span className="toggle-knob" />
-                  </button>
-
-                </div>
-
-              </div>
-
+              <span>Ambient sound</span>
             </div>
 
-          </section>
-        )}
+            <div className="sound-options">
+              {SOUND_OPTIONS.map((s) => (
+                <button
+                  key={s.id}
+                  className={`sound-btn ${
+                    soundType === s.id
+                      ? "active"
+                      : ""
+                  }`}
+                  onClick={() =>
+                    setSoundType(s.id)
+                  }
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+
+          </div>
+
+          <div className="timer-option-row">
+
+            <div className="timer-option-label">
+              <RotateCcw size={17} />
+              <span>Auto-start next session</span>
+            </div>
+
+            <button
+              className={`toggle-switch ${
+                autoStart ? "on" : ""
+              }`}
+              onClick={() =>
+                setAutoStart((v) => !v)
+              }
+              aria-label="Toggle auto-start"
+            >
+              <span className="toggle-knob" />
+            </button>
+
+          </div>
+
+          <div className="timer-option-row">
+
+            <div className="timer-option-label">
+              {notifyOn ? (
+                <Bell size={17} />
+              ) : (
+                <BellOff size={17} />
+              )}
+
+              <span>Notify when session ends</span>
+            </div>
+
+            <button
+              className={`toggle-switch ${
+                notifyOn ? "on" : ""
+              }`}
+              onClick={toggleNotify}
+              aria-label="Toggle notifications"
+            >
+              <span className="toggle-knob" />
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* RIGHT SIDE */}
+      <div className="focus-side">
+
+        <div className="focus-stat-card">
+          <span>Sessions</span>
+          <strong>{sessionsToday}</strong>
+          <small>Completed today</small>
+        </div>
+
+        <div className="focus-stat-card">
+          <span>Focus Time</span>
+          <strong>{focusMinutesToday}</strong>
+          <small>Minutes focused</small>
+        </div>
+
+        <div className="focus-stat-card">
+          <span>Streak</span>
+          <strong>{focusStreak}</strong>
+          <small>Days consistent</small>
+        </div>
+
+        <div className="today-focus-card">
+
+          <div className="today-focus-header">
+            <h2>Today's Focus</h2>
+            <ListChecks size={20} />
+          </div>
+
+          {incompleteTasks.length === 0 ? (
+            <p className="focus-empty">
+              No pending tasks. You're all caught up!
+            </p>
+          ) : (
+            <div className="today-focus-list">
+              {incompleteTasks.map((task) => (
+                <div
+                  className="today-focus-item"
+                  key={task.id}
+                >
+                  <span className="focus-task-dot" />
+
+                  <span>{task.title}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+)}
 
         {activePage === "goals" && (
           <section className="dashboard-page">
