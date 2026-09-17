@@ -5090,201 +5090,7 @@
 }
 
 
-/* ================= FOCUS TASK CUSTOM DROPDOWN ================= */
-.focus-task-dropdown {
-  position: relative;
-  width: 100%;
-  margin-top: 18px;
-}
 
-.focus-task-trigger {
-  width: 100%;
-  height: 58px;
-  padding: 0 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid #eadfd6;
-  border-radius: 14px;
-  outline: none;
-  background: #fffaf5;
-  color: #24201c;
-  font-family: "Poppins", sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-}
-
-.focus-task-trigger:hover:not(:disabled),
-.focus-task-trigger.open {
-  border-color: #ff941f;
-  background: #fff7ef;
-  box-shadow: 0 0 0 3px rgba(255, 148, 31, 0.1);
-}
-
-.focus-task-trigger:disabled {
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-.focus-task-trigger svg {
-  color: #8b8178;
-  flex-shrink: 0;
-  transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.focus-task-trigger.open svg {
-  transform: rotate(180deg);
-  color: #ff8b18;
-}
-
-.focus-task-menu {
-  position: absolute;
-  z-index: 100;
-  top: calc(100% + 8px);
-  left: 0;
-  right: 0;
-  max-height: 250px;
-  overflow-y: auto;
-  padding: 8px;
-  background: #ffffff;
-  border: 1px solid #eadfd6;
-  border-radius: 15px;
-  box-shadow: 0 18px 42px rgba(60, 40, 20, 0.14), 0 4px 12px rgba(60, 40, 20, 0.06);
-  animation: focusDropdownIn 0.18s ease;
-}
-
-@keyframes focusDropdownIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.focus-task-menu-title {
-  padding: 8px 12px 10px;
-  color: #9b9188;
-  font-size: 11px;
-  line-height: 1;
-  font-weight: 700;
-  letter-spacing: 1.1px;
-  text-transform: uppercase;
-}
-
-.focus-task-option {
-  width: 100%;
-  min-height: 48px;
-  padding: 10px 12px;
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  border: none;
-  border-radius: 10px;
-  background: transparent;
-  color: #292929;
-  text-align: left;
-  font-family: "Poppins", sans-serif;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.18s ease, color 0.18s ease;
-}
-
-.focus-task-option:hover {
-  background: #fff4e7;
-  color: #e87500;
-}
-
-.focus-task-option.selected {
-  background: #fff0df;
-  color: #e87500;
-  font-weight: 600;
-}
-
-.focus-task-option-check {
-  width: 22px;
-  height: 22px;
-  flex: 0 0 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1.5px solid #ded4ca;
-  border-radius: 50%;
-  color: #ffffff;
-  transition: background 0.18s ease, border-color 0.18s ease;
-}
-
-.focus-task-option.selected .focus-task-option-check {
-  background: #ff941f;
-  border-color: #ff941f;
-}
-
-.focus-task-option-name {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dashboard-dark .focus-task-trigger {
-  background: #232323;
-  border-color: #3b3b3b;
-  color: #f1f1f1;
-}
-
-.dashboard-dark .focus-task-trigger:hover:not(:disabled),
-.dashboard-dark .focus-task-trigger.open {
-  background: #292929;
-  border-color: #ff941f;
-}
-
-.dashboard-dark .focus-task-menu {
-  background: #222222;
-  border-color: #3b3b3b;
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.45);
-}
-
-.dashboard-dark .focus-task-menu-title {
-  color: #888888;
-}
-
-.dashboard-dark .focus-task-option {
-  color: #eeeeee;
-}
-
-.dashboard-dark .focus-task-option:hover {
-  background: #302519;
-  color: #ffad55;
-}
-
-.dashboard-dark .focus-task-option.selected {
-  background: #35281b;
-  color: #ffad55;
-}
-
-.dashboard-dark .focus-task-option-check {
-  border-color: #555555;
-}
-
-.dashboard-dark .focus-task-option.selected .focus-task-option-check {
-  background: #ff941f;
-  border-color: #ff941f;
-}
-
-@media (max-width: 520px) {
-  .focus-task-trigger {
-    height: 54px;
-    font-size: 14px;
-  }
-
-  .focus-task-menu {
-    max-height: 220px;
-  }
-}
 /* ===== SESSION COUNTER ===== */
 .session-counter {
   display: flex;
@@ -5502,5 +5308,189 @@
 
   .sound-options {
     flex-wrap: wrap;
+  }
+}
+
+/* ================= FOCUS PAGE ================= */
+
+.focus-page {
+  width: 100%;
+}
+
+.focus-label {
+  display: inline-block;
+  color: #ff6d00;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.focus-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+/* MAIN TIMER CARD */
+
+.focus-main-card {
+  width: 100%;
+  min-width: 0;
+  padding: 32px;
+}
+
+.focus-main-card .timer-display {
+  margin: 35px auto;
+}
+
+/* RIGHT SIDE */
+
+.focus-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.focus-stat-card {
+  padding: 20px 24px;
+  border: 1px solid #eadfd5;
+  border-radius: 18px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.focus-stat-card span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #777;
+}
+
+.focus-stat-card strong {
+  font-size: 30px;
+  font-weight: 700;
+  color: #ff6d00;
+}
+
+.focus-stat-card small {
+  font-size: 12px;
+  color: #999;
+}
+
+/* TODAY'S FOCUS */
+
+.today-focus-card {
+  padding: 24px;
+  border: 1px solid #eadfd5;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.today-focus-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.today-focus-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.today-focus-header svg {
+  color: #ff6d00;
+}
+
+.today-focus-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.today-focus-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #555;
+}
+
+.focus-task-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #ff6d00;
+}
+
+.focus-empty {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #999;
+}
+
+/* ================= DARK MODE ================= */
+
+.dashboard-dark .focus-stat-card,
+.dashboard-dark .today-focus-card {
+  background: #202020;
+  border-color: #383838;
+}
+
+.dashboard-dark .focus-stat-card span,
+.dashboard-dark .focus-stat-card small {
+  color: #aaa;
+}
+
+.dashboard-dark .today-focus-item {
+  color: #ddd;
+}
+
+.dashboard-dark .focus-empty {
+  color: #999;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1000px) {
+  .focus-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .focus-side {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .today-focus-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .focus-main-card {
+    padding: 20px;
+  }
+
+  .focus-side {
+    grid-template-columns: 1fr;
+  }
+
+  .today-focus-card {
+    grid-column: auto;
+  }
+
+  .focus-stat-card {
+    padding: 18px;
+  }
+
+  .focus-main-card .timer-display {
+    font-size: 55px;
   }
 }
