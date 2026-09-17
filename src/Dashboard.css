@@ -1701,7 +1701,7 @@
   color: #aaaaaa;
 }
 
-/* ===== MILESTONES ===== */
+
 .mini-progress {
   display: flex;
   align-items: center;
@@ -1792,7 +1792,7 @@
   color: #eeeeee;
 }
 
-/* ===== CONSISTENCY (Goals page) ===== */
+
 .consistency-card {
   padding: 27px;
   border-radius: 18px;
@@ -2127,7 +2127,7 @@
   border-color: #5b3823;
   color: #bdbdbd;
 }
-/* Exercise row: completion checkbox + labeled sets/reps/time */
+
 .exercise-item {
   display: flex;
   align-items: center;
@@ -2233,7 +2233,7 @@
 }
 
 
-/* Exercise row: completion checkbox + labeled sets/reps/time */
+
 .exercise-item {
   display: flex;
   align-items: center;
@@ -2337,7 +2337,7 @@
 .dashboard-dark .exercise-multiply {
   color: #8d8d8d;
 }
-/* WEEKLY CONSISTENCY */
+
 .weekly-consistency-card {
   min-height: 100%;
   padding: 38px 38px 30px;
@@ -2492,7 +2492,7 @@
     height: 44px;
   }
 }
-/* Exercise row: completion checkbox + labeled sets/reps/time */
+
 .exercise-item {
   display: flex;
   align-items: center;
@@ -2596,7 +2596,7 @@
 .dashboard-dark .exercise-multiply {
   color: #8d8d8d;
 }
-/* WEEKLY CONSISTENCY */
+
 .weekly-consistency-card {
   min-height: 100%;
   padding: 38px 38px 30px;
@@ -2751,7 +2751,7 @@
     height: 44px;
   }
 }
-/* ================= FOCUS PAGE ================= */
+
 
 .focus-page {
   width: 100%;
@@ -2773,7 +2773,7 @@
   align-items: start;
 }
 
-/* MAIN TIMER CARD */
+
 
 .focus-main-card {
   padding: 32px;
@@ -2835,7 +2835,7 @@
   color: #f97316;
 }
 
-/* TIMER DISPLAY */
+
 
 .timer-display {
   margin: 35px 0;
@@ -2902,7 +2902,7 @@
   background: #f5f5f5;
 }
 
-/* RIGHT SIDE */
+
 
 .focus-side {
   display: flex;
@@ -2937,7 +2937,7 @@
   color: #999;
 }
 
-/* TODAY'S FOCUS */
+
 
 .today-focus-card {
   padding: 22px;
@@ -2992,7 +2992,7 @@
   line-height: 1.6;
 }
 
-/* DARK MODE */
+
 
 .dashboard-dark .timer-display {
   color: #ffffff;
@@ -3025,7 +3025,7 @@
   background: #333;
 }
 
-/* RESPONSIVE */
+
 
 @media (max-width: 900px) {
   .focus-layout {
@@ -3067,7 +3067,7 @@
     flex-wrap: wrap;
   }
 }
-/* Exercise row: completion checkbox + labeled sets/reps/time */
+
 .exercise-item {
   display: flex;
   align-items: center;
