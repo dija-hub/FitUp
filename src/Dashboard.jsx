@@ -751,10 +751,7 @@ function Dashboard({
                   {showCategoryForm ? (
                     <div className="inline-form">
 
-                      {/* Both the trigger button and the dropdown live inside
-                          the same ref'd wrapper, so clicking a swatch counts
-                          as an "inside" click and doesn't get closed by the
-                          outside-click handler before onClick can fire. */}
+                      
                       <div className="color-picker-wrapper" ref={colorPickerRef}>
 
                         <div className="inline-form-row">
@@ -1066,7 +1063,7 @@ function Dashboard({
 
             <div className="goals-grid">
 
-              {/* WORKOUT TRACKER */}
+              
               <div className="feature-card">
                 <div className="feature-card-header">
                   <div className="feature-icon orange">
@@ -1225,7 +1222,7 @@ function Dashboard({
                 )}
               </div>
 
-              {/* WEEKLY CONSISTENCY */}
+             
               <div className="feature-card weekly-consistency-card">
                 <div className="weekly-consistency-top">
                   <span className="weekly-label">CONSISTENCY</span>
