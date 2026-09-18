@@ -3171,7 +3171,7 @@
 .dashboard-dark .exercise-multiply {
   color: #8d8d8d;
 }
-/* WEEKLY CONSISTENCY */
+
 .weekly-consistency-card {
   min-height: 100%;
   padding: 38px 38px 30px;
@@ -3326,7 +3326,7 @@
     height: 44px;
   }
 }
-/* ================= FOCUS PAGE ================= */
+
 .focus-task-card,
 .focus-stat-card,
 .focus-complete-card {
@@ -3645,7 +3645,7 @@
     font-size: 62px;
   }
 }
-/* Exercise row: completion checkbox + labeled sets/reps/time */
+
 .exercise-item {
   display: flex;
   align-items: center;
@@ -3749,7 +3749,7 @@
 .dashboard-dark .exercise-multiply {
   color: #8d8d8d;
 }
-/* WEEKLY CONSISTENCY */
+
 .weekly-consistency-card {
   min-height: 100%;
   padding: 38px 38px 30px;
@@ -3904,7 +3904,7 @@
     height: 44px;
   }
 }
-/* ================= FOCUS PAGE ================= */
+
 .focus-task-card,
 .focus-stat-card,
 .focus-complete-card {
@@ -4224,7 +4224,7 @@
   }
 }
 
-/* ================= FOCUS MODES ================= */
+
 .focus-modes-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4365,7 +4365,6 @@
     grid-template-columns: 1fr;
   }
 }
-/* Exercise row: completion checkbox + labeled sets/reps/time */
 .exercise-item {
   display: flex;
   align-items: center;

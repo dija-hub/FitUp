@@ -13,6 +13,7 @@ import {
   Tag,
   X,
   ChevronDown,
+  ListChecks,
 } from "lucide-react";
 
 import { supabase } from "./utils/supabase";
@@ -54,40 +55,18 @@ function Dashboard({
   const [taskCategoryOpen, setTaskCategoryOpen] = useState(false);
   const taskCategoryRef = useRef(null);
 
-  // FOCUS TIMER STATE
-  const FOCUS_MODES = [
-    {
-      id: "deep",
-      name: "Deep Work",
-      description: "Long uninterrupted focus",
-      duration: 50,
-    },
-    {
-      id: "quick",
-      name: "Quick Focus",
-      description: "Short focused session",
-      duration: 15,
-    },
-    {
-      id: "study",
-      name: "Study",
-      description: "Focused study session",
-      duration: 25,
-    },
-    {
-      id: "workout",
-      name: "Workout",
-      description: "Focus while training",
-      duration: 45,
-    },
-  ];
-
-  const [focusMode, setFocusMode] = useState("study");
-  const [focusDuration, setFocusDuration] = useState(25);
-  const [timerSeconds, setTimerSeconds] = useState(25 * 60);
+  // ===== FOCUS TIMER (user-set duration, starts at 00:00) =====
+  const [minutesInput, setMinutesInput] = useState("0");
+  const [secondsInput, setSecondsInput] = useState("0");
+  const [focusTotalSeconds, setFocusTotalSeconds] = useState(0);
+  const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
-  const [selectedFocusTaskId, setSelectedFocusTaskId] = useState("");
+
+  // combined focus target: a task or an exercise
+  const [selectedFocusType, setSelectedFocusType] = useState(null); // "task" | "exercise"
+  const [selectedFocusId, setSelectedFocusId] = useState(null);
   const [focusTaskDropdownOpen, setFocusTaskDropdownOpen] = useState(false);
+
   const [focusSessions, setFocusSessions] = useState([]);
   const [lastCompletedSession, setLastCompletedSession] = useState(null);
 
@@ -95,7 +74,7 @@ function Dashboard({
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState("Study");
 
-  // WORKOUT TRACKER STATE
+  // WORKOUT TRACKER
   const [exercises, setExercises] = useState([]);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
   const [exerciseSets, setExerciseSets] = useState("3");
@@ -103,8 +82,12 @@ function Dashboard({
   const [exerciseCategory, setExerciseCategory] = useState("Strength");
   const [selectedExercise, setSelectedExercise] = useState(null);
 
+  // MILESTONES
+  const [milestones, setMilestones] = useState([]);
+  const [showMilestoneForm, setShowMilestoneForm] = useState(false);
+  const [milestoneText, setMilestoneText] = useState("");
 
-  // CUSTOM CATEGORIES STATE
+  // CUSTOM CATEGORIES
   const [categories, setCategories] = useState([]);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [categoryColor, setCategoryColor] = useState("#94a3b8");
@@ -123,6 +106,12 @@ function Dashboard({
 
   const progress =
     totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+  const milestonesDone = milestones.filter((m) => m.done).length;
+  const milestoneProgress =
+    milestones.length === 0
+      ? 0
+      : Math.round((milestonesDone / milestones.length) * 100);
 
   const startOfWeek = new Date();
   const currentDay = startOfWeek.getDay();
@@ -165,7 +154,6 @@ function Dashboard({
     return streak;
   })();
 
-  // CLOSE TASK CATEGORY DROPDOWN ON OUTSIDE CLICK
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -180,7 +168,6 @@ function Dashboard({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // CLOSE FOCUS TASK DROPDOWN ON OUTSIDE CLICK
   useEffect(() => {
     const handleFocusTaskOutside = (e) => {
       if (!e.target.closest(".focus-task-dropdown")) {
@@ -193,7 +180,6 @@ function Dashboard({
       document.removeEventListener("mousedown", handleFocusTaskOutside);
   }, []);
 
-  // CLOSE COLOR PICKER ON OUTSIDE CLICK
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -208,7 +194,7 @@ function Dashboard({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // FOCUS TIMER (counts down while running)
+  // ===== TIMER TICK / SESSION COMPLETE =====
   useEffect(() => {
     if (!timerRunning) return;
 
@@ -217,11 +203,22 @@ function Dashboard({
         if (seconds <= 1) {
           setTimerRunning(false);
 
-          const task = tasks.find((item) => item.id === selectedFocusTaskId);
+          let title = "Focus Session";
+
+          if (selectedFocusType === "task") {
+            const task = tasks.find((item) => item.id === selectedFocusId);
+            if (task) title = task.title;
+          } else if (selectedFocusType === "exercise") {
+            const ex = exercises.find((item) => item.id === selectedFocusId);
+            if (ex) title = ex.name;
+          }
+
+          const durationMinutes = Math.round(focusTotalSeconds / 60) || 0;
+
           const session = {
             id: Date.now(),
-            taskTitle: task?.title || "Focus Session",
-            duration: focusDuration,
+            taskTitle: title,
+            duration: durationMinutes,
             date: getDateKey(),
             completedAt: new Date().toLocaleTimeString([], {
               hour: "numeric",
@@ -239,9 +236,16 @@ function Dashboard({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timerRunning, tasks, selectedFocusTaskId, focusDuration]);
+  }, [
+    timerRunning,
+    tasks,
+    exercises,
+    selectedFocusType,
+    selectedFocusId,
+    focusTotalSeconds,
+  ]);
 
-  // TASK FUNCTIONS
+  // ===== TASK FUNCTIONS =====
   const toggleTask = (id) => {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
@@ -306,9 +310,48 @@ function Dashboard({
     return known.includes(name.toLowerCase()) ? name.toLowerCase() : "custom";
   };
 
-  // FOCUS TIMER FUNCTIONS
+  // ===== FOCUS TIMER FUNCTIONS =====
+  const unfinishedTasks = tasks.filter((task) => !task.completed);
+  const unfinishedExercises = exercises.filter((ex) => !ex.completed);
+
+  const selectedFocusTask =
+    selectedFocusType === "task"
+      ? tasks.find((task) => task.id === selectedFocusId)
+      : null;
+
+  const selectedFocusExercise =
+    selectedFocusType === "exercise"
+      ? exercises.find((ex) => ex.id === selectedFocusId)
+      : null;
+
+  const selectedFocusLabel =
+    selectedFocusTask?.title || selectedFocusExercise?.name || null;
+
+  const selectFocusTarget = (type, id) => {
+    setSelectedFocusType(type);
+    setSelectedFocusId(id);
+    setFocusTaskDropdownOpen(false);
+    setTimerRunning(false);
+    setLastCompletedSession(null);
+  };
+
+  const applyCustomDuration = () => {
+    if (timerRunning) return;
+
+    const mins = Math.max(0, Math.min(180, parseInt(minutesInput, 10) || 0));
+    const secs = Math.max(0, Math.min(59, parseInt(secondsInput, 10) || 0));
+    const totalSeconds = mins * 60 + secs;
+
+    setMinutesInput(String(mins));
+    setSecondsInput(String(secs));
+    setFocusTotalSeconds(totalSeconds);
+    setTimerSeconds(totalSeconds);
+    setLastCompletedSession(null);
+  };
+
   const toggleTimer = () => {
-    if (!selectedFocusTaskId) return;
+    if (!selectedFocusLabel) return;
+    if (!timerRunning && timerSeconds === 0) return;
 
     setLastCompletedSession(null);
     setTimerRunning((current) => !current);
@@ -316,24 +359,7 @@ function Dashboard({
 
   const resetTimer = () => {
     setTimerRunning(false);
-    setTimerSeconds(focusDuration * 60);
-    setLastCompletedSession(null);
-  };
-
-  const selectFocusDuration = (minutes) => {
-    if (timerRunning) return;
-
-    setFocusDuration(minutes);
-    setTimerSeconds(minutes * 60);
-    setLastCompletedSession(null);
-  };
-
-  const selectFocusMode = (mode) => {
-    if (timerRunning) return;
-
-    setFocusMode(mode.id);
-    setFocusDuration(mode.duration);
-    setTimerSeconds(mode.duration * 60);
+    setTimerSeconds(focusTotalSeconds);
     setLastCompletedSession(null);
   };
 
@@ -349,16 +375,9 @@ function Dashboard({
     0
   );
 
-  const unfinishedTasks = tasks.filter((task) => !task.completed);
-
-  // FOCUS PAGE CALCULATED VALUES
-  const focusMinutesToday = todayFocusMinutes;
   const focusStreak = currentStreak;
-  const incompleteTasks = unfinishedTasks.slice(0, 5);
 
-  const selectedFocusTask = tasks.find((task) => task.id === selectedFocusTaskId);
-
-  // WORKOUT TRACKER FUNCTIONS
+  // ===== WORKOUT TRACKER =====
   const EXERCISE_SUGGESTIONS = {
     Strength: [
       { name: "Push Ups", sets: "3", reps: "10" },
@@ -446,7 +465,35 @@ function Dashboard({
       : "reps";
   };
 
-  // CUSTOM CATEGORIES FUNCTIONS
+  // ===== MILESTONES =====
+  const addMilestone = () => {
+    if (!milestoneText.trim()) return;
+
+    setMilestones((current) => [
+      ...current,
+      { id: Date.now(), text: milestoneText.trim(), done: false },
+    ]);
+
+    setMilestoneText("");
+    setShowMilestoneForm(false);
+  };
+
+  const cancelMilestoneForm = () => {
+    setMilestoneText("");
+    setShowMilestoneForm(false);
+  };
+
+  const toggleMilestone = (id) => {
+    setMilestones((current) =>
+      current.map((m) => (m.id === id ? { ...m, done: !m.done } : m))
+    );
+  };
+
+  const deleteMilestone = (id) => {
+    setMilestones((current) => current.filter((m) => m.id !== id));
+  };
+
+  // ===== CUSTOM CATEGORIES =====
   const addCategory = () => {
     if (!categoryName.trim()) return;
 
@@ -751,7 +798,6 @@ function Dashboard({
                   {showCategoryForm ? (
                     <div className="inline-form">
 
-                      
                       <div className="color-picker-wrapper" ref={colorPickerRef}>
 
                         <div className="inline-form-row">
@@ -830,36 +876,82 @@ function Dashboard({
           </>
         )}
 
+        {/* ================= FOCUS ================= */}
         {activePage === "focus" && (
           <section className="dashboard-page">
 
             <div className="dashboard-page-heading">
               <h1>Focus Timer</h1>
-              <p>Choose a task, set your focus time, and get to work.</p>
+              <p>Choose what you're working on, set your time, and go.</p>
             </div>
 
             <div className="focus-task-card">
+
               <div className="focus-task-top">
                 <div>
-                  <span className="focus-eyebrow">CHOOSE YOUR SESSION</span>
-                  <h2>How do you want to focus?</h2>
+                  <span className="focus-eyebrow">SET YOUR TIME</span>
+                  <h2>How long do you want to focus?</h2>
                 </div>
               </div>
 
-              <div className="focus-modes-grid">
-                {FOCUS_MODES.map((mode) => (
-                  <button
-                    key={mode.id}
-                    type="button"
-                    className={`focus-mode-card ${focusMode === mode.id ? "active" : ""}`}
-                    onClick={() => selectFocusMode(mode)}
-                    disabled={timerRunning}
-                  >
-                    <span className="focus-mode-name">{mode.name}</span>
-                    <span className="focus-mode-description">{mode.description}</span>
-                    <span className="focus-mode-duration">{mode.duration} min</span>
-                  </button>
-                ))}
+              <div className="timer-option-row">
+                <div className="timer-option-label">
+                  <span>Minutes</span>
+                </div>
+
+                <input
+                  type="number"
+                  min="0"
+                  max="180"
+                  className="duration-custom"
+                  value={minutesInput}
+                  disabled={timerRunning}
+                  onChange={(e) => setMinutesInput(e.target.value)}
+                  onBlur={applyCustomDuration}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      applyCustomDuration();
+                      e.target.blur();
+                    }
+                  }}
+                />
+              </div>
+
+              <div className="timer-option-row">
+                <div className="timer-option-label">
+                  <span>Seconds</span>
+                </div>
+
+                <input
+                  type="number"
+                  min="0"
+                  max="59"
+                  className="duration-custom"
+                  value={secondsInput}
+                  disabled={timerRunning}
+                  onChange={(e) => setSecondsInput(e.target.value)}
+                  onBlur={applyCustomDuration}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      applyCustomDuration();
+                      e.target.blur();
+                    }
+                  }}
+                />
+              </div>
+
+              <div className="timer-option-row">
+                <div className="timer-option-label" />
+
+                <button
+                  type="button"
+                  className="duration-btn active"
+                  disabled={timerRunning}
+                  onClick={applyCustomDuration}
+                  style={{ opacity: timerRunning ? 0.5 : 1 }}
+                >
+                  Set Time
+                </button>
               </div>
 
               <div className="focus-task-divider" />
@@ -867,11 +959,11 @@ function Dashboard({
               <div className="focus-task-top focus-task-select-heading">
                 <div>
                   <span className="focus-eyebrow">WHAT ARE YOU WORKING ON?</span>
-                  <h2>Choose a task to focus on</h2>
+                  <h2>Choose a task or exercise</h2>
                 </div>
               </div>
 
-              {unfinishedTasks.length > 0 ? (
+              {unfinishedTasks.length > 0 || unfinishedExercises.length > 0 ? (
                 <div className="focus-task-dropdown">
                   <button
                     type="button"
@@ -883,9 +975,7 @@ function Dashboard({
                     }
                     disabled={timerRunning}
                   >
-                    <span>
-                      {selectedFocusTask?.title || "Select a task"}
-                    </span>
+                    <span>{selectedFocusLabel || "Select a task or exercise"}</span>
 
                     <ChevronDown
                       size={18}
@@ -895,44 +985,78 @@ function Dashboard({
 
                   {focusTaskDropdownOpen && (
                     <div className="focus-task-menu">
-                      <div className="focus-task-menu-title">
-                        Select a task
-                      </div>
 
-                      {unfinishedTasks.map((task) => (
-                        <button
-                          type="button"
-                          key={task.id}
-                          className={`focus-task-option ${
-                            selectedFocusTaskId === task.id ? "selected" : ""
-                          }`}
-                          onClick={() => {
-                            setSelectedFocusTaskId(task.id);
-                            setFocusTaskDropdownOpen(false);
-                            setTimerRunning(false);
-                            setTimerSeconds(focusDuration * 60);
-                            setLastCompletedSession(null);
-                          }}
-                        >
-                          <span className="focus-task-option-check">
-                            {selectedFocusTaskId === task.id && (
-                              <Check size={14} />
-                            )}
-                          </span>
+                      {unfinishedTasks.length > 0 && (
+                        <>
+                          <div className="focus-task-menu-title">Tasks</div>
 
-                          <span className="focus-task-option-name">
-                            {task.title}
-                          </span>
-                        </button>
-                      ))}
+                          {unfinishedTasks.map((task) => (
+                            <button
+                              type="button"
+                              key={`task-${task.id}`}
+                              className={`focus-task-option ${
+                                selectedFocusType === "task" &&
+                                selectedFocusId === task.id
+                                  ? "selected"
+                                  : ""
+                              }`}
+                              onClick={() => selectFocusTarget("task", task.id)}
+                            >
+                              <span className="focus-task-option-check">
+                                {selectedFocusType === "task" &&
+                                  selectedFocusId === task.id && (
+                                    <Check size={14} />
+                                  )}
+                              </span>
+
+                              <span className="focus-task-option-name">
+                                {task.title}
+                              </span>
+                            </button>
+                          ))}
+                        </>
+                      )}
+
+                      {unfinishedExercises.length > 0 && (
+                        <>
+                          <div className="focus-task-menu-title">Exercises</div>
+
+                          {unfinishedExercises.map((ex) => (
+                            <button
+                              type="button"
+                              key={`exercise-${ex.id}`}
+                              className={`focus-task-option ${
+                                selectedFocusType === "exercise" &&
+                                selectedFocusId === ex.id
+                                  ? "selected"
+                                  : ""
+                              }`}
+                              onClick={() => selectFocusTarget("exercise", ex.id)}
+                            >
+                              <span className="focus-task-option-check">
+                                {selectedFocusType === "exercise" &&
+                                  selectedFocusId === ex.id && (
+                                    <Check size={14} />
+                                  )}
+                              </span>
+
+                              <span className="focus-task-option-name">
+                                {ex.name} ({ex.sets} × {ex.reps})
+                              </span>
+                            </button>
+                          ))}
+                        </>
+                      )}
+
                     </div>
                   )}
                 </div>
               ) : (
                 <div className="focus-no-tasks">
-                  <p>No unfinished tasks yet.</p>
+                  <p>No unfinished tasks or exercises yet.</p>
                   <span>
-                    Add a task from your Overview page to start a focus session.
+                    Add a task from Overview or an exercise from Goals to start a
+                    focus session.
                   </span>
                 </div>
               )}
@@ -945,12 +1069,7 @@ function Dashboard({
                   <strong>Focus Session</strong>
                 </div>
 
-                <span>{selectedFocusTask?.title || "Choose a task"}</span>
-              </div>
-
-              <div className="focus-selected-mode">
-                {FOCUS_MODES.find((mode) => mode.id === focusMode)?.name || "Study"}
-                <span>{focusDuration} min session</span>
+                <span>{selectedFocusLabel || "Choose a task"}</span>
               </div>
 
               <div className="timer-display">
@@ -960,16 +1079,18 @@ function Dashboard({
               <p className="focus-helper-text">
                 {timerRunning
                   ? "Stay focused. One task at a time."
-                  : selectedFocusTask
-                    ? `${focusDuration} minutes of focused work`
-                    : "Choose a task before starting your session."}
+                  : !selectedFocusLabel
+                    ? "Choose a task or exercise before starting your session."
+                    : timerSeconds === 0
+                      ? "Set your focus time above to get started."
+                      : "Ready when you are."}
               </p>
 
               <div className="timer-controls">
                 <button
                   className="timer-start"
                   onClick={toggleTimer}
-                  disabled={!selectedFocusTask}
+                  disabled={!selectedFocusLabel || timerSeconds === 0}
                 >
                   <Play size={18} />
                   {timerRunning ? "Pause" : "Start Focus"}
@@ -1053,17 +1174,18 @@ function Dashboard({
           </section>
         )}
 
+        {/* ================= GOALS ================= */}
         {activePage === "goals" && (
           <section className="dashboard-page">
 
             <div className="dashboard-page-heading">
               <h1>Goals</h1>
-              <p>Build your workout routine with simple guided suggestions.</p>
+              <p>Build your workout routine, hit milestones, and stay consistent.</p>
             </div>
 
             <div className="goals-grid">
 
-              
+              {/* WORKOUT TRACKER */}
               <div className="feature-card">
                 <div className="feature-card-header">
                   <div className="feature-icon orange">
@@ -1222,7 +1344,105 @@ function Dashboard({
                 )}
               </div>
 
-             
+              {/* MILESTONES */}
+              <div className="feature-card">
+
+                <div className="feature-card-header">
+                  <div className="feature-icon purple">
+                    <ListChecks size={24} />
+                  </div>
+                  <div>
+                    <h2>Milestones</h2>
+                    <p>Break big goals into small wins</p>
+                  </div>
+                </div>
+
+                {milestones.length > 0 && (
+                  <div className="mini-progress">
+                    <div className="mini-progress-track">
+                      <div
+                        className="mini-progress-fill"
+                        style={{ width: `${milestoneProgress}%` }}
+                      />
+                    </div>
+                    <span>
+                      {milestonesDone} of {milestones.length} done
+                    </span>
+                  </div>
+                )}
+
+                {milestones.length === 0 && !showMilestoneForm && (
+                  <div className="feature-empty">
+                    <p>No milestones yet.</p>
+                  </div>
+                )}
+
+                {milestones.length > 0 && (
+                  <div className="milestone-list">
+                    {milestones.map((m) => (
+                      <div
+                        className={`milestone-item ${m.done ? "milestone-done" : ""}`}
+                        key={m.id}
+                      >
+                        <button
+                          className={`milestone-check ${m.done ? "checked" : ""}`}
+                          onClick={() => toggleMilestone(m.id)}
+                        >
+                          {m.done && <Check size={14} />}
+                        </button>
+
+                        <span className="milestone-text">{m.text}</span>
+
+                        <button
+                          className="exercise-delete"
+                          onClick={() => deleteMilestone(m.id)}
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {showMilestoneForm ? (
+                  <div className="inline-form">
+                    <input
+                      type="text"
+                      className="inline-form-input"
+                      placeholder="e.g. Run 5km without stopping"
+                      value={milestoneText}
+                      onChange={(e) => setMilestoneText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") addMilestone();
+                      }}
+                      autoFocus
+                    />
+
+                    <div className="inline-form-actions">
+                      <button className="inline-form-cancel" onClick={cancelMilestoneForm}>
+                        <X size={16} />
+                        Cancel
+                      </button>
+
+                      <button className="inline-form-save" onClick={addMilestone}>
+                        <Check size={16} />
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    className="feature-add-btn"
+                    onClick={() => setShowMilestoneForm(true)}
+                  >
+                    <Plus size={18} />
+                    Add Milestone
+                  </button>
+                )}
+
+              </div>
+
+              {/* WEEKLY CONSISTENCY */}
               <div className="feature-card weekly-consistency-card">
                 <div className="weekly-consistency-top">
                   <span className="weekly-label">CONSISTENCY</span>
