@@ -5681,3 +5681,97 @@
     font-size: 55px;
   }
 }
+
+.dashboard-dark .focus-no-tasks p {
+  color: #f0f0f0;
+}
+
+.dashboard-dark .focus-no-tasks span {
+  color: #aaaaaa;
+}
+
+
+.duration-custom::-webkit-outer-spin-button,
+.duration-custom::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.duration-custom[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Merged focus and goals layout */
+.merged-goals-heading {
+  margin: 48px 0 24px;
+  text-align: center;
+}
+
+.merged-goals-heading h2 {
+  margin: 8px 0;
+  color: #171717;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.merged-goals-heading p {
+  margin: 0;
+  color: #77716b;
+  font-size: 14px;
+}
+
+.timer-finish {
+  min-height: 51px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #ff9b2f;
+  border-radius: 13px;
+  background: transparent;
+  color: #e87515;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.timer-finish:hover:not(:disabled) {
+  background: #fff0df;
+}
+
+.timer-finish:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.dashboard-dark .merged-goals-heading h2 {
+  color: #f4f4f4;
+}
+
+.dashboard-dark .merged-goals-heading p {
+  color: #aaaaaa;
+}
+
+.dashboard-dark .timer-finish {
+  border-color: #ffab50;
+  color: #ffab50;
+}
+
+.dashboard-dark .timer-finish:hover:not(:disabled) {
+  background: #4a2f18;
+}
+
+@media (max-width: 650px) {
+  .timer-finish {
+    padding: 0 12px;
+    font-size: 13px;
+  }
+
+  .merged-goals-heading h2 {
+    font-size: 23px;
+  }
+}

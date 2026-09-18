@@ -55,12 +55,10 @@ function Dashboard({
   const [taskCategoryOpen, setTaskCategoryOpen] = useState(false);
   const taskCategoryRef = useRef(null);
 
-  // ===== FOCUS TIMER (user-set duration, starts at 00:00) =====
-  const [minutesInput, setMinutesInput] = useState("0");
-  const [secondsInput, setSecondsInput] = useState("0");
-  const [focusTotalSeconds, setFocusTotalSeconds] = useState(0);
+  // ===== FOCUS TIMER (stopwatch starts at 00:00) =====
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
+  const sessionRecordedRef = useRef(false);
 
   // combined focus target: a task or an exercise
   const [selectedFocusType, setSelectedFocusType] = useState(null); // "task" | "exercise"
@@ -194,56 +192,16 @@ function Dashboard({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ===== TIMER TICK / SESSION COMPLETE =====
+  // ===== TIMER TICK =====
   useEffect(() => {
     if (!timerRunning) return;
 
     const interval = setInterval(() => {
-      setTimerSeconds((seconds) => {
-        if (seconds <= 1) {
-          setTimerRunning(false);
-
-          let title = "Focus Session";
-
-          if (selectedFocusType === "task") {
-            const task = tasks.find((item) => item.id === selectedFocusId);
-            if (task) title = task.title;
-          } else if (selectedFocusType === "exercise") {
-            const ex = exercises.find((item) => item.id === selectedFocusId);
-            if (ex) title = ex.name;
-          }
-
-          const durationMinutes = Math.round(focusTotalSeconds / 60) || 0;
-
-          const session = {
-            id: Date.now(),
-            taskTitle: title,
-            duration: durationMinutes,
-            date: getDateKey(),
-            completedAt: new Date().toLocaleTimeString([], {
-              hour: "numeric",
-              minute: "2-digit",
-            }),
-          };
-
-          setFocusSessions((current) => [session, ...current]);
-          setLastCompletedSession(session);
-          return 0;
-        }
-
-        return seconds - 1;
-      });
+      setTimerSeconds((currentSeconds) => currentSeconds + 1);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [
-    timerRunning,
-    tasks,
-    exercises,
-    selectedFocusType,
-    selectedFocusId,
-    focusTotalSeconds,
-  ]);
+  }, [timerRunning]);
 
   // ===== TASK FUNCTIONS =====
   const toggleTask = (id) => {
@@ -332,39 +290,71 @@ function Dashboard({
     setSelectedFocusId(id);
     setFocusTaskDropdownOpen(false);
     setTimerRunning(false);
+    setTimerSeconds(0);
+    sessionRecordedRef.current = false;
     setLastCompletedSession(null);
   };
 
-  const applyCustomDuration = () => {
-    if (timerRunning) return;
-
-    const mins = Math.max(0, Math.min(180, parseInt(minutesInput, 10) || 0));
-    const secs = Math.max(0, Math.min(59, parseInt(secondsInput, 10) || 0));
-    const totalSeconds = mins * 60 + secs;
-
-    setMinutesInput(String(mins));
-    setSecondsInput(String(secs));
-    setFocusTotalSeconds(totalSeconds);
-    setTimerSeconds(totalSeconds);
-    setLastCompletedSession(null);
-  };
-
-  const toggleTimer = () => {
+  const startTimer = () => {
     if (!selectedFocusLabel) return;
-    if (!timerRunning && timerSeconds === 0) return;
 
+    if (timerSeconds === 0) {
+      sessionRecordedRef.current = false;
+    }
+
+    setTimerRunning(true);
     setLastCompletedSession(null);
-    setTimerRunning((current) => !current);
+  };
+
+  const pauseTimer = () => {
+    setTimerRunning(false);
+  };
+
+  const finishTimer = () => {
+    if (!selectedFocusLabel || timerSeconds === 0 || sessionRecordedRef.current) {
+      return;
+    }
+
+    sessionRecordedRef.current = true;
+    setTimerRunning(false);
+
+    const durationMinutes = Math.floor(timerSeconds / 60);
+    const session = {
+      id: Date.now(),
+      taskTitle: selectedFocusLabel,
+      duration: durationMinutes,
+      durationSeconds: timerSeconds,
+      date: getDateKey(),
+      completedAt: new Date().toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      }),
+    };
+
+    setFocusSessions((current) => [session, ...current]);
+    setLastCompletedSession(session);
   };
 
   const resetTimer = () => {
     setTimerRunning(false);
-    setTimerSeconds(focusTotalSeconds);
+    setTimerSeconds(0);
+    sessionRecordedRef.current = false;
     setLastCompletedSession(null);
   };
 
   const minutes = Math.floor(timerSeconds / 60).toString().padStart(2, "0");
   const seconds = (timerSeconds % 60).toString().padStart(2, "0");
+
+  const formatSessionDuration = (totalSeconds = 0) => {
+    if (totalSeconds < 60) return `${totalSeconds}s`;
+
+    const sessionMinutes = Math.floor(totalSeconds / 60);
+    const remainingSeconds = totalSeconds % 60;
+
+    return remainingSeconds === 0
+      ? `${sessionMinutes}m`
+      : `${sessionMinutes}m ${remainingSeconds}s`;
+  };
 
   const todayFocusSessions = focusSessions.filter(
     (session) => session.date === getDateKey()
@@ -886,75 +876,16 @@ function Dashboard({
             </div>
 
             <div className="focus-task-card">
-
               <div className="focus-task-top">
                 <div>
-                  <span className="focus-eyebrow">SET YOUR TIME</span>
-                  <h2>How long do you want to focus?</h2>
+                  <span className="focus-eyebrow">READY TO FOCUS?</span>
+                  <h2>Your focus timer starts at 00:00</h2>
+                  <p className="focus-helper-text">
+                    Choose a task or exercise, start the stopwatch, and finish when you are done.
+                  </p>
                 </div>
               </div>
 
-              <div className="timer-option-row">
-                <div className="timer-option-label">
-                  <span>Minutes</span>
-                </div>
-
-                <input
-                  type="number"
-                  min="0"
-                  max="180"
-                  className="duration-custom"
-                  value={minutesInput}
-                  disabled={timerRunning}
-                  onChange={(e) => setMinutesInput(e.target.value)}
-                  onBlur={applyCustomDuration}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      applyCustomDuration();
-                      e.target.blur();
-                    }
-                  }}
-                />
-              </div>
-
-              <div className="timer-option-row">
-                <div className="timer-option-label">
-                  <span>Seconds</span>
-                </div>
-
-                <input
-                  type="number"
-                  min="0"
-                  max="59"
-                  className="duration-custom"
-                  value={secondsInput}
-                  disabled={timerRunning}
-                  onChange={(e) => setSecondsInput(e.target.value)}
-                  onBlur={applyCustomDuration}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      applyCustomDuration();
-                      e.target.blur();
-                    }
-                  }}
-                />
-              </div>
-
-              <div className="timer-option-row">
-                <div className="timer-option-label" />
-
-                <button
-                  type="button"
-                  className="duration-btn active"
-                  disabled={timerRunning}
-                  onClick={applyCustomDuration}
-                  style={{ opacity: timerRunning ? 0.5 : 1 }}
-                >
-                  Set Time
-                </button>
-              </div>
-
-              <div className="focus-task-divider" />
 
               <div className="focus-task-top focus-task-select-heading">
                 <div>
@@ -1082,18 +1013,33 @@ function Dashboard({
                   : !selectedFocusLabel
                     ? "Choose a task or exercise before starting your session."
                     : timerSeconds === 0
-                      ? "Set your focus time above to get started."
-                      : "Ready when you are."}
+                      ? "Press Start Focus to begin."
+                      : "Pause or finish your session when you are done."}
               </p>
 
               <div className="timer-controls">
+                {timerRunning ? (
+                  <button className="timer-start" onClick={pauseTimer}>
+                    Pause
+                  </button>
+                ) : (
+                  <button
+                    className="timer-start"
+                    onClick={startTimer}
+                    disabled={!selectedFocusLabel || sessionRecordedRef.current}
+                  >
+                    <Play size={18} />
+                    Start Focus
+                  </button>
+                )}
+
                 <button
-                  className="timer-start"
-                  onClick={toggleTimer}
-                  disabled={!selectedFocusLabel || timerSeconds === 0}
+                  className="timer-finish"
+                  onClick={finishTimer}
+                  disabled={!selectedFocusLabel || timerSeconds === 0 || sessionRecordedRef.current}
                 >
-                  <Play size={18} />
-                  {timerRunning ? "Pause" : "Start Focus"}
+                  <Check size={18} />
+                  Finish
                 </button>
 
                 <button className="timer-reset" onClick={resetTimer}>
@@ -1110,7 +1056,7 @@ function Dashboard({
                 <div>
                   <strong>Focus session completed</strong>
                   <p>
-                    Task: {lastCompletedSession.taskTitle} · Time: {lastCompletedSession.duration} minutes
+                    Task: {lastCompletedSession.taskTitle} · Time: {formatSessionDuration(lastCompletedSession.durationSeconds)}
                   </p>
                 </div>
               </div>
@@ -1162,7 +1108,7 @@ function Dashboard({
                           <small>{session.completedAt}</small>
                         </div>
                         <span className="focus-session-duration">
-                          {session.duration}m
+                          {formatSessionDuration(session.durationSeconds || session.duration * 60)}
                         </span>
                       </div>
                     ))}
@@ -1171,17 +1117,14 @@ function Dashboard({
               </div>
             </div>
 
-          </section>
-        )}
 
-        {/* ================= GOALS ================= */}
-        {activePage === "goals" && (
-          <section className="dashboard-page">
 
-            <div className="dashboard-page-heading">
-              <h1>Goals</h1>
-              <p>Build your workout routine, hit milestones, and stay consistent.</p>
+            <div className="merged-goals-heading">
+              <span className="focus-eyebrow">YOUR GOALS</span>
+              <h2>Workout and consistency</h2>
+              <p>Manage your exercises, milestones, and weekly progress in the same page.</p>
             </div>
+
 
             <div className="goals-grid">
 
@@ -1494,6 +1437,8 @@ function Dashboard({
             </div>
           </section>
         )}
+
+        
 
       </main>
 
