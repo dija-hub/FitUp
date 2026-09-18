@@ -5775,3 +5775,203 @@
     font-size: 23px;
   }
 }
+
+
+/* Focus timer layout */
+.dashboard-page-heading {
+  text-align: center;
+  margin: 0 auto 28px;
+}
+
+.dashboard-page-heading h1 {
+  margin: 0;
+  color: #171717;
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.8px;
+}
+
+.dashboard-page-heading p {
+  margin: 10px 0 0;
+  color: #817a73;
+  font-size: 15px;
+}
+
+.focus-main-card {
+  width: 100%;
+  max-width: none;
+  align-self: stretch;
+  margin: 0 0 24px;
+  padding: 38px 32px 34px;
+  text-align: center;
+  background: #ffffff;
+  border: 1px solid #eadfd5;
+  border-radius: 22px;
+  box-shadow: 0 5px 18px rgba(60, 40, 20, 0.025);
+}
+
+.focus-main-card .timer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  text-align: left;
+}
+
+.focus-main-card .timer-header > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #77716b;
+}
+
+.focus-main-card .timer-header svg {
+  color: #ff851c;
+}
+
+.focus-main-card .timer-header strong {
+  color: #171717;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.focus-main-card .timer-header > span {
+  max-width: 45%;
+  overflow: hidden;
+  color: #e87515;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.focus-main-card .timer-display {
+  margin: 32px 0 14px;
+  color: #171717;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(64px, 9vw, 104px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 2px;
+}
+
+.focus-main-card .focus-helper-text {
+  margin: 0 auto 26px;
+  max-width: 600px;
+  color: #817a73;
+  font-size: 14px;
+}
+
+.timer-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.timer-start,
+.timer-finish,
+.timer-reset {
+  min-height: 50px;
+  border-radius: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.timer-start {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 25px;
+  border: none;
+  background: #ff9b2f;
+  color: #171717;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.timer-start:hover:not(:disabled) {
+  background: #ff8c17;
+  transform: translateY(-2px);
+}
+
+.timer-reset {
+  width: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #eadfd5;
+  background: #fffaf5;
+  color: #77716b;
+}
+
+.timer-reset:hover {
+  color: #e87515;
+  border-color: #ff9b2f;
+}
+
+.focus-task-card {
+  width: 100%;
+  margin: 0 0 24px;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #eadfd5;
+  border-radius: 22px;
+  box-shadow: 0 5px 18px rgba(60, 40, 20, 0.025);
+}
+
+.dashboard-dark .dashboard-page-heading h1,
+.dashboard-dark .focus-main-card .timer-header strong,
+.dashboard-dark .focus-main-card .timer-display {
+  color: #f4f4f4;
+}
+
+.dashboard-dark .dashboard-page-heading p,
+.dashboard-dark .focus-main-card .focus-helper-text,
+.dashboard-dark .focus-main-card .timer-header > div {
+  color: #aaa;
+}
+
+.dashboard-dark .focus-main-card,
+.dashboard-dark .focus-task-card {
+  background: #202020;
+  border-color: #383838;
+}
+
+.dashboard-dark .timer-reset {
+  background: #292929;
+  border-color: #444;
+  color: #ccc;
+}
+
+@media (max-width: 650px) {
+  .dashboard-page-heading h1 {
+    font-size: 27px;
+  }
+
+  .focus-main-card,
+  .focus-task-card {
+    padding: 24px 18px;
+  }
+
+  .focus-main-card .timer-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .focus-main-card .timer-header > span {
+    max-width: 100%;
+  }
+}
+
+
+.focus-task-card {
+  margin-top: 24px;
+}
+
+.focus-task-select-heading {
+  margin-top: 0;
+}

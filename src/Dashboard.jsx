@@ -872,21 +872,66 @@ function Dashboard({
 
             <div className="dashboard-page-heading">
               <h1>Focus Timer</h1>
-              <p>Choose what you're working on, set your time, and go.</p>
+              <p>Choose a task, start the stopwatch, and focus at your own pace.</p>
             </div>
 
-            <div className="focus-task-card">
-              <div className="focus-task-top">
+            <div className="focus-main-card progress-big-card">
+              <div className="timer-header">
                 <div>
-                  <span className="focus-eyebrow">READY TO FOCUS?</span>
-                  <h2>Your focus timer starts at 00:00</h2>
-                  <p className="focus-helper-text">
-                    Choose a task or exercise, start the stopwatch, and finish when you are done.
-                  </p>
+                  <Clock size={20} />
+                  <strong>Focus Session</strong>
                 </div>
+
+                <span>{selectedFocusLabel || "Choose a task"}</span>
               </div>
 
+              <div className="timer-display">
+                {minutes}:{seconds}
+              </div>
 
+              <p className="focus-helper-text">
+                {timerRunning
+                  ? "Stay focused. One task at a time."
+                  : !selectedFocusLabel
+                    ? "Choose a task or exercise before starting your session."
+                    : timerSeconds === 0
+                      ? "Press Start Focus to begin."
+                      : "Pause or finish your session when you are done."}
+              </p>
+
+              <div className="timer-controls">
+                {timerRunning ? (
+                  <button className="timer-start" onClick={pauseTimer}>
+                    Pause
+                  </button>
+                ) : (
+                  <button
+                    className="timer-start"
+                    onClick={startTimer}
+                    disabled={!selectedFocusLabel || sessionRecordedRef.current}
+                  >
+                    <Play size={18} />
+                    Start Focus
+                  </button>
+                )}
+
+                <button
+                  className="timer-finish"
+                  onClick={finishTimer}
+                  disabled={!selectedFocusLabel || timerSeconds === 0 || sessionRecordedRef.current}
+                >
+                  <Check size={18} />
+                  Finish
+                </button>
+
+                <button className="timer-reset" onClick={resetTimer}>
+                  <RotateCcw size={18} />
+                </button>
+              </div>
+            </div>
+
+
+            <div className="focus-task-card">
               <div className="focus-task-top focus-task-select-heading">
                 <div>
                   <span className="focus-eyebrow">WHAT ARE YOU WORKING ON?</span>
@@ -991,61 +1036,6 @@ function Dashboard({
                   </span>
                 </div>
               )}
-            </div>
-
-            <div className="focus-main-card progress-big-card">
-              <div className="timer-header">
-                <div>
-                  <Clock size={20} />
-                  <strong>Focus Session</strong>
-                </div>
-
-                <span>{selectedFocusLabel || "Choose a task"}</span>
-              </div>
-
-              <div className="timer-display">
-                {minutes}:{seconds}
-              </div>
-
-              <p className="focus-helper-text">
-                {timerRunning
-                  ? "Stay focused. One task at a time."
-                  : !selectedFocusLabel
-                    ? "Choose a task or exercise before starting your session."
-                    : timerSeconds === 0
-                      ? "Press Start Focus to begin."
-                      : "Pause or finish your session when you are done."}
-              </p>
-
-              <div className="timer-controls">
-                {timerRunning ? (
-                  <button className="timer-start" onClick={pauseTimer}>
-                    Pause
-                  </button>
-                ) : (
-                  <button
-                    className="timer-start"
-                    onClick={startTimer}
-                    disabled={!selectedFocusLabel || sessionRecordedRef.current}
-                  >
-                    <Play size={18} />
-                    Start Focus
-                  </button>
-                )}
-
-                <button
-                  className="timer-finish"
-                  onClick={finishTimer}
-                  disabled={!selectedFocusLabel || timerSeconds === 0 || sessionRecordedRef.current}
-                >
-                  <Check size={18} />
-                  Finish
-                </button>
-
-                <button className="timer-reset" onClick={resetTimer}>
-                  <RotateCcw size={18} />
-                </button>
-              </div>
             </div>
 
             {lastCompletedSession && (
