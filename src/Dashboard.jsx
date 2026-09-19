@@ -1108,14 +1108,6 @@ function Dashboard({
             </div>
 
 
-
-            <div className="merged-goals-heading">
-              <span className="focus-eyebrow">YOUR GOALS</span>
-              <h2>Workout and consistency</h2>
-              <p>Manage your exercises, milestones, and weekly progress in the same page.</p>
-            </div>
-
-
             <div className="goals-grid">
 
               {/* WORKOUT TRACKER */}
