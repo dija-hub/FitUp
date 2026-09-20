@@ -55,13 +55,13 @@ function Dashboard({
   const [taskCategoryOpen, setTaskCategoryOpen] = useState(false);
   const taskCategoryRef = useRef(null);
 
-  // ===== FOCUS TIMER (stopwatch starts at 00:00) =====
+  
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
   const sessionRecordedRef = useRef(false);
 
-  // combined focus target: a task or an exercise
-  const [selectedFocusType, setSelectedFocusType] = useState(null); // "task" | "exercise"
+  
+  const [selectedFocusType, setSelectedFocusType] = useState(null);
   const [selectedFocusId, setSelectedFocusId] = useState(null);
   const [focusTaskDropdownOpen, setFocusTaskDropdownOpen] = useState(false);
 
@@ -72,7 +72,7 @@ function Dashboard({
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState("Study");
 
-  // WORKOUT TRACKER
+  
   const [exercises, setExercises] = useState([]);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
   const [exerciseSets, setExerciseSets] = useState("3");
@@ -80,12 +80,12 @@ function Dashboard({
   const [exerciseCategory, setExerciseCategory] = useState("Strength");
   const [selectedExercise, setSelectedExercise] = useState(null);
 
-  // MILESTONES
+  
   const [milestones, setMilestones] = useState([]);
   const [showMilestoneForm, setShowMilestoneForm] = useState(false);
   const [milestoneText, setMilestoneText] = useState("");
 
-  // CUSTOM CATEGORIES
+  
   const [categories, setCategories] = useState([]);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [categoryColor, setCategoryColor] = useState("#94a3b8");
@@ -152,11 +152,7 @@ function Dashboard({
     return streak;
   })();
 
-  // ===== PERSISTENCE (localStorage) =====
-  // Loads any previously saved data once, on mount, so tasks, exercises,
-  // milestones, categories and focus sessions survive a page refresh —
-  // which is what makes the weekly streak/consistency tracking meaningful
-  // across days instead of resetting every reload.
+  
   useEffect(() => {
     try {
       const savedTasks = localStorage.getItem("fitup_tasks");
@@ -235,7 +231,7 @@ function Dashboard({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ===== TIMER TICK =====
+ 
   useEffect(() => {
     if (!timerRunning) return;
 
@@ -246,7 +242,7 @@ function Dashboard({
     return () => clearInterval(interval);
   }, [timerRunning]);
 
-  // ===== TASK FUNCTIONS =====
+  
   const toggleTask = (id) => {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
@@ -311,7 +307,7 @@ function Dashboard({
     return known.includes(name.toLowerCase()) ? name.toLowerCase() : "custom";
   };
 
-  // ===== FOCUS TIMER FUNCTIONS =====
+  
   const unfinishedTasks = tasks.filter((task) => !task.completed);
   const unfinishedExercises = exercises.filter((ex) => !ex.completed);
 
@@ -410,7 +406,7 @@ function Dashboard({
 
   const focusStreak = currentStreak;
 
-  // ===== WORKOUT TRACKER =====
+  
   const EXERCISE_SUGGESTIONS = {
     Strength: [
       { name: "Push Ups", sets: "3", reps: "10" },
@@ -498,7 +494,7 @@ function Dashboard({
       : "reps";
   };
 
-  // ===== MILESTONES =====
+  
   const addMilestone = () => {
     if (!milestoneText.trim()) return;
 
@@ -526,7 +522,7 @@ function Dashboard({
     setMilestones((current) => current.filter((m) => m.id !== id));
   };
 
-  // ===== CUSTOM CATEGORIES =====
+
   const addCategory = () => {
     if (!categoryName.trim()) return;
 
