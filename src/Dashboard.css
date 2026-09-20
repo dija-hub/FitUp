@@ -2841,3 +2841,56 @@
     max-width: 100%;
   }
 }
+
+
+/* ===== Lighter Workout Tracker + Focus Session Text ===== */
+
+.exercise-name {
+  font-size: 15px;
+  font-weight: 400;
+  color: #77716b;
+}
+
+.exercise-metric strong {
+  color: #f97316;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.exercise-metric small {
+  margin-top: 3px;
+  color: #aaa19a;
+  font-size: 8px;
+  font-weight: 400;
+}
+
+.exercise-multiply {
+  color: #aaa19a;
+  font-weight: 400;
+}
+
+.focus-complete-card strong {
+  color: #77716b;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.focus-complete-card p {
+  margin: 4px 0 0;
+  color: #9a918a;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* Extra spacing around the workout tracker items */
+.exercise-row {
+  gap: 12px;
+}
+
+.exercise-right {
+  gap: 10px;
+}
+
+.exercise-metrics {
+  gap: 8px;
+}
