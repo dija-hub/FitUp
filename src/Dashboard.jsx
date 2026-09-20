@@ -1107,16 +1107,9 @@ function Dashboard({
               </div>
             </div>
 
+            <div className="goals-layout">
 
-
-            <div className="merged-goals-heading">
-              <span className="focus-eyebrow">YOUR GOALS</span>
-              <h2>Workout and consistency</h2>
-              <p>Manage your exercises, milestones, and weekly progress in the same page.</p>
-            </div>
-
-
-            <div className="goals-grid">
+              <div className="goals-left">
 
               {/* WORKOUT TRACKER */}
               <div className="feature-card">
@@ -1277,6 +1270,10 @@ function Dashboard({
                 )}
               </div>
 
+              </div>
+
+              <div className="goals-right">
+
               {/* MILESTONES */}
               <div className="feature-card">
 
@@ -1423,6 +1420,8 @@ function Dashboard({
                     <strong>{completedDays} day completed — start today</strong>
                   )}
                 </div>
+              </div>
+
               </div>
             </div>
           </section>
