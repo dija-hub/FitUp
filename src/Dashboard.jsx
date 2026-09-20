@@ -152,6 +152,49 @@ function Dashboard({
     return streak;
   })();
 
+  // ===== PERSISTENCE (localStorage) =====
+  // Loads any previously saved data once, on mount, so tasks, exercises,
+  // milestones, categories and focus sessions survive a page refresh —
+  // which is what makes the weekly streak/consistency tracking meaningful
+  // across days instead of resetting every reload.
+  useEffect(() => {
+    try {
+      const savedTasks = localStorage.getItem("fitup_tasks");
+      const savedExercises = localStorage.getItem("fitup_exercises");
+      const savedMilestones = localStorage.getItem("fitup_milestones");
+      const savedCategories = localStorage.getItem("fitup_categories");
+      const savedFocusSessions = localStorage.getItem("fitup_focus_sessions");
+
+      if (savedTasks) setTasks(JSON.parse(savedTasks));
+      if (savedExercises) setExercises(JSON.parse(savedExercises));
+      if (savedMilestones) setMilestones(JSON.parse(savedMilestones));
+      if (savedCategories) setCategories(JSON.parse(savedCategories));
+      if (savedFocusSessions) setFocusSessions(JSON.parse(savedFocusSessions));
+    } catch (err) {
+      console.error("Failed to load saved data:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("fitup_tasks", JSON.stringify(tasks));
+  }, [tasks]);
+
+  useEffect(() => {
+    localStorage.setItem("fitup_exercises", JSON.stringify(exercises));
+  }, [exercises]);
+
+  useEffect(() => {
+    localStorage.setItem("fitup_milestones", JSON.stringify(milestones));
+  }, [milestones]);
+
+  useEffect(() => {
+    localStorage.setItem("fitup_categories", JSON.stringify(categories));
+  }, [categories]);
+
+  useEffect(() => {
+    localStorage.setItem("fitup_focus_sessions", JSON.stringify(focusSessions));
+  }, [focusSessions]);
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -1031,7 +1074,7 @@ function Dashboard({
                 <div className="focus-no-tasks">
                   <p>No unfinished tasks or exercises yet.</p>
                   <span>
-                    Add a task from Overview or an exercise from Goals to start a
+                    Add a task from Overview or an exercise below to start a
                     focus session.
                   </span>
                 </div>
@@ -1372,6 +1415,12 @@ function Dashboard({
 
               </div>
 
+
+
+              </div>
+            </div>
+
+            <div className="goals-full-width">
               {/* WEEKLY CONSISTENCY */}
               <div className="feature-card weekly-consistency-card">
                 <div className="weekly-consistency-top">
@@ -1420,8 +1469,6 @@ function Dashboard({
                     <strong>{completedDays} day completed — start today</strong>
                   )}
                 </div>
-              </div>
-
               </div>
             </div>
           </section>
