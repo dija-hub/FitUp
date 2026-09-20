@@ -905,7 +905,7 @@ function Dashboard({
           </>
         )}
 
-        {/* ================= FOCUS ================= */}
+       
         {activePage === "focus" && (
           <section className="dashboard-page">
 
@@ -1150,7 +1150,7 @@ function Dashboard({
 
               <div className="goals-left">
 
-              {/* WORKOUT TRACKER */}
+              
               <div className="feature-card">
                 <div className="feature-card-header">
                   <div className="feature-icon orange">
@@ -1313,7 +1313,7 @@ function Dashboard({
 
               <div className="goals-right">
 
-              {/* MILESTONES */}
+              
               <div className="feature-card">
 
                 <div className="feature-card-header">
@@ -1417,7 +1417,7 @@ function Dashboard({
             </div>
 
             <div className="goals-full-width">
-              {/* WEEKLY CONSISTENCY */}
+              
               <div className="feature-card weekly-consistency-card">
                 <div className="weekly-consistency-top">
                   <span className="weekly-label">CONSISTENCY</span>

@@ -2651,7 +2651,7 @@
 }
 
 
-/* Focus timer page heading + main card */
+
 .dashboard-page-heading {
   text-align: center;
   margin: 0 auto 28px;
@@ -2719,7 +2719,7 @@
   white-space: nowrap;
 }
 
-/* Timer text made smaller per request */
+
 .focus-main-card .timer-display {
   margin: 28px 0 12px;
   color: #171717;
