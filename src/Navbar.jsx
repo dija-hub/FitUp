@@ -1,4 +1,4 @@
-import { Sun, Moon, TrendingUp } from "lucide-react";
+import { Sun, Moon, TrendingUp, ClipboardList } from "lucide-react";
 import "./Navbar.css";
 
 function Navbar({
@@ -80,6 +80,17 @@ function Navbar({
               onClick={() => changeDashboardPage("focus")}
             >
               Focus
+            </button>
+
+            <button
+              type="button"
+              className={`page-toggle-btn ${
+                activePage === "planner" ? "active" : ""
+              }`}
+              onClick={() => changeDashboardPage("planner")}
+            >
+              <ClipboardList size={16} />
+              Planner
             </button>
 
             <button

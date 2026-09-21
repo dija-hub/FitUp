@@ -2894,3 +2894,252 @@
 .exercise-metrics {
   gap: 8px;
 }
+
+/* DashboardFixes.css
+   Small visual fixes + styles for the new Planner page.
+*/
+
+/* Fix light-mode text visibility */
+.dashboard:not(.dashboard-dark) .dashboard-page-heading h1,
+.dashboard:not(.dashboard-dark) .dashboard-page-heading p,
+.dashboard:not(.dashboard-dark) .focus-task-select-heading h2,
+.dashboard:not(.dashboard-dark) .focus-task-option-name,
+.dashboard:not(.dashboard-dark) .focus-task-menu-title,
+.dashboard:not(.dashboard-dark) .focus-helper-text,
+.dashboard:not(.dashboard-dark) .timer-header strong,
+.dashboard:not(.dashboard-dark) .timer-header span,
+.dashboard:not(.dashboard-dark) .focus-card-heading h2,
+.dashboard:not(.dashboard-dark) .focus-stat-values strong,
+.dashboard:not(.dashboard-dark) .focus-stat-values span,
+.dashboard:not(.dashboard-dark) .focus-session-item strong,
+.dashboard:not(.dashboard-dark) .focus-session-item small,
+.dashboard:not(.dashboard-dark) .focus-session-duration,
+.dashboard:not(.dashboard-dark) .feature-card h2,
+.dashboard:not(.dashboard-dark) .feature-card p,
+.dashboard:not(.dashboard-dark) .exercise-name,
+.dashboard:not(.dashboard-dark) .planner-action-item strong,
+.dashboard:not(.dashboard-dark) .planner-action-item small,
+.dashboard:not(.dashboard-dark) .planner-summary-card strong,
+.dashboard:not(.dashboard-dark) .planner-summary-card span,
+.dashboard:not(.dashboard-dark) .planner-routine p {
+  color: #242424;
+}
+
+.dashboard:not(.dashboard-dark) .focus-eyebrow,
+.dashboard:not(.dashboard-dark) .weekly-label,
+.dashboard:not(.dashboard-dark) .planner-action-type {
+  color: #8b7768;
+}
+
+.dashboard:not(.dashboard-dark) .focus-task-trigger,
+.dashboard:not(.dashboard-dark) .focus-task-menu,
+.dashboard:not(.dashboard-dark) .focus-task-card,
+.dashboard:not(.dashboard-dark) .focus-main-card,
+.dashboard:not(.dashboard-dark) .focus-stat-card,
+.dashboard:not(.dashboard-dark) .feature-card,
+.dashboard:not(.dashboard-dark) .planner-summary-card {
+  color: #242424;
+}
+
+/* Keep clear space between the completed-session card and the weekly tracker */
+.goals-full-width {
+  margin-top: 32px;
+}
+
+.weekly-consistency-card {
+  margin-top: 0;
+}
+
+/* Planner page */
+.planner-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 24px 0;
+}
+
+.planner-summary-card {
+  border: 1px solid #eadfd5;
+  border-radius: 18px;
+  padding: 22px;
+  background: var(--card-bg, #fffaf5);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.planner-summary-card span {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #8b7768;
+}
+
+.planner-summary-card strong {
+  font-size: 32px;
+  line-height: 1;
+  color: #242424;
+}
+
+.planner-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.planner-main-card,
+.planner-tip-card {
+  min-width: 0;
+}
+
+.planner-action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.planner-action-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #eadfd5;
+  border-radius: 14px;
+}
+
+.planner-action-item > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.planner-action-item strong {
+  font-size: 15px;
+  color: #242424;
+  overflow-wrap: anywhere;
+}
+
+.planner-action-item small {
+  color: #8b7768;
+  font-size: 12px;
+}
+
+.planner-action-type {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  color: #8b7768;
+}
+
+.planner-focus-btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 15px;
+  background: #f97316;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.planner-focus-btn:hover {
+  opacity: 0.88;
+}
+
+.planner-empty {
+  padding: 42px 16px 20px;
+  text-align: center;
+}
+
+.planner-empty svg {
+  color: #16a34a;
+}
+
+.planner-empty h3 {
+  margin: 12px 0 6px;
+  color: #242424;
+}
+
+.planner-empty p {
+  color: #8b7768;
+}
+
+.planner-routine {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.planner-routine div {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.planner-routine span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff0e5;
+  color: #f97316;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.planner-routine p {
+  margin: 0;
+  color: #242424;
+  font-weight: 600;
+}
+
+/* Dark mode */
+.dashboard-dark .planner-summary-card,
+.dashboard-dark .planner-action-item {
+  background: #202020;
+  border-color: #393939;
+}
+
+.dashboard-dark .planner-summary-card span,
+.dashboard-dark .planner-action-type,
+.dashboard-dark .planner-action-item small {
+  color: #aaa;
+}
+
+.dashboard-dark .planner-summary-card strong,
+.dashboard-dark .planner-action-item strong,
+.dashboard-dark .planner-routine p,
+.dashboard-dark .planner-empty h3 {
+  color: #f5f5f5;
+}
+
+.dashboard-dark .planner-routine span {
+  background: #35251c;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .planner-layout,
+  .planner-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .planner-action-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .planner-focus-btn {
+    width: 100%;
+  }
+}

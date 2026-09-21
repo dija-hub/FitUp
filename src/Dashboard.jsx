@@ -20,6 +20,7 @@ import {
 
 import { supabase } from "./utils/supabase";
 import "./Dashboard.css";
+import "./DashboardFixes.css";
 
 const COLOR_OPTIONS = [
   "#3b82f6", "#ef4444", "#f97316", "#eab308",
@@ -351,6 +352,11 @@ function Dashboard({
     setTimerSeconds(0);
     sessionRecordedRef.current = false;
     setLastCompletedSession(null);
+  };
+
+  const openPlannerFocus = (type, id) => {
+    selectFocusTarget(type, id);
+    setActivePage("focus");
   };
 
   const startTimer = () => {
@@ -1047,6 +1053,117 @@ function Dashboard({
                 </div>
               )}
             </section>
+          </section>
+        )}
+
+        {activePage === "planner" && (
+          <section className="dashboard-page planner-page">
+            <div className="dashboard-page-heading">
+              <span className="focus-eyebrow">YOUR DAILY WORKSPACE</span>
+              <h1>Daily Planner</h1>
+              <p>See what needs your attention and choose your next small step.</p>
+            </div>
+
+            <div className="planner-summary-grid">
+              <div className="planner-summary-card">
+                <span>Tasks left</span>
+                <strong>{unfinishedTasks.length}</strong>
+              </div>
+              <div className="planner-summary-card">
+                <span>Exercises left</span>
+                <strong>{unfinishedExercises.length}</strong>
+              </div>
+              <div className="planner-summary-card">
+                <span>Focus today</span>
+                <strong>{todayFocusMinutes} min</strong>
+              </div>
+            </div>
+
+            <div className="planner-layout">
+              <div className="feature-card planner-main-card">
+                <div className="feature-card-header">
+                  <div className="feature-icon orange">
+                    <Target size={24} />
+                  </div>
+                  <div>
+                    <h2>Next actions</h2>
+                    <p>Pick one item instead of trying to do everything at once.</p>
+                  </div>
+                </div>
+
+                {unfinishedTasks.length === 0 && unfinishedExercises.length === 0 ? (
+                  <div className="planner-empty">
+                    <Check size={28} />
+                    <h3>Everything is complete!</h3>
+                    <p>You can rest or add a new task from Overview.</p>
+                  </div>
+                ) : (
+                  <div className="planner-action-list">
+                    {unfinishedTasks.slice(0, 6).map((task) => (
+                      <div className="planner-action-item" key={`planner-task-${task.id}`}>
+                        <div>
+                          <span className="planner-action-type">TASK</span>
+                          <strong>{task.title}</strong>
+                          <small>{task.category}</small>
+                        </div>
+                        <button
+                          type="button"
+                          className="planner-focus-btn"
+                          onClick={() => openPlannerFocus("task", task.id)}
+                        >
+                          Focus
+                        </button>
+                      </div>
+                    ))}
+
+                    {unfinishedExercises.slice(0, 6).map((exercise) => (
+                      <div className="planner-action-item" key={`planner-exercise-${exercise.id}`}>
+                        <div>
+                          <span className="planner-action-type">EXERCISE</span>
+                          <strong>{exercise.name}</strong>
+                          <small>{exercise.sets} sets × {exercise.reps}</small>
+                        </div>
+                        <button
+                          type="button"
+                          className="planner-focus-btn"
+                          onClick={() => openPlannerFocus("exercise", exercise.id)}
+                        >
+                          Focus
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="feature-card planner-tip-card">
+                <div className="feature-card-header">
+                  <div className="feature-icon purple">
+                    <Clock size={24} />
+                  </div>
+                  <div>
+                    <h2>Simple routine</h2>
+                    <p>A small plan for a focused day.</p>
+                  </div>
+                </div>
+
+                <div className="planner-routine">
+                  <div><span>01</span><p>Choose one task</p></div>
+                  <div><span>02</span><p>Focus for a few minutes</p></div>
+                  <div><span>03</span><p>Take a short break</p></div>
+                  <div><span>04</span><p>Mark your work complete</p></div>
+                </div>
+
+                <button
+                  type="button"
+                  className="feature-add-btn"
+                  onClick={() => setActivePage("overview")}
+                >
+                  <Plus size={18} />
+                  Add from Overview
+                </button>
+              </div>
+            </div>
           </section>
         )}
 
