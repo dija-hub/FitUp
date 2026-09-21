@@ -14,8 +14,6 @@ import {
   X,
   ChevronDown,
   ListChecks,
-  TrendingUp,
-  Target,
 } from "lucide-react";
 
 import { supabase } from "./utils/supabase";
@@ -142,10 +140,14 @@ function Dashboard({
       dayExercises.length > 0 &&
       dayExercises.every((exercise) => exercise.completed);
 
+    const hasTasks = dayTasks.length > 0;
+    const hasExercises = dayExercises.length > 0;
+    const hasAssignedItems = hasTasks || hasExercises;
+
     const isCompleted =
-      (dayTasks.length > 0 || dayExercises.length > 0) &&
-      dayTasks.every((task) => task.completed) &&
-      dayExercises.every((exercise) => exercise.completed);
+      hasAssignedItems &&
+      (!hasTasks || allTasksDone) &&
+      (!hasExercises || allExercisesDone);
 
     return {
       date,
@@ -354,11 +356,6 @@ function Dashboard({
     setLastCompletedSession(null);
   };
 
-  const openPlannerFocus = (type, id) => {
-    selectFocusTarget(type, id);
-    setActivePage("focus");
-  };
-
   const startTimer = () => {
     if (!selectedFocusLabel) return;
 
@@ -430,14 +427,6 @@ function Dashboard({
   );
 
   const focusStreak = currentStreak;
-
-  const completedExercises = exercises.filter((exercise) => exercise.completed).length;
-  const totalTrackedItems = totalTasks + exercises.length;
-  const completedTrackedItems = completedTasks + completedExercises;
-  const overallProgress =
-    totalTrackedItems === 0
-      ? 0
-      : Math.round((completedTrackedItems / totalTrackedItems) * 100);
 
   
   const EXERCISE_SUGGESTIONS = {
@@ -940,233 +929,6 @@ function Dashboard({
         )}
 
        
-        {activePage === "progress" && (
-          <section className="dashboard-page">
-            <div className="dashboard-page-heading">
-              <span className="focus-eyebrow">YOUR GROWTH</span>
-              <h1>Progress Overview</h1>
-              <p>See how consistently you complete tasks, exercises, and focus sessions.</p>
-            </div>
-
-            <div className="stats-grid">
-              <div className="stat-card">
-                <div className="stat-icon orange"><TrendingUp size={25} /></div>
-                <div>
-                  <span className="stat-title">Overall Progress</span>
-                  <strong className="stat-number orange-text">{overallProgress}%</strong>
-                </div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-icon green"><Check size={25} /></div>
-                <div>
-                  <span className="stat-title">Completed Tasks</span>
-                  <strong className="stat-number green-text">{completedTasks}</strong>
-                </div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-icon dark-icon"><Dumbbell size={25} /></div>
-                <div>
-                  <span className="stat-title">Completed Exercises</span>
-                  <strong className="stat-number dark-text">{completedExercises}</strong>
-                </div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-icon red-icon"><Clock size={25} /></div>
-                <div>
-                  <span className="stat-title">Focus Minutes</span>
-                  <strong className="stat-number red-text">{todayFocusMinutes}</strong>
-                </div>
-              </div>
-            </div>
-
-            <div className="dashboard-grid" style={{ marginTop: "28px" }}>
-              <section className="feature-card">
-                <div className="feature-card-header">
-                  <div className="feature-icon orange"><Target size={24} /></div>
-                  <div>
-                    <h2>Completion Progress</h2>
-                    <p>Tasks and exercises together</p>
-                  </div>
-                </div>
-                <div className="mini-progress" style={{ marginTop: "24px" }}>
-                  <div className="mini-progress-track">
-                    <div className="mini-progress-fill" style={{ width: `${overallProgress}%` }} />
-                  </div>
-                  <span>{completedTrackedItems} of {totalTrackedItems} completed</span>
-                </div>
-                <div className="focus-stat-values" style={{ marginTop: "28px" }}>
-                  <div>
-                    <strong>{totalTasks}</strong>
-                    <span>Total tasks</span>
-                  </div>
-                  <div>
-                    <strong>{exercises.length}</strong>
-                    <span>Total exercises</span>
-                  </div>
-                </div>
-              </section>
-
-              <section className="feature-card">
-                <div className="feature-card-header">
-                  <div className="feature-icon purple"><CalendarDays size={24} /></div>
-                  <div>
-                    <h2>This Week</h2>
-                    <p>Daily consistency tracker</p>
-                  </div>
-                </div>
-                <div className="weekly-days" style={{ marginTop: "28px" }}>
-                  {weekDays.map((day) => (
-                    <div className="weekly-day" key={`progress-${day.dateKey}`}>
-                      <span className="weekly-day-label">{day.label}</span>
-                      <div className={`weekly-day-circle ${day.isCompleted ? "completed" : day.isToday ? "today" : ""}`}>
-                        {day.isCompleted ? <Check size={18} /> : day.isToday ? <span /> : null}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <p style={{ marginTop: "24px" }}>{completedDays} of 7 days completed</p>
-              </section>
-            </div>
-
-            <section className="feature-card" style={{ marginTop: "28px" }}>
-              <div className="feature-card-header">
-                <div className="feature-icon yellow"><Clock size={24} /></div>
-                <div>
-                  <h2>Recent Focus Activity</h2>
-                  <p>Your latest completed sessions</p>
-                </div>
-              </div>
-              {focusSessions.length === 0 ? (
-                <div className="feature-empty"><p>No focus sessions yet.</p></div>
-              ) : (
-                <div className="focus-session-list" style={{ marginTop: "20px" }}>
-                  {focusSessions.slice(0, 5).map((session) => (
-                    <div className="focus-session-item" key={`progress-session-${session.id}`}>
-                      <span className="focus-session-check"><Check size={14} /></span>
-                      <div>
-                        <strong>{session.taskTitle}</strong>
-                        <small>{session.date} · {session.completedAt}</small>
-                      </div>
-                      <span className="focus-session-duration">{formatSessionDuration(session.durationSeconds || session.duration * 60)}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-          </section>
-        )}
-
-        {activePage === "planner" && (
-          <section className="dashboard-page planner-page">
-            <div className="dashboard-page-heading">
-              <span className="focus-eyebrow">YOUR DAILY WORKSPACE</span>
-              <h1>Daily Planner</h1>
-              <p>See what needs your attention and choose your next small step.</p>
-            </div>
-
-            <div className="planner-summary-grid">
-              <div className="planner-summary-card">
-                <span>Tasks left</span>
-                <strong>{unfinishedTasks.length}</strong>
-              </div>
-              <div className="planner-summary-card">
-                <span>Exercises left</span>
-                <strong>{unfinishedExercises.length}</strong>
-              </div>
-              <div className="planner-summary-card">
-                <span>Focus today</span>
-                <strong>{todayFocusMinutes} min</strong>
-              </div>
-            </div>
-
-            <div className="planner-layout">
-              <div className="feature-card planner-main-card">
-                <div className="feature-card-header">
-                  <div className="feature-icon orange">
-                    <Target size={24} />
-                  </div>
-                  <div>
-                    <h2>Next actions</h2>
-                    <p>Pick one item instead of trying to do everything at once.</p>
-                  </div>
-                </div>
-
-                {unfinishedTasks.length === 0 && unfinishedExercises.length === 0 ? (
-                  <div className="planner-empty">
-                    <Check size={28} />
-                    <h3>Everything is complete!</h3>
-                    <p>You can rest or add a new task from Overview.</p>
-                  </div>
-                ) : (
-                  <div className="planner-action-list">
-                    {unfinishedTasks.slice(0, 6).map((task) => (
-                      <div className="planner-action-item" key={`planner-task-${task.id}`}>
-                        <div>
-                          <span className="planner-action-type">TASK</span>
-                          <strong>{task.title}</strong>
-                          <small>{task.category}</small>
-                        </div>
-                        <button
-                          type="button"
-                          className="planner-focus-btn"
-                          onClick={() => openPlannerFocus("task", task.id)}
-                        >
-                          Focus
-                        </button>
-                      </div>
-                    ))}
-
-                    {unfinishedExercises.slice(0, 6).map((exercise) => (
-                      <div className="planner-action-item" key={`planner-exercise-${exercise.id}`}>
-                        <div>
-                          <span className="planner-action-type">EXERCISE</span>
-                          <strong>{exercise.name}</strong>
-                          <small>{exercise.sets} sets × {exercise.reps}</small>
-                        </div>
-                        <button
-                          type="button"
-                          className="planner-focus-btn"
-                          onClick={() => openPlannerFocus("exercise", exercise.id)}
-                        >
-                          Focus
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="feature-card planner-tip-card">
-                <div className="feature-card-header">
-                  <div className="feature-icon purple">
-                    <Clock size={24} />
-                  </div>
-                  <div>
-                    <h2>Simple routine</h2>
-                    <p>A small plan for a focused day.</p>
-                  </div>
-                </div>
-
-                <div className="planner-routine">
-                  <div><span>01</span><p>Choose one task</p></div>
-                  <div><span>02</span><p>Focus for a few minutes</p></div>
-                  <div><span>03</span><p>Take a short break</p></div>
-                  <div><span>04</span><p>Mark your work complete</p></div>
-                </div>
-
-                <button
-                  type="button"
-                  className="feature-add-btn"
-                  onClick={() => setActivePage("overview")}
-                >
-                  <Plus size={18} />
-                  Add from Overview
-                </button>
-              </div>
-            </div>
-          </section>
-        )}
-
         {activePage === "focus" && (
           <section className="dashboard-page">
 
@@ -1677,9 +1439,9 @@ function Dashboard({
               </div>
             </div>
 
-            <div className="goals-full-width">
+            <div className="goals-full-width" style={{ marginTop: "32px" }}>
               
-              <div className="feature-card weekly-consistency-card" style={{ marginTop: "32px" }}>
+              <div className="feature-card weekly-consistency-card">
                 <div className="weekly-consistency-top">
                   <span className="weekly-label">CONSISTENCY</span>
                   <strong className="weekly-count">{completedDays} / 7</strong>
@@ -1687,7 +1449,7 @@ function Dashboard({
 
                 <div className="weekly-heading">
                   <h2>This week</h2>
-                  <p>Complete every task and exercise for a day to mark it complete.</p>
+                  <p>Complete all your tasks for a day to mark it complete.</p>
                 </div>
 
                 <div className="weekly-days">
@@ -1705,7 +1467,7 @@ function Dashboard({
                         }`}
                         title={
                           day.isCompleted
-                            ? "All tasks and exercises completed"
+                            ? "All assigned tasks and exercises completed"
                             : day.hasTasks
                               ? "Tasks still remaining"
                               : "No tasks for this day"
