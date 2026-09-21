@@ -1,4 +1,4 @@
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, TrendingUp } from "lucide-react";
 import "./Navbar.css";
 
 function Navbar({
@@ -42,9 +42,14 @@ function Navbar({
     setShowDashboard(true);
   };
 
+  const changeDashboardPage = (page) => {
+    setActiveSection("dashboard");
+    setActivePage(page);
+    setShowDashboard(true);
+  };
+
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>
-
       <button
         type="button"
         className="logo"
@@ -55,16 +60,14 @@ function Navbar({
       </button>
 
       <ul className="nav-links">
-
         {showDashboard ? (
           <li className="page-toggle-group">
-
             <button
               type="button"
               className={`page-toggle-btn ${
                 activePage === "overview" ? "active" : ""
               }`}
-              onClick={() => setActivePage("overview")}
+              onClick={() => changeDashboardPage("overview")}
             >
               Overview
             </button>
@@ -74,11 +77,21 @@ function Navbar({
               className={`page-toggle-btn ${
                 activePage === "focus" ? "active" : ""
               }`}
-              onClick={() => setActivePage("focus")}
+              onClick={() => changeDashboardPage("focus")}
             >
               Focus
             </button>
 
+            <button
+              type="button"
+              className={`page-toggle-btn ${
+                activePage === "progress" ? "active" : ""
+              }`}
+              onClick={() => changeDashboardPage("progress")}
+            >
+              <TrendingUp size={16} />
+              Progress
+            </button>
           </li>
         ) : (
           <>
@@ -86,9 +99,7 @@ function Navbar({
               <button
                 type="button"
                 className={`nav-link ${
-                  activeSection === "home" && !showDashboard
-                    ? "active"
-                    : ""
+                  activeSection === "home" && !showDashboard ? "active" : ""
                 }`}
                 onClick={() => goTo("home")}
               >
@@ -100,9 +111,7 @@ function Navbar({
               <button
                 type="button"
                 className={`nav-link ${
-                  activeSection === "features" && !showDashboard
-                    ? "active"
-                    : ""
+                  activeSection === "features" && !showDashboard ? "active" : ""
                 }`}
                 onClick={() => goTo("features")}
               >
@@ -114,9 +123,7 @@ function Navbar({
               <button
                 type="button"
                 className={`nav-link ${
-                  activeSection === "work" && !showDashboard
-                    ? "active"
-                    : ""
+                  activeSection === "work" && !showDashboard ? "active" : ""
                 }`}
                 onClick={() => goTo("work")}
               >
@@ -128,9 +135,7 @@ function Navbar({
               <button
                 type="button"
                 className={`nav-link ${
-                  activeSection === "connect" && !showDashboard
-                    ? "active"
-                    : ""
+                  activeSection === "connect" && !showDashboard ? "active" : ""
                 }`}
                 onClick={() => goTo("connect")}
               >
@@ -153,7 +158,6 @@ function Navbar({
             )}
           </>
         )}
-
       </ul>
 
       <div className="nav-buttons">
@@ -185,9 +189,7 @@ function Navbar({
         >
           {darkMode ? <Sun size={20} /> : <Moon size={20} />}
         </button>
-
       </div>
-
     </nav>
   );
 }
