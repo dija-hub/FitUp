@@ -1,4 +1,4 @@
-import { Sun, Moon, TrendingUp, ClipboardList } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 import "./Navbar.css";
 
 function Navbar({
@@ -39,6 +39,7 @@ function Navbar({
 
     setShowSignUp(false);
     setActiveSection("dashboard");
+    setActivePage("overview");
     setShowDashboard(true);
   };
 
@@ -81,28 +82,6 @@ function Navbar({
             >
               Focus
             </button>
-
-            <button
-              type="button"
-              className={`page-toggle-btn ${
-                activePage === "planner" ? "active" : ""
-              }`}
-              onClick={() => changeDashboardPage("planner")}
-            >
-              <ClipboardList size={16} />
-              Planner
-            </button>
-
-            <button
-              type="button"
-              className={`page-toggle-btn ${
-                activePage === "progress" ? "active" : ""
-              }`}
-              onClick={() => changeDashboardPage("progress")}
-            >
-              <TrendingUp size={16} />
-              Progress
-            </button>
           </li>
         ) : (
           <>
@@ -110,7 +89,9 @@ function Navbar({
               <button
                 type="button"
                 className={`nav-link ${
-                  activeSection === "home" && !showDashboard ? "active" : ""
+                  activeSection === "home" && !showDashboard
+                    ? "active"
+                    : ""
                 }`}
                 onClick={() => goTo("home")}
               >
@@ -122,7 +103,9 @@ function Navbar({
               <button
                 type="button"
                 className={`nav-link ${
-                  activeSection === "features" && !showDashboard ? "active" : ""
+                  activeSection === "features" && !showDashboard
+                    ? "active"
+                    : ""
                 }`}
                 onClick={() => goTo("features")}
               >
@@ -134,7 +117,9 @@ function Navbar({
               <button
                 type="button"
                 className={`nav-link ${
-                  activeSection === "work" && !showDashboard ? "active" : ""
+                  activeSection === "work" && !showDashboard
+                    ? "active"
+                    : ""
                 }`}
                 onClick={() => goTo("work")}
               >
@@ -146,7 +131,9 @@ function Navbar({
               <button
                 type="button"
                 className={`nav-link ${
-                  activeSection === "connect" && !showDashboard ? "active" : ""
+                  activeSection === "connect" && !showDashboard
+                    ? "active"
+                    : ""
                 }`}
                 onClick={() => goTo("connect")}
               >

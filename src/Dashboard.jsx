@@ -18,7 +18,7 @@ import {
 
 import { supabase } from "./utils/supabase";
 import "./Dashboard.css";
-
+import "./DashboardFixes.css";
 
 const COLOR_OPTIONS = [
   "#3b82f6", "#ef4444", "#f97316", "#eab308",
