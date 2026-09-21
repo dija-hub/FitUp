@@ -122,17 +122,31 @@ function Dashboard({
     date.setDate(startOfWeek.getDate() + index);
 
     const dateKey = getDateKey(date);
+
     const dayTasks = tasks.filter(
       (task) => (task.date || getDateKey()) === dateKey
     );
-    const isCompleted = dayTasks.length > 0 && dayTasks.every((task) => task.completed);
+    const dayExercises = exercises.filter(
+      (exercise) => (exercise.date || getDateKey()) === dateKey
+    );
+
+    // A day only gets ticked automatically once everything assigned to it
+    // is actually finished - every task done, or every exercise done.
+    // As long as even one task (or exercise) is still left, it stays unticked.
+    const allTasksDone =
+      dayTasks.length > 0 && dayTasks.every((task) => task.completed);
+    const allExercisesDone =
+      dayExercises.length > 0 &&
+      dayExercises.every((exercise) => exercise.completed);
+
+    const isCompleted = allTasksDone || allExercisesDone;
 
     return {
       date,
       dateKey,
       label: date.toLocaleDateString("en-US", { weekday: "short" }).slice(0, 1),
       isToday: dateKey === getDateKey(),
-      hasTasks: dayTasks.length > 0,
+      hasTasks: dayTasks.length > 0 || dayExercises.length > 0,
       isCompleted,
     };
   });
@@ -455,6 +469,7 @@ function Dashboard({
         sets: exerciseSets.trim() || selectedExercise.sets,
         reps: exerciseReps.trim() || selectedExercise.reps,
         completed: false,
+        date: getDateKey(),
       },
     ]);
 
@@ -1078,7 +1093,7 @@ function Dashboard({
             </div>
 
             {lastCompletedSession && (
-              <div className="focus-complete-card">
+              <div className="focus-complete-card" style={{ marginTop: "24px" }}>
                 <div className="focus-complete-icon">
                   <Check size={20} />
                 </div>
