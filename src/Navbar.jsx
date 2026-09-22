@@ -42,14 +42,9 @@ function Navbar({
     setShowDashboard(true);
   };
 
-  const changePage = (page) => {
-    setActivePage(page);
-    setActiveSection("dashboard");
-    setShowDashboard(true);
-  };
-
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>
+
       <button
         type="button"
         className="logo"
@@ -60,14 +55,16 @@ function Navbar({
       </button>
 
       <ul className="nav-links">
+
         {showDashboard ? (
           <li className="page-toggle-group">
+
             <button
               type="button"
               className={`page-toggle-btn ${
                 activePage === "overview" ? "active" : ""
               }`}
-              onClick={() => changePage("overview")}
+              onClick={() => setActivePage("overview")}
             >
               Overview
             </button>
@@ -77,7 +74,7 @@ function Navbar({
               className={`page-toggle-btn ${
                 activePage === "focus" ? "active" : ""
               }`}
-              onClick={() => changePage("focus")}
+              onClick={() => setActivePage("focus")}
             >
               Focus
             </button>
@@ -85,12 +82,13 @@ function Navbar({
             <button
               type="button"
               className={`page-toggle-btn ${
-                activePage === "week" ? "active" : ""
+                activePage === "activity" ? "active" : ""
               }`}
-              onClick={() => changePage("week")}
+              onClick={() => setActivePage("activity")}
             >
-              Week
+              Activity
             </button>
+
           </li>
         ) : (
           <>
@@ -98,7 +96,9 @@ function Navbar({
               <button
                 type="button"
                 className={`nav-link ${
-                  activeSection === "home" && !showDashboard ? "active" : ""
+                  activeSection === "home" && !showDashboard
+                    ? "active"
+                    : ""
                 }`}
                 onClick={() => goTo("home")}
               >
@@ -124,7 +124,9 @@ function Navbar({
               <button
                 type="button"
                 className={`nav-link ${
-                  activeSection === "work" && !showDashboard ? "active" : ""
+                  activeSection === "work" && !showDashboard
+                    ? "active"
+                    : ""
                 }`}
                 onClick={() => goTo("work")}
               >
@@ -161,6 +163,7 @@ function Navbar({
             )}
           </>
         )}
+
       </ul>
 
       <div className="nav-buttons">
@@ -192,7 +195,9 @@ function Navbar({
         >
           {darkMode ? <Sun size={20} /> : <Moon size={20} />}
         </button>
+
       </div>
+
     </nav>
   );
 }
