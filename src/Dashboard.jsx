@@ -139,14 +139,7 @@ function Dashboard({
       dayExercises.length > 0 &&
       dayExercises.every((exercise) => exercise.completed);
 
-    const hasTasks = dayTasks.length > 0;
-    const hasExercises = dayExercises.length > 0;
-    const hasAssignedItems = hasTasks || hasExercises;
-
-    const isCompleted =
-      hasAssignedItems &&
-      (!hasTasks || allTasksDone) &&
-      (!hasExercises || allExercisesDone);
+    const isCompleted = allTasksDone || allExercisesDone;
 
     return {
       date,
@@ -928,6 +921,214 @@ function Dashboard({
         )}
 
        
+        {activePage === "week" && (
+          <section className="dashboard-page week-page">
+            <div className="week-page-heading">
+              <div>
+                <span className="week-eyebrow">YOUR WEEK</span>
+                <h1>This week</h1>
+                <p>Keep track of your tasks, exercises, and focus.</p>
+              </div>
+              <div className="week-range-badge">
+                {weekDays[0].date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })}
+                {" — "}
+                {weekDays[6].date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })}
+              </div>
+            </div>
+
+            <div className="week-stats-grid">
+              <div className="week-stat-card">
+                <span>Tasks</span>
+                <strong>
+                  {weekDays.reduce(
+                    (total, day) =>
+                      total +
+                      tasks.filter(
+                        (task) => (task.date || getDateKey()) === day.dateKey
+                      ).filter((task) => task.completed).length,
+                    0
+                  )}
+                </strong>
+                <small>completed this week</small>
+              </div>
+
+              <div className="week-stat-card">
+                <span>Exercises</span>
+                <strong>
+                  {weekDays.reduce(
+                    (total, day) =>
+                      total +
+                      exercises.filter(
+                        (exercise) =>
+                          (exercise.date || getDateKey()) === day.dateKey
+                      ).filter((exercise) => exercise.completed).length,
+                    0
+                  )}
+                </strong>
+                <small>completed this week</small>
+              </div>
+
+              <div className="week-stat-card">
+                <span>Focus time</span>
+                <strong>
+                  {Math.floor(
+                    weekDays.reduce(
+                      (total, day) =>
+                        total +
+                        focusSessions
+                          .filter((session) => session.date === day.dateKey)
+                          .reduce(
+                            (minutesTotal, session) =>
+                              minutesTotal +
+                              Math.floor(
+                                (session.durationSeconds || session.duration * 60 || 0) /
+                                  60
+                              ),
+                            0
+                          ),
+                      0
+                    )
+                  )} min
+                </strong>
+                <small>focused this week</small>
+              </div>
+            </div>
+
+            <div className="week-calendar-card">
+              <div className="week-calendar-grid">
+                {weekDays.map((day) => {
+                  const dayTasks = tasks.filter(
+                    (task) => (task.date || getDateKey()) === day.dateKey
+                  );
+                  const dayExercises = exercises.filter(
+                    (exercise) =>
+                      (exercise.date || getDateKey()) === day.dateKey
+                  );
+                  const daySessions = focusSessions.filter(
+                    (session) => session.date === day.dateKey
+                  );
+
+                  const totalItems = dayTasks.length + dayExercises.length;
+                  const completedItems =
+                    dayTasks.filter((task) => task.completed).length +
+                    dayExercises.filter((exercise) => exercise.completed).length;
+
+                  const focusMinutes = daySessions.reduce(
+                    (total, session) =>
+                      total +
+                      Math.floor(
+                        (session.durationSeconds || session.duration * 60 || 0) /
+                          60
+                      ),
+                    0
+                  );
+
+                  return (
+                    <div
+                      className={`week-day-card ${
+                        day.isToday ? "current-day" : ""
+                      }`}
+                      key={day.dateKey}
+                    >
+                      <div className="week-day-header">
+                        <div>
+                          <span className="week-day-name">
+                            {day.date.toLocaleDateString("en-US", {
+                              weekday: "short",
+                            })}
+                          </span>
+                          <strong>{day.date.getDate()}</strong>
+                        </div>
+                        {day.isToday && (
+                          <span className="today-pill">Today</span>
+                        )}
+                      </div>
+
+                      <div className="week-day-items">
+                        {totalItems === 0 ? (
+                          <div className="week-empty">Nothing planned</div>
+                        ) : (
+                          <>
+                            {dayTasks.map((task) => (
+                              <div
+                                className={`week-item ${
+                                  task.completed ? "done" : ""
+                                }`}
+                                key={`task-${task.id}`}
+                              >
+                                <span className="week-item-check">
+                                  {task.completed ? <Check size={13} /> : null}
+                                </span>
+                                <span>{task.title}</span>
+                              </div>
+                            ))}
+
+                            {dayExercises.map((exercise) => (
+                              <div
+                                className={`week-item exercise-item ${
+                                  exercise.completed ? "done" : ""
+                                }`}
+                                key={`exercise-${exercise.id}`}
+                              >
+                                <span className="week-item-check">
+                                  {exercise.completed ? <Check size={13} /> : null}
+                                </span>
+                                <span>{exercise.name}</span>
+                              </div>
+                            ))}
+                          </>
+                        )}
+                      </div>
+
+                      <div className="week-day-footer">
+                        <div className="week-day-progress-row">
+                          <span>
+                            {completedItems}/{totalItems} done
+                          </span>
+                          <span>{focusMinutes} min focus</span>
+                        </div>
+                        <div className="week-mini-progress">
+                          <div
+                            style={{
+                              width:
+                                totalItems === 0
+                                  ? "0%"
+                                  : `${
+                                      (completedItems / totalItems) * 100
+                                    }%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="week-consistency-card">
+              <div>
+                <span className="week-eyebrow">CONSISTENCY</span>
+                <h2>{completedDays}/7 days completed</h2>
+                <p>
+                  Finish all your planned tasks and exercises to complete a day.
+                </p>
+              </div>
+              <div className="week-consistency-progress">
+                <div
+                  style={{ width: `${(completedDays / 7) * 100}%` }}
+                />
+              </div>
+            </div>
+          </section>
+        )}
+
         {activePage === "focus" && (
           <section className="dashboard-page">
 
@@ -1438,7 +1639,7 @@ function Dashboard({
               </div>
             </div>
 
-            <div className="goals-full-width" style={{ marginTop: "32px" }}>
+            <div className="goals-full-width">
               
               <div className="feature-card weekly-consistency-card">
                 <div className="weekly-consistency-top">
@@ -1466,7 +1667,7 @@ function Dashboard({
                         }`}
                         title={
                           day.isCompleted
-                            ? "All assigned tasks and exercises completed"
+                            ? "All tasks completed"
                             : day.hasTasks
                               ? "Tasks still remaining"
                               : "No tasks for this day"

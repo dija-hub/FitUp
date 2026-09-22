@@ -1,4 +1,4 @@
-import { Sun, Moon, CalendarDays } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 import "./Navbar.css";
 
 function Navbar({
@@ -89,7 +89,6 @@ function Navbar({
               }`}
               onClick={() => changePage("week")}
             >
-              <CalendarDays size={18} />
               Week
             </button>
           </li>

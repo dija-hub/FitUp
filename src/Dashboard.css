@@ -3191,6 +3191,45 @@
   font-weight: 600;
 }
 
+/* Weekly overview */
+.week-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.week-stat-card {
+  padding: 20px 22px;
+  background: #ffffff;
+  border: 1px solid #eadfd5;
+  border-radius: 18px;
+}
+
+.week-stat-card span,
+.week-stat-card small {
+  display: block;
+}
+
+.week-stat-card span {
+  color: #77716b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.week-stat-card strong {
+  display: block;
+  margin: 5px 0 2px;
+  color: #202020;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.week-stat-card small {
+  color: #aaa29a;
+  font-size: 11px;
+}
+
 .week-calendar-card {
   padding: 20px;
   background: #ffffff;
@@ -3299,24 +3338,30 @@
   text-decoration: line-through;
 }
 
-.week-item-icon {
-  width: 25px;
-  height: 25px;
+.week-item-check {
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 7px;
+  border: 1.5px solid #e97817;
+  border-radius: 50%;
+  color: #ffffff;
 }
 
-.task-icon {
-  background: #fff0df;
-  color: #e97817;
+.week-item.done .week-item-check {
+  background: #e97817;
+  border-color: #e97817;
 }
 
-.exercise-icon {
-  background: #eef1ff;
-  color: #5865e0;
+.exercise-item .week-item-check {
+  border-color: #7a86e8;
+}
+
+.exercise-item.done .week-item-check {
+  background: #7a86e8;
+  border-color: #7a86e8;
 }
 
 .week-empty {
@@ -3335,8 +3380,10 @@
   border-top: 1px solid #eee3da;
 }
 
-.week-day-footer > span {
-  display: block;
+.week-day-progress-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 7px;
   color: #77716b;
   font-size: 11px;
@@ -3364,11 +3411,50 @@
 
 .dashboard-dark .week-page-heading p,
 .dashboard-dark .week-day-name,
-.dashboard-dark .week-day-footer > span {
+.dashboard-dark .week-day-progress-row {
   color: #a9a9a9;
 }
 
-.dashboard-dark .week-calendar-card {
+.dashboard-dark /* Weekly overview */
+.week-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.week-stat-card {
+  padding: 20px 22px;
+  background: #ffffff;
+  border: 1px solid #eadfd5;
+  border-radius: 18px;
+}
+
+.week-stat-card span,
+.week-stat-card small {
+  display: block;
+}
+
+.week-stat-card span {
+  color: #77716b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.week-stat-card strong {
+  display: block;
+  margin: 5px 0 2px;
+  color: #202020;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.week-stat-card small {
+  color: #aaa29a;
+  font-size: 11px;
+}
+
+.week-calendar-card {
   background: #202020;
   border-color: #303030;
   box-shadow: none;
@@ -3426,9 +3512,83 @@
   color: #93a1ff;
 }
 
+
+.dashboard-dark .week-stat-card {
+  background: #202020;
+  border-color: #303030;
+}
+
+.dashboard-dark .week-stat-card span {
+  color: #a9a9a9;
+}
+
+.dashboard-dark .week-stat-card strong {
+  color: #f4f4f4;
+}
+
+.dashboard-dark .week-stat-card small {
+  color: #777777;
+}
+
+.week-consistency-card {
+  margin-top: 18px;
+  padding: 22px 24px;
+  background: #ffffff;
+  border: 1px solid #eadfd5;
+  border-radius: 18px;
+}
+
+.week-consistency-card h2 {
+  margin: 5px 0 4px;
+  color: #202020;
+  font-size: 20px;
+}
+
+.week-consistency-card p {
+  margin: 0;
+  color: #77716b;
+  font-size: 13px;
+}
+
+.week-consistency-progress {
+  height: 7px;
+  margin-top: 18px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #eee4db;
+}
+
+.week-consistency-progress > div {
+  height: 100%;
+  border-radius: inherit;
+  background: #ff9b2f;
+  transition: width 0.3s ease;
+}
+
+.dashboard-dark .week-consistency-card {
+  background: #202020;
+  border-color: #303030;
+}
+
+.dashboard-dark .week-consistency-card h2 {
+  color: #f4f4f4;
+}
+
+.dashboard-dark .week-consistency-card p {
+  color: #a9a9a9;
+}
+
+.dashboard-dark .week-consistency-progress {
+  background: #3a3a3a;
+}
+
 @media (max-width: 1100px) {
   .week-calendar-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .week-stats-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -3440,6 +3600,10 @@
 
   .week-calendar-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .week-stats-grid {
+    grid-template-columns: 1fr;
   }
 }
 
