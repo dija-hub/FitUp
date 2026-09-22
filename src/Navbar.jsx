@@ -39,12 +39,18 @@ function Navbar({
 
     setShowSignUp(false);
     setActiveSection("dashboard");
+    setActivePage("overview");
+    setShowDashboard(true);
+  };
+
+  const changeDashboardPage = (page) => {
+    setActiveSection("dashboard");
+    setActivePage(page);
     setShowDashboard(true);
   };
 
   return (
     <nav className={`navbar ${darkMode ? "dark" : ""}`}>
-
       <button
         type="button"
         className="logo"
@@ -55,16 +61,14 @@ function Navbar({
       </button>
 
       <ul className="nav-links">
-
         {showDashboard ? (
           <li className="page-toggle-group">
-
             <button
               type="button"
               className={`page-toggle-btn ${
                 activePage === "overview" ? "active" : ""
               }`}
-              onClick={() => setActivePage("overview")}
+              onClick={() => changeDashboardPage("overview")}
             >
               Overview
             </button>
@@ -74,21 +78,10 @@ function Navbar({
               className={`page-toggle-btn ${
                 activePage === "focus" ? "active" : ""
               }`}
-              onClick={() => setActivePage("focus")}
+              onClick={() => changeDashboardPage("focus")}
             >
               Focus
             </button>
-
-            <button
-              type="button"
-              className={`page-toggle-btn ${
-                activePage === "activity" ? "active" : ""
-              }`}
-              onClick={() => setActivePage("activity")}
-            >
-              Activity
-            </button>
-
           </li>
         ) : (
           <>
@@ -163,7 +156,6 @@ function Navbar({
             )}
           </>
         )}
-
       </ul>
 
       <div className="nav-buttons">
@@ -195,9 +187,7 @@ function Navbar({
         >
           {darkMode ? <Sun size={20} /> : <Moon size={20} />}
         </button>
-
       </div>
-
     </nav>
   );
 }

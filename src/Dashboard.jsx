@@ -13,8 +13,6 @@ import {
   Tag,
   X,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   ListChecks,
 } from "lucide-react";
 
@@ -95,15 +93,6 @@ function Dashboard({
   const [showColorPicker, setShowColorPicker] = useState(false);
   const colorPickerRef = useRef(null);
 
-  
-  const [activityMonth, setActivityMonth] = useState(() => {
-    const d = new Date();
-    d.setDate(1);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  });
-  const [selectedActivityDate, setSelectedActivityDate] = useState(getDateKey());
-
   const allCategories = [
     ...DEFAULT_CATEGORIES,
     ...categories.map((c) => ({ name: c.name, color: c.color })),
@@ -141,16 +130,20 @@ function Dashboard({
       (exercise) => (exercise.date || getDateKey()) === dateKey
     );
 
-    // A day only gets ticked automatically once everything assigned to it
-    // is actually finished - every task done, or every exercise done.
-    // As long as even one task (or exercise) is still left, it stays unticked.
     const allTasksDone =
       dayTasks.length > 0 && dayTasks.every((task) => task.completed);
     const allExercisesDone =
       dayExercises.length > 0 &&
       dayExercises.every((exercise) => exercise.completed);
 
-    const isCompleted = allTasksDone || allExercisesDone;
+    const hasTasks = dayTasks.length > 0;
+    const hasExercises = dayExercises.length > 0;
+    const hasAssignedItems = hasTasks || hasExercises;
+
+    const isCompleted =
+      hasAssignedItems &&
+      (!hasTasks || allTasksDone) &&
+      (!hasExercises || allExercisesDone);
 
     return {
       date,
@@ -175,93 +168,6 @@ function Dashboard({
     }
 
     return streak;
-  })();
-
-  
-  const activityMonthLabel = activityMonth.toLocaleDateString("en-US", {
-    month: "long",
-    year: "numeric",
-  });
-
-  const goToPrevMonth = () => {
-    setActivityMonth((current) => {
-      const next = new Date(current);
-      next.setMonth(next.getMonth() - 1);
-      return next;
-    });
-  };
-
-  const goToNextMonth = () => {
-    setActivityMonth((current) => {
-      const next = new Date(current);
-      next.setMonth(next.getMonth() + 1);
-      return next;
-    });
-  };
-
-  const activityDays = (() => {
-    const year = activityMonth.getFullYear();
-    const month = activityMonth.getMonth();
-    const firstOfMonth = new Date(year, month, 1);
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    const firstWeekday = firstOfMonth.getDay();
-    const leadingBlanks = firstWeekday === 0 ? 6 : firstWeekday - 1;
-
-    const days = [];
-
-    for (let i = 0; i < leadingBlanks; i += 1) {
-      days.push(null);
-    }
-
-    for (let dayNum = 1; dayNum <= daysInMonth; dayNum += 1) {
-      const date = new Date(year, month, dayNum);
-      const dateKey = getDateKey(date);
-
-      const dayHasTask = tasks.some(
-        (task) => (task.date || getDateKey()) === dateKey && task.completed
-      );
-      const dayHasExercise = exercises.some(
-        (exercise) =>
-          (exercise.date || getDateKey()) === dateKey && exercise.completed
-      );
-      const dayHasFocus = focusSessions.some(
-        (session) => session.date === dateKey
-      );
-
-      days.push({
-        dateKey,
-        dayNum,
-        hasActivity: dayHasTask || dayHasExercise || dayHasFocus,
-        isToday: dateKey === getDateKey(),
-      });
-    }
-
-    return days;
-  })();
-
-  const selectedDayTasks = tasks.filter(
-    (task) => (task.date || getDateKey()) === selectedActivityDate
-  );
-  const selectedDayExercises = exercises.filter(
-    (exercise) => (exercise.date || getDateKey()) === selectedActivityDate
-  );
-  const selectedDayFocusSessions = focusSessions.filter(
-    (session) => session.date === selectedActivityDate
-  );
-  const selectedDayFocusMinutes = selectedDayFocusSessions.reduce(
-    (total, session) => total + session.duration,
-    0
-  );
-
-  const selectedDateLabel = (() => {
-    const [y, m, d] = selectedActivityDate.split("-").map(Number);
-    const date = new Date(y, m - 1, d);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "short",
-      day: "numeric",
-    });
   })();
 
   
@@ -1289,7 +1195,6 @@ function Dashboard({
                           exercise.completed ? "exercise-completed" : ""
                         }`}
                         key={exercise.id}
-                        style={{ marginBottom: "12px" }}
                       >
                         <button
                           type="button"
@@ -1530,7 +1435,7 @@ function Dashboard({
               </div>
             </div>
 
-            <div className="goals-full-width">
+            <div className="goals-full-width" style={{ marginTop: "32px" }}>
               
               <div className="feature-card weekly-consistency-card">
                 <div className="weekly-consistency-top">
@@ -1540,7 +1445,7 @@ function Dashboard({
 
                 <div className="weekly-heading">
                   <h2>This week</h2>
-                  <p>Complete all your tasks or exercises for a day to mark it complete.</p>
+                  <p>Complete all your tasks for a day to mark it complete.</p>
                 </div>
 
                 <div className="weekly-days">
@@ -1558,7 +1463,7 @@ function Dashboard({
                         }`}
                         title={
                           day.isCompleted
-                            ? "All tasks or exercises completed"
+                            ? "All assigned tasks and exercises completed"
                             : day.hasTasks
                               ? "Tasks still remaining"
                               : "No tasks for this day"
@@ -1584,243 +1489,7 @@ function Dashboard({
           </section>
         )}
 
-        {activePage === "activity" && (
-          <section className="dashboard-page">
-
-            <div className="dashboard-page-heading">
-              <h1>Activity</h1>
-              <p>Browse any day to see what you got done.</p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-card-header">
-                <div className="feature-icon orange">
-                  <CalendarDays size={24} />
-                </div>
-                <div>
-                  <h2>{activityMonthLabel}</h2>
-                  <p>Dots mark days with a completed task, exercise, or focus session.</p>
-                </div>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  margin: "4px 0 18px",
-                }}
-              >
-                <button
-                  type="button"
-                  className="inline-form-cancel"
-                  onClick={goToPrevMonth}
-                >
-                  <ChevronLeft size={16} />
-                  Prev
-                </button>
-
-                <button
-                  type="button"
-                  className="inline-form-cancel"
-                  onClick={goToNextMonth}
-                >
-                  Next
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(7, 1fr)",
-                  gap: "6px",
-                  textAlign: "center",
-                  marginBottom: "6px",
-                }}
-              >
-                {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((label) => (
-                  <span key={label} style={{ fontSize: "12px", opacity: 0.6 }}>
-                    {label}
-                  </span>
-                ))}
-              </div>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(7, 1fr)",
-                  gap: "6px",
-                }}
-              >
-                {activityDays.map((day, index) =>
-                  day ? (
-                    <button
-                      type="button"
-                      key={day.dateKey}
-                      onClick={() => setSelectedActivityDate(day.dateKey)}
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: "4px",
-                        padding: "8px 0",
-                        borderRadius: "10px",
-                        border:
-                          day.dateKey === selectedActivityDate
-                            ? "1px solid #f97316"
-                            : "1px solid transparent",
-                        background:
-                          day.dateKey === selectedActivityDate
-                            ? "rgba(249, 115, 22, 0.12)"
-                            : "transparent",
-                        cursor: "pointer",
-                        color: "inherit",
-                        font: "inherit",
-                      }}
-                    >
-                      <span style={{ fontWeight: day.isToday ? 700 : 400 }}>
-                        {day.dayNum}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: "8px",
-                          color: day.hasActivity ? "#f97316" : "currentColor",
-                          opacity: day.hasActivity ? 1 : 0.25,
-                        }}
-                      >
-                        ●
-                      </span>
-                    </button>
-                  ) : (
-                    <span key={`blank-${index}`} />
-                  )
-                )}
-              </div>
-            </div>
-
-            <div className="dashboard-grid">
-              <div className="left-column">
-                <section className="tasks-section">
-                  <div className="tasks-heading">
-                    <h2>{selectedDateLabel}</h2>
-                    <span>
-                      {selectedDayTasks.length + selectedDayExercises.length} items
-                    </span>
-                  </div>
-
-                  <div className="task-list">
-                    {selectedDayTasks.length === 0 &&
-                    selectedDayExercises.length === 0 ? (
-                      <div className="empty-tasks">
-                        <p>Nothing logged for this day.</p>
-                      </div>
-                    ) : (
-                      <>
-                        {selectedDayTasks.map((task) => (
-                          <div
-                            className={`task-item ${
-                              task.completed ? "task-completed" : ""
-                            }`}
-                            key={`activity-task-${task.id}`}
-                          >
-                            <span
-                              className={`task-check ${
-                                task.completed ? "checked" : ""
-                              }`}
-                            >
-                              {task.completed && <Check size={16} />}
-                            </span>
-
-                            <div className="task-title">
-                              <h3>{task.title}</h3>
-                            </div>
-
-                            <span
-                              className={`category ${getCategoryClass(
-                                task.category
-                              )}`}
-                            >
-                              <span
-                                className="category-dot"
-                                style={{
-                                  backgroundColor: getCategoryColor(task.category),
-                                }}
-                              />
-                              {task.category}
-                            </span>
-                          </div>
-                        ))}
-
-                        {selectedDayExercises.map((exercise) => (
-                          <div
-                            className={`task-item ${
-                              exercise.completed ? "task-completed" : ""
-                            }`}
-                            key={`activity-exercise-${exercise.id}`}
-                          >
-                            <span
-                              className={`task-check ${
-                                exercise.completed ? "checked" : ""
-                              }`}
-                            >
-                              {exercise.completed && <Check size={16} />}
-                            </span>
-
-                            <div className="task-title">
-                              <h3>{exercise.name}</h3>
-                            </div>
-
-                            <span className="category custom">
-                              <Dumbbell size={13} />
-                              {exercise.sets} × {exercise.reps}
-                            </span>
-                          </div>
-                        ))}
-                      </>
-                    )}
-                  </div>
-                </section>
-              </div>
-
-              <div className="right-column">
-                <section className="weekly-section">
-                  <h2>Day Summary</h2>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "14px",
-                      marginTop: "6px",
-                    }}
-                  >
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span>Tasks</span>
-                      <strong>
-                        {selectedDayTasks.filter((t) => t.completed).length}/
-                        {selectedDayTasks.length}
-                      </strong>
-                    </div>
-
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span>Exercises</span>
-                      <strong>
-                        {selectedDayExercises.filter((e) => e.completed).length}/
-                        {selectedDayExercises.length}
-                      </strong>
-                    </div>
-
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span>Focus time</span>
-                      <strong>{selectedDayFocusMinutes} min</strong>
-                    </div>
-                  </div>
-                </section>
-              </div>
-            </div>
-          </section>
-        )}
+        
 
       </main>
 
