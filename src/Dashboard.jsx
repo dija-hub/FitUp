@@ -130,9 +130,6 @@ function Dashboard({
       (exercise) => (exercise.date || getDateKey()) === dateKey
     );
 
-    // A day only gets ticked automatically once everything assigned to it
-    // is actually finished - every task done, or every exercise done.
-    // As long as even one task (or exercise) is still left, it stays unticked.
     const allTasksDone =
       dayTasks.length > 0 && dayTasks.every((task) => task.completed);
     const allExercisesDone =
