@@ -130,20 +130,18 @@ function Dashboard({
       (exercise) => (exercise.date || getDateKey()) === dateKey
     );
 
+    // A day only gets ticked automatically once everything assigned to it
+    // is actually finished - every task done, or every exercise done.
+    // As long as even one task (or exercise) is still left, it stays unticked.
     const allTasksDone =
       dayTasks.length > 0 && dayTasks.every((task) => task.completed);
     const allExercisesDone =
       dayExercises.length > 0 &&
       dayExercises.every((exercise) => exercise.completed);
 
-    const hasTasks = dayTasks.length > 0;
-    const hasExercises = dayExercises.length > 0;
-    const hasAssignedItems = hasTasks || hasExercises;
-
     const isCompleted =
-      hasAssignedItems &&
-      (!hasTasks || allTasksDone) &&
-      (!hasExercises || allExercisesDone);
+      (dayTasks.length > 0 || dayExercises.length > 0) &&
+      [...dayTasks, ...dayExercises].every((item) => item.completed);
 
     return {
       date,
@@ -925,6 +923,82 @@ function Dashboard({
         )}
 
        
+        {activePage === "week" && (
+          <section className="dashboard-page week-page">
+            <div className="week-simple-card">
+              <div className="week-simple-top">
+                <div>
+                  <span className="week-simple-label">YOUR FIRST WEEK</span>
+                  <h1>Your First Week</h1>
+                  <p>A simple plan to get you started.</p>
+                </div>
+
+                <div className="week-simple-progress-info">
+                  <strong>{completedDays} / 7</strong>
+                  <div className="week-simple-progress-track">
+                    <div
+                      className="week-simple-progress-fill"
+                      style={{ width: `${(completedDays / 7) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="week-simple-days">
+                {weekDays.map((day) => {
+                  const dayTasks = tasks.filter(
+                    (task) => (task.date || getDateKey()) === day.dateKey
+                  );
+                  const dayExercises = exercises.filter(
+                    (exercise) =>
+                      (exercise.date || getDateKey()) === day.dateKey
+                  );
+
+                  const totalItems = dayTasks.length + dayExercises.length;
+                  const completedItems =
+                    dayTasks.filter((task) => task.completed).length +
+                    dayExercises.filter((exercise) => exercise.completed).length;
+
+                  const dayComplete = totalItems > 0 && completedItems === totalItems;
+
+                  return (
+                    <div
+                      className={`week-simple-day ${
+                        day.isToday ? "current" : ""
+                      } ${dayComplete ? "complete" : ""}`}
+                      key={day.dateKey}
+                    >
+                      <span className="week-simple-day-name">
+                        {day.date.toLocaleDateString("en-US", {
+                          weekday: "short",
+                        })}
+                      </span>
+
+                      <div className="week-simple-circle">
+                        {dayComplete && <Check size={17} strokeWidth={2.5} />}
+                      </div>
+
+                      <span className="week-simple-count">
+                        {completedItems}/{totalItems}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="week-simple-footer">
+                <span>
+                  {completedDays === 7
+                    ? "Week complete — great consistency!"
+                    : completedDays > 0
+                      ? `${completedDays} day${completedDays === 1 ? "" : "s"} complete — keep going!`
+                      : "Start today and build your first streak!"}
+                </span>
+              </div>
+            </div>
+          </section>
+        )}
+
         {activePage === "focus" && (
           <section className="dashboard-page">
 
@@ -1435,7 +1509,7 @@ function Dashboard({
               </div>
             </div>
 
-            <div className="goals-full-width" style={{ marginTop: "32px" }}>
+            <div className="goals-full-width">
               
               <div className="feature-card weekly-consistency-card">
                 <div className="weekly-consistency-top">
@@ -1463,7 +1537,7 @@ function Dashboard({
                         }`}
                         title={
                           day.isCompleted
-                            ? "All assigned tasks and exercises completed"
+                            ? "All tasks completed"
                             : day.hasTasks
                               ? "Tasks still remaining"
                               : "No tasks for this day"
