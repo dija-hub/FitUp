@@ -928,33 +928,33 @@
 }
 
 .dashboard-dark .category.study {
-  background: #4a2f18;
-  color: #ffb35c;
+  background: #292929;
+  color: #fb923c;
 }
 
 .dashboard-dark .category.personal {
-  background: #1f3a28;
-  color: #7edb8b;
+  background: #292929;
+  color: #fb923c;
 }
 
 .dashboard-dark .category.health {
-  background: #463817;
-  color: #f3c95f;
+  background: #292929;
+  color: #fb923c;
 }
 
 .dashboard-dark .category.project {
-  background: #49251f;
-  color: #ff8f78;
+  background: #292929;
+  color: #fb923c;
 }
 
 .dashboard-dark .category.custom {
-  background: #262a4a;
-  color: #93a1ff;
+  background: #292929;
+  color: #fb923c;
 }
 
 .dashboard-dark .edit-category.custom {
-  background: #262a4a;
-  color: #93a1ff;
+  background: #292929;
+  color: #fb923c;
 }
 
 .dashboard-dark .stat-icon.orange {
