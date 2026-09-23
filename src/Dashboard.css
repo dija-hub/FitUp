@@ -3416,3 +3416,255 @@
     min-height: 112px;
   }
 }
+
+/* =========================================================
+   FIX: Your First Week card on the Focus page
+   The JSX uses .focus-week-* classes, so give those elements
+   an actual layout instead of letting them stack vertically.
+   ========================================================= */
+
+.focus-week-card {
+  width: 100%;
+  margin-top: 26px;
+  padding: 30px 32px 26px;
+  background: #ffffff;
+  border: 1px solid #eadfd5;
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(60, 40, 20, 0.035);
+}
+
+.focus-week-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.focus-week-header > div {
+  min-width: 0;
+}
+
+.focus-week-header h2 {
+  margin: 6px 0 5px;
+  color: #171717;
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.focus-week-header p {
+  margin: 0;
+  color: #817970;
+  font-size: 14px;
+}
+
+.focus-week-count {
+  flex-shrink: 0;
+  color: #ff7a00;
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.focus-week-progress-track {
+  width: 220px;
+  height: 7px;
+  margin: 17px 0 23px auto;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #f1e7dd;
+}
+
+.focus-week-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: #ff8b1f;
+  transition: width 0.3s ease;
+}
+
+.focus-week-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.focus-week-day {
+  min-width: 0;
+  padding: 14px 9px 12px;
+  border: 1px solid #efe7df;
+  border-radius: 15px;
+  background: #fffaf5;
+  text-align: center;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.focus-week-day:hover {
+  border-color: #ead7c3;
+  background: #fff8f1;
+  transform: translateY(-1px);
+}
+
+.focus-week-day.current {
+  border-color: #f4c18f;
+  background: #fff8f0;
+}
+
+.focus-week-day.complete {
+  border-color: #f2d1b0;
+}
+
+.focus-week-day-name {
+  display: block;
+  margin-bottom: 12px;
+  color: #5e5751;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.focus-week-circle {
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #e7ddd4;
+  border-radius: 50%;
+  background: transparent;
+  color: #ffffff;
+  transition: 0.2s ease;
+}
+
+.focus-week-day.current .focus-week-circle {
+  border-color: #ff9b2f;
+  box-shadow: 0 0 0 4px rgba(255, 155, 47, 0.08);
+}
+
+.focus-week-day.complete .focus-week-circle {
+  border-color: #ff9b2f;
+  background: #ff9b2f;
+  box-shadow: 0 4px 12px rgba(255, 139, 31, 0.18);
+}
+
+.focus-week-count-small {
+  display: block;
+  color: #8a837d;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.focus-week-day.complete .focus-week-count-small {
+  color: #e87515;
+}
+
+.focus-week-status {
+  margin-top: 20px;
+  padding-top: 17px;
+  border-top: 1px solid #eee6de;
+  color: #e97716;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* DARK MODE */
+.dashboard-dark .focus-week-card {
+  background: #202020;
+  border-color: #303030;
+  box-shadow: none;
+}
+
+.dashboard-dark .focus-week-header h2 {
+  color: #f4f4f4;
+}
+
+.dashboard-dark .focus-week-header p,
+.dashboard-dark .focus-week-day-name,
+.dashboard-dark .focus-week-count-small {
+  color: #a9a9a9;
+}
+
+.dashboard-dark .focus-week-progress-track {
+  background: #353535;
+}
+
+.dashboard-dark .focus-week-day {
+  border-color: #343434;
+  background: #252525;
+}
+
+.dashboard-dark .focus-week-day:hover {
+  border-color: #444444;
+  background: #292929;
+}
+
+.dashboard-dark .focus-week-day.current {
+  border-color: #4b3a2b;
+  background: #29241f;
+}
+
+.dashboard-dark .focus-week-day.complete {
+  border-color: #4b3827;
+}
+
+.dashboard-dark .focus-week-circle {
+  border-color: #424242;
+}
+
+.dashboard-dark .focus-week-day.current .focus-week-circle {
+  border-color: #ff9b2f;
+}
+
+.dashboard-dark .focus-week-day.complete .focus-week-circle {
+  border-color: #ff9b2f;
+  background: #ff9b2f;
+}
+
+.dashboard-dark .focus-week-status {
+  border-top-color: #343434;
+  color: #ff9b2f;
+}
+
+@media (max-width: 800px) {
+  .focus-week-card {
+    padding: 26px 20px 22px;
+  }
+
+  .focus-week-days {
+    gap: 8px;
+  }
+
+  .focus-week-day {
+    padding: 12px 6px 10px;
+  }
+
+  .focus-week-circle {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+@media (max-width: 600px) {
+  .focus-week-header {
+    gap: 12px;
+  }
+
+  .focus-week-header h2 {
+    font-size: 22px;
+  }
+
+  .focus-week-header p {
+    font-size: 12px;
+  }
+
+  .focus-week-count {
+    font-size: 23px;
+  }
+
+  .focus-week-progress-track {
+    width: 150px;
+  }
+
+  .focus-week-days {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
