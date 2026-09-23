@@ -923,82 +923,6 @@ function Dashboard({
         )}
 
        
-        {activePage === "week" && (
-          <section className="dashboard-page week-page">
-            <div className="week-simple-card">
-              <div className="week-simple-top">
-                <div>
-                  <span className="week-simple-label">YOUR FIRST WEEK</span>
-                  <h1>Your First Week</h1>
-                  <p>A simple plan to get you started.</p>
-                </div>
-
-                <div className="week-simple-progress-info">
-                  <strong>{completedDays} / 7</strong>
-                  <div className="week-simple-progress-track">
-                    <div
-                      className="week-simple-progress-fill"
-                      style={{ width: `${(completedDays / 7) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="week-simple-days">
-                {weekDays.map((day) => {
-                  const dayTasks = tasks.filter(
-                    (task) => (task.date || getDateKey()) === day.dateKey
-                  );
-                  const dayExercises = exercises.filter(
-                    (exercise) =>
-                      (exercise.date || getDateKey()) === day.dateKey
-                  );
-
-                  const totalItems = dayTasks.length + dayExercises.length;
-                  const completedItems =
-                    dayTasks.filter((task) => task.completed).length +
-                    dayExercises.filter((exercise) => exercise.completed).length;
-
-                  const dayComplete = totalItems > 0 && completedItems === totalItems;
-
-                  return (
-                    <div
-                      className={`week-simple-day ${
-                        day.isToday ? "current" : ""
-                      } ${dayComplete ? "complete" : ""}`}
-                      key={day.dateKey}
-                    >
-                      <span className="week-simple-day-name">
-                        {day.date.toLocaleDateString("en-US", {
-                          weekday: "short",
-                        })}
-                      </span>
-
-                      <div className="week-simple-circle">
-                        {dayComplete && <Check size={17} strokeWidth={2.5} />}
-                      </div>
-
-                      <span className="week-simple-count">
-                        {completedItems}/{totalItems}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="week-simple-footer">
-                <span>
-                  {completedDays === 7
-                    ? "Week complete — great consistency!"
-                    : completedDays > 0
-                      ? `${completedDays} day${completedDays === 1 ? "" : "s"} complete — keep going!`
-                      : "Start today and build your first streak!"}
-                </span>
-              </div>
-            </div>
-          </section>
-        )}
-
         {activePage === "focus" && (
           <section className="dashboard-page">
 
@@ -1509,57 +1433,73 @@ function Dashboard({
               </div>
             </div>
 
-            <div className="goals-full-width">
-              
-              <div className="feature-card weekly-consistency-card">
-                <div className="weekly-consistency-top">
-                  <span className="weekly-label">CONSISTENCY</span>
-                  <strong className="weekly-count">{completedDays} / 7</strong>
+            <div className="focus-week-card">
+              <div className="focus-week-header">
+                <div>
+                  <span className="focus-eyebrow">YOUR FIRST WEEK</span>
+                  <h2>Your First Week</h2>
+                  <p>Complete your tasks and exercises each day to build your streak.</p>
                 </div>
+                <strong className="focus-week-count">{completedDays} / 7</strong>
+              </div>
 
-                <div className="weekly-heading">
-                  <h2>This week</h2>
-                  <p>Complete all your tasks for a day to mark it complete.</p>
-                </div>
+              <div className="focus-week-progress-track">
+                <div
+                  className="focus-week-progress-fill"
+                  style={{ width: `${(completedDays / 7) * 100}%` }}
+                />
+              </div>
 
-                <div className="weekly-days">
-                  {weekDays.map((day) => (
-                    <div className="weekly-day" key={day.dateKey}>
-                      <span className="weekly-day-label">{day.label}</span>
+              <div className="focus-week-days">
+                {weekDays.map((day) => {
+                  const dayTasks = tasks.filter(
+                    (task) => (task.date || getDateKey()) === day.dateKey
+                  );
+                  const dayExercises = exercises.filter(
+                    (exercise) => (exercise.date || getDateKey()) === day.dateKey
+                  );
 
-                      <div
-                        className={`weekly-day-circle ${
-                          day.isCompleted
-                            ? "completed"
-                            : day.isToday
-                              ? "today"
-                              : ""
-                        }`}
-                        title={
-                          day.isCompleted
-                            ? "All tasks completed"
-                            : day.hasTasks
-                              ? "Tasks still remaining"
-                              : "No tasks for this day"
-                        }
-                      >
-                        {day.isCompleted ? <Check size={18} /> : day.isToday ? <span /> : null}
+                  const totalItems = dayTasks.length + dayExercises.length;
+                  const completedItems =
+                    dayTasks.filter((task) => task.completed).length +
+                    dayExercises.filter((exercise) => exercise.completed).length;
+                  const dayComplete =
+                    totalItems > 0 && completedItems === totalItems;
+
+                  return (
+                    <div
+                      className={`focus-week-day ${
+                        day.isToday ? "current" : ""
+                      } ${dayComplete ? "complete" : ""}`}
+                      key={day.dateKey}
+                    >
+                      <span className="focus-week-day-name">
+                        {day.date.toLocaleDateString("en-US", {
+                          weekday: "short",
+                        })}
+                      </span>
+
+                      <div className="focus-week-circle">
+                        {dayComplete && <Check size={16} strokeWidth={2.5} />}
                       </div>
-                    </div>
-                  ))}
-                </div>
 
-                <div className="weekly-status">
-                  {completedDays === 7 ? (
-                    <strong>✓ Week completed — amazing consistency!</strong>
-                  ) : currentStreak > 0 ? (
-                    <strong>{currentStreak} day streak — keep it going</strong>
-                  ) : (
-                    <strong>{completedDays} day completed — start today</strong>
-                  )}
-                </div>
+                      <span className="focus-week-count-small">
+                        {completedItems}/{totalItems}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="focus-week-status">
+                {completedDays === 7
+                  ? "Week complete — great consistency!"
+                  : completedDays > 0
+                    ? `${completedDays} day${completedDays === 1 ? "" : "s"} complete — keep going!`
+                    : "Start today and build your first streak!"}
               </div>
             </div>
+
           </section>
         )}
 

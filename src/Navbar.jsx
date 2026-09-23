@@ -81,16 +81,6 @@ function Navbar({
             >
               Focus
             </button>
-
-            <button
-              type="button"
-              className={`page-toggle-btn ${
-                activePage === "week" ? "active" : ""
-              }`}
-              onClick={() => changePage("week")}
-            >
-              Week
-            </button>
           </li>
         ) : (
           <>
