@@ -39,13 +39,12 @@ function Navbar({
 
     setShowSignUp(false);
     setActiveSection("dashboard");
-    setActivePage("overview");
     setShowDashboard(true);
   };
 
-  const changeDashboardPage = (page) => {
-    setActiveSection("dashboard");
+  const changePage = (page) => {
     setActivePage(page);
+    setActiveSection("dashboard");
     setShowDashboard(true);
   };
 
@@ -68,7 +67,7 @@ function Navbar({
               className={`page-toggle-btn ${
                 activePage === "overview" ? "active" : ""
               }`}
-              onClick={() => changeDashboardPage("overview")}
+              onClick={() => changePage("overview")}
             >
               Overview
             </button>
@@ -78,9 +77,19 @@ function Navbar({
               className={`page-toggle-btn ${
                 activePage === "focus" ? "active" : ""
               }`}
-              onClick={() => changeDashboardPage("focus")}
+              onClick={() => changePage("focus")}
             >
               Focus
+            </button>
+
+            <button
+              type="button"
+              className={`page-toggle-btn ${
+                activePage === "week" ? "active" : ""
+              }`}
+              onClick={() => changePage("week")}
+            >
+              Week
             </button>
           </li>
         ) : (
@@ -89,9 +98,7 @@ function Navbar({
               <button
                 type="button"
                 className={`nav-link ${
-                  activeSection === "home" && !showDashboard
-                    ? "active"
-                    : ""
+                  activeSection === "home" && !showDashboard ? "active" : ""
                 }`}
                 onClick={() => goTo("home")}
               >
@@ -117,9 +124,7 @@ function Navbar({
               <button
                 type="button"
                 className={`nav-link ${
-                  activeSection === "work" && !showDashboard
-                    ? "active"
-                    : ""
+                  activeSection === "work" && !showDashboard ? "active" : ""
                 }`}
                 onClick={() => goTo("work")}
               >

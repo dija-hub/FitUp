@@ -19,7 +19,7 @@ function Web({
 }) {
   const [showSignUp, setShowSignUp] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [activePage, setActivePage] = useState("overview");
 
   useEffect(() => {
