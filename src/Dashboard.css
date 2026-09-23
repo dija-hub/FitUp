@@ -3143,3 +3143,276 @@
     width: 100%;
   }
 }
+
+
+/* =====================================
+   FITUP — COMPACT ONE-WEEK PAGE
+   ===================================== */
+.week-page {
+  padding: 18px 0 45px;
+}
+
+.week-simple-card {
+  width: 100%;
+  padding: 34px 38px 28px;
+  background: #ffffff;
+  border: 1px solid #eadfd5;
+  border-radius: 22px;
+  box-shadow: 0 7px 24px rgba(60, 40, 20, 0.035);
+}
+
+.week-simple-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.week-simple-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #e97817;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.week-simple-top h1 {
+  margin: 0 0 7px;
+  color: #171717;
+  font-size: 29px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.7px;
+}
+
+.week-simple-top p {
+  margin: 0;
+  color: #77716b;
+  font-size: 14px;
+}
+
+.week-simple-progress-info {
+  width: 158px;
+  flex-shrink: 0;
+  padding-top: 3px;
+}
+
+.week-simple-progress-info strong {
+  display: block;
+  margin-bottom: 9px;
+  color: #77716b;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 600;
+  text-align: right;
+}
+
+.week-simple-progress-track {
+  width: 100%;
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #f5e8dc;
+}
+
+.week-simple-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: #ff941f;
+  transition: width 0.3s ease;
+}
+
+.week-simple-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.week-simple-day {
+  min-width: 0;
+  min-height: 126px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  background: #ffffff;
+  transition: background 0.2s ease, border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.week-simple-day:hover {
+  background: #fffaf5;
+  border-color: #eee1d5;
+  transform: translateY(-2px);
+}
+
+.week-simple-day.current {
+  border-color: #f1dfcb;
+  background: #fffaf5;
+}
+
+.week-simple-day.complete {
+  border-color: #f5dfc8;
+}
+
+.week-simple-day-name {
+  margin-bottom: 12px;
+  color: #55504b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.week-simple-circle {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  border: 2px solid #ece4dd;
+  border-radius: 50%;
+  background: transparent;
+  color: #ffffff;
+  transition: 0.2s ease;
+}
+
+.week-simple-day.current .week-simple-circle {
+  border-color: #ff9b2f;
+  box-shadow: 0 0 0 5px rgba(255, 155, 47, 0.08);
+}
+
+.week-simple-day.complete .week-simple-circle {
+  border-color: #ff9b2f;
+  background: #ff9b2f;
+  box-shadow: 0 5px 16px rgba(255, 145, 30, 0.18);
+}
+
+.week-simple-count {
+  color: #8a847e;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.week-simple-day.complete .week-simple-count {
+  color: #e97716;
+}
+
+.week-simple-footer {
+  margin-top: 22px;
+  padding-top: 19px;
+  border-top: 1px solid #eee8e2;
+  color: #e97716;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dashboard-dark .week-simple-card {
+  background: #202020;
+  border-color: #303030;
+  box-shadow: none;
+}
+
+.dashboard-dark .week-simple-top h1 {
+  color: #f4f4f4;
+}
+
+.dashboard-dark .week-simple-top p,
+.dashboard-dark .week-simple-progress-info strong,
+.dashboard-dark .week-simple-day-name,
+.dashboard-dark .week-simple-count {
+  color: #a9a9a9;
+}
+
+.dashboard-dark .week-simple-progress-track {
+  background: #353535;
+}
+
+.dashboard-dark .week-simple-day {
+  background: #202020;
+}
+
+.dashboard-dark .week-simple-day:hover {
+  background: #262626;
+  border-color: #363636;
+}
+
+.dashboard-dark .week-simple-day.current {
+  background: #29241f;
+  border-color: #4b3a2b;
+}
+
+.dashboard-dark .week-simple-day.complete {
+  border-color: #4b3827;
+}
+
+.dashboard-dark .week-simple-circle {
+  border-color: #414141;
+}
+
+.dashboard-dark .week-simple-day.current .week-simple-circle {
+  border-color: #ff9b2f;
+  box-shadow: 0 0 0 5px rgba(255, 155, 47, 0.08);
+}
+
+.dashboard-dark .week-simple-day.complete .week-simple-circle {
+  border-color: #ff9b2f;
+  background: #ff9b2f;
+}
+
+.dashboard-dark .week-simple-footer {
+  border-color: #343434;
+}
+
+@media (max-width: 900px) {
+  .week-simple-card {
+    padding: 28px 24px 24px;
+  }
+
+  .week-simple-top {
+    gap: 20px;
+  }
+
+  .week-simple-days {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .week-page {
+    padding-top: 10px;
+  }
+
+  .week-simple-card {
+    padding: 24px 16px 20px;
+    border-radius: 18px;
+  }
+
+  .week-simple-top {
+    flex-direction: column;
+    margin-bottom: 22px;
+  }
+
+  .week-simple-progress-info {
+    width: 100%;
+  }
+
+  .week-simple-progress-info strong {
+    text-align: left;
+  }
+
+  .week-simple-days {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .week-simple-day {
+    min-height: 112px;
+  }
+}
