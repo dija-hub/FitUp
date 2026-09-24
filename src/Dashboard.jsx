@@ -54,8 +54,7 @@ function Dashboard({
   const [category, setCategory] = useState("Study");
   const [taskCategoryOpen, setTaskCategoryOpen] = useState(false);
   const taskCategoryRef = useRef(null);
-const [userId, setUserId] = useState(null);
-const [loadingData, setLoadingData] = useState(true);
+
   
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
@@ -169,142 +168,7 @@ const [loadingData, setLoadingData] = useState(true);
     return streak;
   })();
 
-  useEffect(() => {
-  let mounted = true;
-
-  const loadUserData = async () => {
-    setLoadingData(true);
-
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      console.error("Could not get user:", userError);
-      setLoadingData(false);
-      return;
-    }
-
-    if (!mounted) return;
-
-    setUserId(user.id);
-
-    const [
-      tasksResult,
-      exercisesResult,
-      milestonesResult,
-      categoriesResult,
-      focusResult,
-    ] = await Promise.all([
-      supabase
-        .from("tasks")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: true }),
-
-      supabase
-        .from("exercises")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: true }),
-
-      supabase
-        .from("milestones")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: true }),
-
-      supabase
-        .from("categories")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: true }),
-
-      supabase
-        .from("focus_sessions")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("completed_at", { ascending: false }),
-    ]);
-
-    if (tasksResult.error) {
-      console.error("Tasks:", tasksResult.error);
-    } else {
-      setTasks(
-        (tasksResult.data || []).map((task) => ({
-          id: task.id,
-          title: task.title,
-          category: task.category,
-          completed: task.completed,
-          date: task.task_date,
-        }))
-      );
-    }
-
-    if (exercisesResult.error) {
-      console.error("Exercises:", exercisesResult.error);
-    } else {
-      setExercises(
-        (exercisesResult.data || []).map((exercise) => ({
-          id: exercise.id,
-          name: exercise.name,
-          category: exercise.category,
-          sets: exercise.sets,
-          reps: exercise.reps,
-          completed: exercise.completed,
-        }))
-      );
-    }
-
-    if (milestonesResult.error) {
-      console.error("Milestones:", milestonesResult.error);
-    } else {
-      setMilestones(
-        (milestonesResult.data || []).map((milestone) => ({
-          id: milestone.id,
-          text: milestone.text,
-          done: milestone.done,
-        }))
-      );
-    }
-
-    if (categoriesResult.error) {
-      console.error("Categories:", categoriesResult.error);
-    } else {
-      setCategories(categoriesResult.data || []);
-    }
-
-    if (focusResult.error) {
-      console.error("Focus sessions:", focusResult.error);
-    } else {
-      setFocusSessions(
-        (focusResult.data || []).map((session) => ({
-          id: session.id,
-          taskTitle: session.task_title,
-          durationSeconds: session.duration_seconds,
-          duration: Math.floor(session.duration_seconds / 60),
-          date: session.session_date,
-          completedAt: new Date(
-            session.completed_at
-          ).toLocaleTimeString([], {
-            hour: "numeric",
-            minute: "2-digit",
-          }),
-        }))
-      );
-    }
-
-    setLoadingData(false);
-  };
-
-  loadUserData();
-
-  return () => {
-    mounted = false;
-  };
-}, []); 
-
+  
   useEffect(() => {
     try {
       const savedTasks = localStorage.getItem("fitup_tasks");
