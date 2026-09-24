@@ -54,7 +54,8 @@ function Dashboard({
   const [category, setCategory] = useState("Study");
   const [taskCategoryOpen, setTaskCategoryOpen] = useState(false);
   const taskCategoryRef = useRef(null);
-
+const [userId, setUserId] = useState(null);
+const [loadingData, setLoadingData] = useState(true);
   
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
@@ -168,44 +169,143 @@ function Dashboard({
     return streak;
   })();
 
-  
   useEffect(() => {
-    try {
-      const savedTasks = localStorage.getItem("fitup_tasks");
-      const savedExercises = localStorage.getItem("fitup_exercises");
-      const savedMilestones = localStorage.getItem("fitup_milestones");
-      const savedCategories = localStorage.getItem("fitup_categories");
-      const savedFocusSessions = localStorage.getItem("fitup_focus_sessions");
+  let mounted = true;
 
-      if (savedTasks) setTasks(JSON.parse(savedTasks));
-      if (savedExercises) setExercises(JSON.parse(savedExercises));
-      if (savedMilestones) setMilestones(JSON.parse(savedMilestones));
-      if (savedCategories) setCategories(JSON.parse(savedCategories));
-      if (savedFocusSessions) setFocusSessions(JSON.parse(savedFocusSessions));
-    } catch (err) {
-      console.error("Failed to load saved data:", err);
+  const loadUserData = async () => {
+    setLoadingData(true);
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("Could not get user:", userError);
+      setLoadingData(false);
+      return;
     }
-  }, []);
 
-  useEffect(() => {
-    localStorage.setItem("fitup_tasks", JSON.stringify(tasks));
-  }, [tasks]);
+    if (!mounted) return;
 
-  useEffect(() => {
-    localStorage.setItem("fitup_exercises", JSON.stringify(exercises));
-  }, [exercises]);
+    setUserId(user.id);
 
-  useEffect(() => {
-    localStorage.setItem("fitup_milestones", JSON.stringify(milestones));
-  }, [milestones]);
+    const [
+      tasksResult,
+      exercisesResult,
+      milestonesResult,
+      categoriesResult,
+      focusResult,
+    ] = await Promise.all([
+      supabase
+        .from("tasks")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true }),
 
-  useEffect(() => {
-    localStorage.setItem("fitup_categories", JSON.stringify(categories));
-  }, [categories]);
+      supabase
+        .from("exercises")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true }),
 
-  useEffect(() => {
-    localStorage.setItem("fitup_focus_sessions", JSON.stringify(focusSessions));
-  }, [focusSessions]);
+      supabase
+        .from("milestones")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true }),
+
+      supabase
+        .from("categories")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true }),
+
+      supabase
+        .from("focus_sessions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("completed_at", { ascending: false }),
+    ]);
+
+    if (tasksResult.error) {
+      console.error("Tasks:", tasksResult.error);
+    } else {
+      setTasks(
+        (tasksResult.data || []).map((task) => ({
+          id: task.id,
+          title: task.title,
+          category: task.category,
+          completed: task.completed,
+          date: task.task_date,
+        }))
+      );
+    }
+
+    if (exercisesResult.error) {
+      console.error("Exercises:", exercisesResult.error);
+    } else {
+      setExercises(
+        (exercisesResult.data || []).map((exercise) => ({
+          id: exercise.id,
+          name: exercise.name,
+          category: exercise.category,
+          sets: exercise.sets,
+          reps: exercise.reps,
+          completed: exercise.completed,
+          date: exercise.exercise_date,
+        }))
+      );
+    }
+
+    if (milestonesResult.error) {
+      console.error("Milestones:", milestonesResult.error);
+    } else {
+      setMilestones(
+        (milestonesResult.data || []).map((milestone) => ({
+          id: milestone.id,
+          text: milestone.text,
+          done: milestone.done,
+        }))
+      );
+    }
+
+    if (categoriesResult.error) {
+      console.error("Categories:", categoriesResult.error);
+    } else {
+      setCategories(categoriesResult.data || []);
+    }
+
+    if (focusResult.error) {
+      console.error("Focus sessions:", focusResult.error);
+    } else {
+      setFocusSessions(
+        (focusResult.data || []).map((session) => ({
+          id: session.id,
+          taskTitle: session.task_title,
+          durationSeconds: session.duration_seconds,
+          duration: Math.floor(session.duration_seconds / 60),
+          date: session.session_date,
+          completedAt: new Date(
+            session.completed_at
+          ).toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit",
+          }),
+        }))
+      );
+    }
+
+    setLoadingData(false);
+  };
+
+  loadUserData();
+
+  return () => {
+    mounted = false;
+  };
+}, []); 
+
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -259,53 +359,46 @@ function Dashboard({
   }, [timerRunning]);
 
   
-  const toggleTask = (id) => {
-    setTasks((currentTasks) =>
-      currentTasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
+  const toggleTask = async (id) => {
+    const task = tasks.find((item) => item.id === id);
+    if (!task || !userId) return;
+    const nextCompleted = !task.completed;
+    setTasks((current) => current.map((item) => item.id === id ? { ...item, completed: nextCompleted } : item));
+    const { error } = await supabase.from("tasks").update({ completed: nextCompleted }).eq("id", id).eq("user_id", userId);
+    if (error) { console.error("Could not update task:", error); setTasks((current) => current.map((item) => item.id === id ? { ...item, completed: task.completed } : item)); }
   };
 
-  const deleteTask = (id) => {
-    setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
+  const deleteTask = async (id) => {
+    if (!userId) return; const previous = tasks;
+    setTasks((current) => current.filter((task) => task.id !== id));
+    const { error } = await supabase.from("tasks").delete().eq("id", id).eq("user_id", userId);
+    if (error) { console.error("Could not delete task:", error); setTasks(previous); }
   };
 
-  const editTask = (task) => {
-    setEditingTask(task);
-    setEditTitle(task.title);
-    setEditCategory(task.category);
+  const editTask = (task) => { setEditingTask(task); setEditTitle(task.title); setEditCategory(task.category); };
+
+  const saveEdit = async () => {
+    if (!editTitle.trim() || !editingTask || !userId) return;
+    const nextTitle = editTitle.trim(); const nextCategory = editCategory; const previous = tasks;
+    setTasks((current) => current.map((item) => item.id === editingTask.id ? { ...item, title: nextTitle, category: nextCategory } : item));
+    const { error } = await supabase.from("tasks").update({ title: nextTitle, category: nextCategory }).eq("id", editingTask.id).eq("user_id", userId);
+    if (error) { console.error("Could not edit task:", error); setTasks(previous); return; }
+    setEditingTask(null); setEditTitle(""); setEditCategory("Study");
   };
 
-  const saveEdit = () => {
-    if (!editTitle.trim()) return;
-
-    setTasks((currentTasks) =>
-      currentTasks.map((item) =>
-        item.id === editingTask.id
-          ? { ...item, title: editTitle.trim(), category: editCategory }
-          : item
-      )
-    );
-
-    setEditingTask(null);
-    setEditTitle("");
-    setEditCategory("Study");
-  };
-
-  const addTask = () => {
-    if (!newTask.trim()) return;
-
-    setTasks((currentTasks) => [
-      ...currentTasks,
-      { id: Date.now(), title: newTask.trim(), category, completed: false, date: getDateKey() },
-    ]);
-
+  const addTask = async () => {
+    if (!newTask.trim() || !userId) return;
+    const { data, error } = await supabase.from("tasks").insert({ user_id: userId, title: newTask.trim(), category, completed: false, task_date: getDateKey() }).select().single();
+    if (error) { console.error("Could not add task:", error); return; }
+    setTasks((current) => [...current, { id: data.id, title: data.title, category: data.category, completed: data.completed, date: data.task_date }]);
     setNewTask("");
   };
 
-  const clearCompleted = () => {
-    setTasks((currentTasks) => currentTasks.filter((task) => !task.completed));
+  const clearCompleted = async () => {
+    if (!userId) return; const previous = tasks;
+    setTasks((current) => current.filter((task) => !task.completed));
+    const { error } = await supabase.from("tasks").delete().eq("user_id", userId).eq("completed", true);
+    if (error) { console.error("Could not clear completed tasks:", error); setTasks(previous); }
   };
 
   const selectTaskCategory = (name) => {
@@ -365,29 +458,13 @@ function Dashboard({
     setTimerRunning(false);
   };
 
-  const finishTimer = () => {
-    if (!selectedFocusLabel || timerSeconds === 0 || sessionRecordedRef.current) {
-      return;
-    }
-
-    sessionRecordedRef.current = true;
-    setTimerRunning(false);
-
-    const durationMinutes = Math.floor(timerSeconds / 60);
-    const session = {
-      id: Date.now(),
-      taskTitle: selectedFocusLabel,
-      duration: durationMinutes,
-      durationSeconds: timerSeconds,
-      date: getDateKey(),
-      completedAt: new Date().toLocaleTimeString([], {
-        hour: "numeric",
-        minute: "2-digit",
-      }),
-    };
-
-    setFocusSessions((current) => [session, ...current]);
-    setLastCompletedSession(session);
+  const finishTimer = async () => {
+    if (!selectedFocusLabel || timerSeconds === 0 || sessionRecordedRef.current || !userId) return;
+    sessionRecordedRef.current = true; setTimerRunning(false);
+    const { data, error } = await supabase.from("focus_sessions").insert({ user_id: userId, target_type: selectedFocusType, target_id: selectedFocusId, task_title: selectedFocusLabel, duration_seconds: timerSeconds, session_date: getDateKey() }).select().single();
+    if (error) { console.error("Could not save focus session:", error); sessionRecordedRef.current = false; return; }
+    const session = { id: data.id, taskTitle: data.task_title, duration: Math.floor(data.duration_seconds / 60), durationSeconds: data.duration_seconds, date: data.session_date, completedAt: new Date(data.completed_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) };
+    setFocusSessions((current) => [session, ...current]); setLastCompletedSession(session);
   };
 
   const resetTimer = () => {
@@ -460,48 +537,28 @@ function Dashboard({
     setExerciseReps(suggestion.reps);
   };
 
-  const addSelectedExercise = () => {
-    if (!selectedExercise) return;
-
-    setExercises((current) => [
-      ...current,
-      {
-        id: Date.now() + Math.random(),
-        name: selectedExercise.name,
-        sets: exerciseSets.trim() || selectedExercise.sets,
-        reps: exerciseReps.trim() || selectedExercise.reps,
-        completed: false,
-        date: getDateKey(),
-      },
-    ]);
-
-    setSelectedExercise(null);
-    setExerciseSets("3");
-    setExerciseReps("12");
-    setExerciseCategory("Strength");
-    setShowExerciseForm(false);
+  const addSelectedExercise = async () => {
+    if (!selectedExercise || !userId) return;
+    const { data, error } = await supabase.from("exercises").insert({ user_id: userId, name: selectedExercise.name, category: exerciseCategory, sets: exerciseSets.trim() || selectedExercise.sets, reps: exerciseReps.trim() || selectedExercise.reps, completed: false, exercise_date: getDateKey() }).select().single();
+    if (error) { console.error("Could not add exercise:", error); return; }
+    setExercises((current) => [...current, { id: data.id, name: data.name, category: data.category, sets: data.sets, reps: data.reps, completed: data.completed, date: data.exercise_date }]);
+    setSelectedExercise(null); setExerciseSets("3"); setExerciseReps("12"); setExerciseCategory("Strength"); setShowExerciseForm(false);
   };
 
-  const cancelExerciseForm = () => {
-    setSelectedExercise(null);
-    setExerciseSets("3");
-    setExerciseReps("12");
-    setExerciseCategory("Strength");
-    setShowExerciseForm(false);
+  const cancelExerciseForm = () => { setSelectedExercise(null); setExerciseSets("3"); setExerciseReps("12"); setExerciseCategory("Strength"); setShowExerciseForm(false); };
+
+  const toggleExercise = async (id) => {
+    const exercise = exercises.find((item) => item.id === id); if (!exercise || !userId) return;
+    const nextCompleted = !exercise.completed;
+    setExercises((current) => current.map((item) => item.id === id ? { ...item, completed: nextCompleted } : item));
+    const { error } = await supabase.from("exercises").update({ completed: nextCompleted }).eq("id", id).eq("user_id", userId);
+    if (error) { console.error("Could not update exercise:", error); setExercises((current) => current.map((item) => item.id === id ? { ...item, completed: exercise.completed } : item)); }
   };
 
-  const toggleExercise = (id) => {
-    setExercises((current) =>
-      current.map((exercise) =>
-        exercise.id === id
-          ? { ...exercise, completed: !exercise.completed }
-          : exercise
-      )
-    );
-  };
-
-  const deleteExercise = (id) => {
-    setExercises((current) => current.filter((e) => e.id !== id));
+  const deleteExercise = async (id) => {
+    if (!userId) return; const previous = exercises; setExercises((current) => current.filter((e) => e.id !== id));
+    const { error } = await supabase.from("exercises").delete().eq("id", id).eq("user_id", userId);
+    if (error) { console.error("Could not delete exercise:", error); setExercises(previous); }
   };
 
   const getExerciseMetricLabel = (value) => {
@@ -512,57 +569,42 @@ function Dashboard({
   };
 
   
-  const addMilestone = () => {
-    if (!milestoneText.trim()) return;
-
-    setMilestones((current) => [
-      ...current,
-      { id: Date.now(), text: milestoneText.trim(), done: false },
-    ]);
-
-    setMilestoneText("");
-    setShowMilestoneForm(false);
+  const addMilestone = async () => {
+    if (!milestoneText.trim() || !userId) return;
+    const { data, error } = await supabase.from("milestones").insert({ user_id: userId, text: milestoneText.trim(), done: false }).select().single();
+    if (error) { console.error("Could not add milestone:", error); return; }
+    setMilestones((current) => [...current, { id: data.id, text: data.text, done: data.done }]); setMilestoneText(""); setShowMilestoneForm(false);
   };
 
-  const cancelMilestoneForm = () => {
-    setMilestoneText("");
-    setShowMilestoneForm(false);
+  const cancelMilestoneForm = () => { setMilestoneText(""); setShowMilestoneForm(false); };
+
+  const toggleMilestone = async (id) => {
+    const milestone = milestones.find((item) => item.id === id); if (!milestone || !userId) return;
+    const nextDone = !milestone.done; setMilestones((current) => current.map((m) => m.id === id ? { ...m, done: nextDone } : m));
+    const { error } = await supabase.from("milestones").update({ done: nextDone }).eq("id", id).eq("user_id", userId);
+    if (error) { console.error("Could not update milestone:", error); setMilestones((current) => current.map((m) => m.id === id ? { ...m, done: milestone.done } : m)); }
   };
 
-  const toggleMilestone = (id) => {
-    setMilestones((current) =>
-      current.map((m) => (m.id === id ? { ...m, done: !m.done } : m))
-    );
-  };
-
-  const deleteMilestone = (id) => {
-    setMilestones((current) => current.filter((m) => m.id !== id));
+  const deleteMilestone = async (id) => {
+    if (!userId) return; const previous = milestones; setMilestones((current) => current.filter((m) => m.id !== id));
+    const { error } = await supabase.from("milestones").delete().eq("id", id).eq("user_id", userId);
+    if (error) { console.error("Could not delete milestone:", error); setMilestones(previous); }
   };
 
 
-  const addCategory = () => {
-    if (!categoryName.trim()) return;
-
-    setCategories((current) => [
-      ...current,
-      { id: Date.now(), color: categoryColor, name: categoryName.trim() },
-    ]);
-
-    setCategoryColor("#94a3b8");
-    setCategoryName("");
-    setShowCategoryForm(false);
-    setShowColorPicker(false);
+  const addCategory = async () => {
+    if (!categoryName.trim() || !userId) return;
+    const { data, error } = await supabase.from("categories").insert({ user_id: userId, name: categoryName.trim(), color: categoryColor }).select().single();
+    if (error) { console.error("Could not add category:", error); return; }
+    setCategories((current) => [...current, data]); setCategoryColor("#94a3b8"); setCategoryName(""); setShowCategoryForm(false); setShowColorPicker(false);
   };
 
-  const cancelCategoryForm = () => {
-    setCategoryColor("#94a3b8");
-    setCategoryName("");
-    setShowCategoryForm(false);
-    setShowColorPicker(false);
-  };
+  const cancelCategoryForm = () => { setCategoryColor("#94a3b8"); setCategoryName(""); setShowCategoryForm(false); setShowColorPicker(false); };
 
-  const deleteCategory = (id) => {
-    setCategories((current) => current.filter((c) => c.id !== id));
+  const deleteCategory = async (id) => {
+    if (!userId) return; const previous = categories; setCategories((current) => current.filter((c) => c.id !== id));
+    const { error } = await supabase.from("categories").delete().eq("id", id).eq("user_id", userId);
+    if (error) { console.error("Could not delete category:", error); setCategories(previous); }
   };
 
   const selectColor = (color) => {

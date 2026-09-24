@@ -13,7 +13,7 @@
   min-height: 100vh;
   padding: 45px 6%;
   background: #fffaf5;
-  color: #171717;
+  color: #111;
   font-family: "Poppins", sans-serif;
   transition: background 0.3s ease, color 0.3s ease;
 }
@@ -698,7 +698,7 @@
 }
 
 .dashboard-dark {
-  background: #171717;
+  background: #111;
   color: #eeeeee;
 }
 
